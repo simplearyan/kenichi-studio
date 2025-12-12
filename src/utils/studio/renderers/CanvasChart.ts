@@ -101,6 +101,10 @@ export class CanvasChart implements SceneObject {
         return clone;
     }
 
+    containsPoint(x: number, y: number): boolean {
+        return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
+    }
+
     draw(ctx: CanvasRenderingContext2D, time: number) {
         const t = time - this.startTime;
         if (t < 0) return;
