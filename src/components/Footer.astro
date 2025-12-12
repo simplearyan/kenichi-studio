@@ -70,7 +70,7 @@ import { Twitter, Github, Linkedin, Youtube, Instagram } from "lucide-react";
                 <ul class="space-y-3 text-sm">
                     <li>
                         <a
-                            href="/about"
+                            href={`${import.meta.env.BASE_URL}about`}
                             class="hover:text-white transition-colors"
                             >About us</a
                         >
@@ -82,7 +82,7 @@ import { Twitter, Github, Linkedin, Youtube, Instagram } from "lucide-react";
                     </li>
                     <li>
                         <a
-                            href="/blog"
+                            href={`${import.meta.env.BASE_URL}blog`}
                             class="hover:text-white transition-colors">Blog</a
                         >
                     </li>
