@@ -128,6 +128,7 @@ export class StudioEngine {
     // --- Rendering ---
 
     draw(time: number) {
+        this.currentTime = time; // Fix: Keep class property in sync
         currentTime.set(time); // Sync time
         const { width, height } = this.canvas;
 

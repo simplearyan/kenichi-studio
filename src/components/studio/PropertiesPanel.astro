@@ -77,6 +77,9 @@
                                     class="prop-color absolute w-[150%] h-[150%] -top-1/4 -left-1/4 cursor-pointer p-0 border-0"
                                 >
                             </div>
+                            <div class="flex-1">
+                                <span class="text-xs font-mono text-gray-500 dark:text-gray-400 uppercase">${val}</span>
+                            </div>
                         `
                                 : key === "theme"
                                   ? `
@@ -89,15 +92,61 @@
                                 <option value="dracula" ${val === "dracula" ? "selected" : ""}>Dracula</option>
                             </select>
                             `
-                                  : key === "animationStyle"
+                                  : key === "animationType"
                                     ? `
                             <select data-key="${key}" class="prop-input w-full bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-xs rounded-lg border-0 ring-1 ring-transparent hover:ring-gray-200 dark:hover:ring-gray-700 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-blue-500 px-3 py-2 outline-none transition-all font-medium cursor-pointer appearance-none">
+                                <option value="none" ${val === "none" ? "selected" : ""}>None</option>
                                 <option value="typewriter" ${val === "typewriter" ? "selected" : ""}>Typewriter</option>
                                 <option value="line-by-line" ${val === "line-by-line" ? "selected" : ""}>Line by Line</option>
                                 <option value="fade" ${val === "fade" ? "selected" : ""}>Fade</option>
+                                <option value="slide-up" ${val === "slide-up" ? "selected" : ""}>Slide Up</option>
+                                <option value="scale-up" ${val === "scale-up" ? "selected" : ""}>Scale Up</option>
+                                <option value="rotate-in" ${val === "rotate-in" ? "selected" : ""}>Rotate In</option>
                             </select>
                             `
-                                    : `
+                                    : key === "fontFamily"
+                                      ? `
+                            <select data-key="${key}" class="prop-input w-full bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-xs rounded-lg border-0 ring-1 ring-transparent hover:ring-gray-200 dark:hover:ring-gray-700 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-blue-500 px-3 py-2 outline-none transition-all font-medium cursor-pointer appearance-none" style="font-family: '${val}'">
+                                <option value="Poppins" style="font-family: 'Poppins'">Poppins</option>
+                                <option value="Inter" style="font-family: 'Inter'">Inter</option>
+                                <option value="Lobster" style="font-family: 'Lobster'">Lobster</option>
+                                <option value="Roboto Mono" style="font-family: 'Roboto Mono'">Roboto Mono</option>
+                                <option value="Pacifico" style="font-family: 'Pacifico'">Pacifico</option>
+                                <option value="Playfair Display" style="font-family: 'Playfair Display'">Playfair Display</option>
+                                <option value="Bangers" style="font-family: 'Bangers'">Bangers</option>
+                                <option value="Oswald" style="font-family: 'Oswald'">Oswald</option>
+                                <option value="Merriweather" style="font-family: 'Merriweather'">Merriweather</option>
+                                <option value="Montserrat" style="font-family: 'Montserrat'">Montserrat</option>
+                            </select>
+                            `
+                                      : key === "fontWeight"
+                                        ? `
+                            <select data-key="${key}" class="prop-input w-full bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-xs rounded-lg border-0 ring-1 ring-transparent hover:ring-gray-200 dark:hover:ring-gray-700 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-blue-500 px-3 py-2 outline-none transition-all font-medium cursor-pointer appearance-none">
+                                <option value="100" ${val === "100" ? "selected" : ""}>Thin 100</option>
+                                <option value="300" ${val === "300" ? "selected" : ""}>Light 300</option>
+                                <option value="400" ${val === "400" ? "selected" : ""}>Regular 400</option>
+                                <option value="500" ${val === "500" ? "selected" : ""}>Medium 500</option>
+                                <option value="700" ${val === "700" ? "selected" : ""}>Bold 700</option>
+                                <option value="900" ${val === "900" ? "selected" : ""}>Black 900</option>
+                            </select>
+                            `
+                                        : key.includes("Blur") ||
+                                            key.includes("Offset") ||
+                                            key.includes("Spacing")
+                                          ? `
+                            <div class="flex items-center gap-2 w-full">
+                                <input type="range" 
+                                    min="-50" max="50" step="1"
+                                    data-key="${key}" 
+                                    value="${val}" 
+                                    class="prop-input-range flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                                <input type="number" 
+                                    data-key="${key}" 
+                                    value="${val}" 
+                                    class="prop-input w-12 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-xs rounded-lg border-0 ring-1 ring-transparent hover:ring-gray-200 dark:hover:ring-gray-700 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-blue-500 px-1 py-1 text-center outline-none transition-all font-medium">
+                            </div>
+                            `
+                                          : `
                             <input type="${isNum ? "number" : "text"}" 
                                    data-key="${key}" 
                                    value="${val}" 
@@ -122,39 +171,50 @@
         // Remove old delete button logic entirely as we use shortcut now
 
         // Bind Inputs
-        panel.querySelectorAll(".prop-input, .prop-color").forEach((input) => {
-            input.addEventListener("input", (e) => {
-                const target = e.target as HTMLInputElement;
-                const key = target.dataset.key!;
-                const val = target.value;
+        panel
+            .querySelectorAll(".prop-input, .prop-color, .prop-input-range")
+            .forEach((input) => {
+                input.addEventListener("input", (e) => {
+                    const target = e.target as HTMLInputElement;
+                    const key = target.dataset.key!;
+                    const val = target.value;
 
-                // Sync siblings if it is a color picker
-                if (target.classList.contains("prop-color")) {
-                    const textInput = panel.querySelector(
-                        `.prop-input[data-key="${key}"]`,
-                    ) as HTMLInputElement;
-                    if (textInput) textInput.value = val;
-                }
-                // Sync color picker if text input changes (hex)
-                if (
-                    target.classList.contains("prop-input") &&
-                    (key.includes("Color") ||
-                        key.includes("fill") ||
-                        key.includes("stroke"))
-                ) {
-                    const colorInput = panel.querySelector(
-                        `.prop-color[data-key="${key}"]`,
-                    ) as HTMLInputElement;
-                    if (colorInput && val.startsWith("#"))
-                        colorInput.value = val;
-                }
+                    // Sync siblings if it is a color picker
+                    if (target.classList.contains("prop-color")) {
+                        const textInput = panel.querySelector(
+                            `.prop-input[data-key="${key}"]`,
+                        ) as HTMLInputElement;
+                        // No text input sibling for color anymore in some cases, but if exists
+                        // Check if there is a sibling span or input to update?
+                        // In my new template, I added a span to show value, need to update it?
+                        // "text-xs font-mono text-gray-500 dark:text-gray-400 uppercase"
+                        const labelSpan =
+                            target.parentElement?.nextElementSibling?.querySelector(
+                                "span",
+                            );
+                        if (labelSpan) labelSpan.textContent = val;
+                    }
 
-                obj.updateProperties({ [key]: val });
-                (window as any).studioEngine.draw(
-                    (window as any).studioEngine.currentTime,
-                );
+                    // Sync Range <-> Number
+                    if (target.type === "range") {
+                        const numInput = panel.querySelector(
+                            `.prop-input[data-key="${key}"][type="number"]`,
+                        ) as HTMLInputElement;
+                        if (numInput) numInput.value = val;
+                    }
+                    if (target.type === "number") {
+                        const rangeInput = panel.querySelector(
+                            `.prop-input-range[data-key="${key}"]`,
+                        ) as HTMLInputElement;
+                        if (rangeInput) rangeInput.value = val;
+                    }
+
+                    obj.updateProperties({ [key]: val });
+                    (window as any).studioEngine.draw(
+                        (window as any).studioEngine.currentTime,
+                    );
+                });
             });
-        });
 
         // Bind delete
         const delBtn = panel.querySelector("#btn-delete-prop");
