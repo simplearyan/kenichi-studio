@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import { 
-    Type, 
-    Image as ImageIcon, 
-    Square, 
+import {
+    Type,
+    Image as ImageIcon,
+    Square,
     ChevronLeft,
     MonitorPlay
 } from "lucide-react";
 import { Engine } from "../../engine/Core";
 import { TextObject } from "../../engine/objects/TextObject";
 import { CodeBlockObject } from "../../engine/objects/CodeBlockObject";
-import { ChartObject } from "../../engine/objects/ChartObject";interface SidebarProps {
+import { ChartObject } from "../../engine/objects/ChartObject"; interface SidebarProps {
     engine: Engine | null;
 }
 import { SquareAd } from "../ads/SquareAd";
@@ -32,14 +32,14 @@ export const Sidebar = ({ engine }: SidebarProps) => {
         let count = 1;
         // Regex to find "Base N" pattern
         const regex = new RegExp(`^${base} (\\d+)$`);
-        
+
         const existingNumbers = engine.scene.objects
             .map(o => {
                 const match = o.name.match(regex);
                 return match ? parseInt(match[1]) : 0;
             })
             .filter(n => n > 0);
-        
+
         if (existingNumbers.length > 0) {
             count = Math.max(...existingNumbers) + 1;
         }
@@ -49,10 +49,10 @@ export const Sidebar = ({ engine }: SidebarProps) => {
         // Let's stick to the gap-filling or max method.
         // If "Heading" exists, next is "Heading 1"? Or "Heading 2"?
         // Used asked for "Heading 1", "Heading 2".
-        
+
         // Let's start with "Heading 1" always if "Heading" isn't taken? 
         // Or if user just clicks add, it should be "Heading 1", then "Heading 2".
-        
+
         return `${base} ${count}`;
     };
 
@@ -95,43 +95,43 @@ export const Sidebar = ({ engine }: SidebarProps) => {
     };
 
     return (
-        <div className="flex h-full z-10 shadow-xl shadow-slate-200 dark:shadow-slate-900/50">
+        <div className="flex h-full z-10 shadow-xl shadow-slate-200 dark:shadow-slate-900/50 relative">
             {/* 1. Slim Activity Bar */}
             <aside className="w-16 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col items-center py-4 gap-4 z-20">
-                 <button 
+                <button
                     onClick={() => handleTabClick("text")}
                     className={`p-3 rounded-xl transition-all ${activeTab === "text" ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
                     title="Typography"
                 >
                     <Type size={22} />
                 </button>
-                <button 
-                     onClick={() => handleTabClick("media")}
-                     className={`p-3 rounded-xl transition-all ${activeTab === "media" ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
-                     title="Charts & Media"
+                <button
+                    onClick={() => handleTabClick("media")}
+                    className={`p-3 rounded-xl transition-all ${activeTab === "media" ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+                    title="Charts & Media"
                 >
                     <ImageIcon size={22} />
                 </button>
-                <button 
-                     onClick={() => handleTabClick("shapes")}
-                     className={`p-3 rounded-xl transition-all ${activeTab === "shapes" ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
-                     title="Shapes & Code"
+                <button
+                    onClick={() => handleTabClick("shapes")}
+                    className={`p-3 rounded-xl transition-all ${activeTab === "shapes" ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+                    title="Shapes & Code"
                 >
                     <Square size={22} />
                 </button>
-                
+
                 <div className="flex-1" />
-                
+
                 {/* Ad Spot - Sponsor Slot */}
                 <div className="w-12 h-12 mb-2 bg-slate-100 dark:bg-slate-800 rounded-lg flex flex-col items-center justify-center border border-slate-200 dark:border-slate-700 overflow-hidden cursor-pointer group hover:border-blue-300 transition-colors">
                     <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter mb-0.5">AD</span>
                     <div className="w-6 h-4 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-sm group-hover:scale-110 transition-transform"></div>
                 </div>
-                
-                <button 
-                     onClick={() => setActiveTab(null)}
-                     className="p-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                     title="Collapse"
+
+                <button
+                    onClick={() => setActiveTab(null)}
+                    className="p-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    title="Collapse"
                 >
                     <ChevronLeft size={20} className={`transition-transform ${!activeTab ? "rotate-180" : ""}`} />
                 </button>
@@ -139,7 +139,7 @@ export const Sidebar = ({ engine }: SidebarProps) => {
 
             {/* 2. Expandable Drawer */}
             {activeTab && (
-                <aside className="w-80 bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800 flex flex-col animate-in slide-in-from-left-4 duration-200">
+                <aside className="w-80 bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800 flex flex-col animate-in slide-in-from-left-4 duration-200 absolute left-16 top-0 bottom-0 lg:static z-50 shadow-2xl lg:shadow-none">
                     <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white/50 dark:bg-slate-900/50">
                         <span className="font-bold text-sm uppercase tracking-wider text-slate-500 dark:text-slate-400">
                             {activeTab === "text" && "Typography"}
@@ -149,18 +149,18 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                        
+
                         {activeTab === "text" && (
                             <div className="space-y-4">
                                 <div className="text-xs font-bold text-slate-400 text-center mb-4">Click to add to canvas</div>
-                                <button 
+                                <button
                                     onClick={() => handleAddText("heading")}
                                     className="w-full text-left p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:scale-105 hover:shadow-md transition-all group"
                                 >
                                     <span className="text-4xl font-black text-slate-900 dark:text-white block mb-2">Heading</span>
                                     <span className="text-xs text-slate-400">Inter Display, Bold</span>
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => handleAddText("subheading")}
                                     className="w-full text-left p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:scale-105 hover:shadow-md transition-all group"
                                 >
@@ -171,8 +171,8 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                         )}
 
                         {activeTab === "media" && (
-                             <div className="space-y-4">
-                                 <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-3">
                                     <button onClick={() => handleAddChart("bar")} className="aspect-square bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center hover:bg-blue-50 dark:hover:bg-slate-700 hover:border-blue-200 transition-all gap-3 group">
                                         <div className="flex items-end gap-1 h-12 w-12 justify-center">
                                             <div className="w-2 bg-blue-500/80 h-6 rounded-t-sm group-hover:h-8 transition-all"></div>
@@ -187,13 +187,13 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                                         </svg>
                                         <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Line Chart</span>
                                     </button>
-                                 </div>
-                             </div>
+                                </div>
+                            </div>
                         )}
 
                         {activeTab === "shapes" && (
                             <div className="space-y-4">
-                                <button 
+                                <button
                                     onClick={handleAddCode}
                                     className="w-full text-left p-1 bg-slate-900 rounded-xl shadow-lg hover:ring-2 ring-blue-500 transition-all group overflow-hidden"
                                 >
@@ -214,7 +214,7 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                         )}
 
                     </div>
-                    
+
                     <div className="mt-auto pt-4">
                         <SquareAd />
                     </div>
