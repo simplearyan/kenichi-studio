@@ -6,12 +6,13 @@ import { PropertiesPanel } from "./PropertiesPanel";
 import { Timeline } from "./Timeline";
 import { Engine } from "../../engine/Core";
 import { Exporter } from "../../engine/Export";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 // Use a simple local context or prop drilling for this "one-page app"
 // to keep it self-contained for now.
 
 export const EditorLayout = () => {
+    const rootRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [engine, setEngine] = useState<Engine | null>(null);
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -20,17 +21,42 @@ export const EditorLayout = () => {
     const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
     const [isExporting, setIsExporting] = useState(false);
 
+    // FIX: Remove injected 'height: auto !important' style to restore layout.
+    useLayoutEffect(() => {
+        const removeInjectedHeight = () => {
+            if (rootRef.current && rootRef.current.style.height === 'auto') {
+                rootRef.current.style.removeProperty('height');
+            }
+        };
+
+        removeInjectedHeight();
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    removeInjectedHeight();
+                }
+            });
+        });
+
+        if (rootRef.current) {
+            observer.observe(rootRef.current, { attributes: true, attributeFilter: ["style"] });
+        }
+
+        return () => observer.disconnect();
+    }, []);
+
     // Initialize Engine
     useEffect(() => {
         if (!canvasRef.current) return;
-        
+
         const newEngine = new Engine(canvasRef.current);
-        
+
         // Hooks
         newEngine.onTimeUpdate = (t) => setCurrentTime(t);
         newEngine.onPlayStateChange = (p) => setIsPlaying(p);
         newEngine.onSelectionChange = (id) => setSelectedId(id);
-        
+
         setEngine(newEngine);
 
         return () => {
@@ -48,7 +74,7 @@ export const EditorLayout = () => {
         if (!engine) return;
         setIsExporting(true);
         setShowExportDialog(false); // Close dialog
-        
+
         await Exporter.exportVideo(engine, {
             filename: exportConfig.filename || "kinetix-video",
             format: exportConfig.format,
@@ -91,37 +117,37 @@ export const EditorLayout = () => {
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div ref={rootRef} className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-black">
             {/* Header */}
             <header className="h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 bg-white dark:bg-slate-900 shrink-0 z-20">
                 <a href={import.meta.env.BASE_URL} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">K</div>
                     <span className="font-bold text-lg hidden sm:block text-slate-900 dark:text-white">Kinetix Create</span>
                 </a>
-                
+
                 <div className="flex items-center gap-2">
-                     {/* Donation Buttons */}
-                     <a 
-                        href="https://ko-fi.com" 
-                        target="_blank" 
+                    {/* Donation Buttons */}
+                    <a
+                        href="https://ko-fi.com"
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="hidden md:flex items-center gap-2 px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg text-xs font-bold transition-colors mr-2"
-                     >
+                    >
                         <Coffee size={14} className="text-amber-700" />
                         <span>Buy me a coffee</span>
-                     </a>
-                     <a 
-                        href="https://patreon.com" 
-                        target="_blank" 
+                    </a>
+                    <a
+                        href="https://patreon.com"
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="hidden md:flex items-center gap-2 px-3 py-2 bg-red-100 hover:bg-red-200 text-red-900 rounded-lg text-xs font-bold transition-colors mr-4"
-                     >
+                    >
                         <Heart size={14} className="text-red-600 fill-red-600" />
                         <span>Patreon</span>
-                     </a>
+                    </a>
 
-                     {/* Guides Menu */}
-                     <div className="relative">
+                    {/* Guides Menu */}
+                    <div className="relative">
                         <button
                             onClick={() => setShowGuidesMenu(!showGuidesMenu)}
                             className={`p-2 rounded-lg transition-colors mr-1 ${currentGuide !== 'none' ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
@@ -129,7 +155,7 @@ export const EditorLayout = () => {
                         >
                             <Grid3x3 size={20} />
                         </button>
-                        
+
                         {showGuidesMenu && (
                             <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                                 <div className="p-2 space-y-1">
@@ -150,9 +176,9 @@ export const EditorLayout = () => {
                                 </div>
                             </div>
                         )}
-                     </div>
+                    </div>
 
-                     <button
+                    <button
                         onClick={() => {
                             // Deselect to show global settings
                             engine?.selectObject(null);
@@ -160,21 +186,21 @@ export const EditorLayout = () => {
                         }}
                         className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors mr-2"
                         title="Scene & Export Settings"
-                     >
+                    >
                         <Settings size={20} />
-                     </button>
+                    </button>
 
-                     <button 
+                    <button
                         onClick={handleExportImage}
                         className="px-3 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg font-medium text-sm hover:bg-slate-200 transition-colors"
-                     >
+                    >
                         Snapshot
-                     </button>
-                     <button 
+                    </button>
+                    <button
                         onClick={() => setShowExportDialog(true)}
                         disabled={isExporting}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
-                     >
+                    >
                         {isExporting ? (
                             <>
                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -183,24 +209,24 @@ export const EditorLayout = () => {
                         ) : (
                             "Export Video"
                         )}
-                     </button>
+                    </button>
                 </div>
             </header>
 
             {/* Main Workspace */}
-            <div className="flex-1 flex overflow-hidden relative">
+            <div className="flex-1 flex overflow-hidden relative min-h-0">
                 {/* Left Sidebar (Assets) */}
                 <Sidebar engine={engine} />
 
                 {/* Center Canvas */}
                 <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-slate-100 dark:bg-slate-950 relative">
                     <CanvasWorkspace ref={canvasRef} />
-                    
+
                     {/* Timeline */}
                     <div className="shrink-0 p-4 z-10">
                         <div className="h-32">
-                             <Timeline 
-                                currentTime={currentTime} 
+                            <Timeline
+                                currentTime={currentTime}
                                 totalDuration={engine?.totalDuration || 5000}
                                 isPlaying={isPlaying}
                                 onPlayPause={handlePlayPause}
@@ -210,11 +236,10 @@ export const EditorLayout = () => {
                     </div>
                 </div>
 
-                {/* Right Sidebar (Properties) */}
                 {rightSidebarOpen && (
-                    <div className="w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 overflow-y-auto">
-                        <PropertiesPanel 
-                            engine={engine} 
+                    <div className="w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 flex flex-col overflow-hidden min-h-0">
+                        <PropertiesPanel
+                            engine={engine}
                             selectedId={selectedId}
                             exportConfig={exportConfig}
                             setExportConfig={setExportConfig}
@@ -224,10 +249,10 @@ export const EditorLayout = () => {
 
                 {/* Export Dialog / Native Window Design */}
                 {(showExportDialog || isExporting) && (
-                    <div className="absolute inset-0 z-50 flex items-center justify-center p-8 animate-in fade-in duration-200 pointer-events-none"> 
-                        
+                    <div className="absolute inset-0 z-50 flex items-center justify-center p-8 animate-in fade-in duration-200 pointer-events-none">
+
                         <div className="pointer-events-auto bg-white dark:bg-slate-900 rounded-xl shadow-2xl shadow-black/20 border border-slate-200 dark:border-slate-800 overflow-hidden w-full max-w-6xl flex h-[650px] animate-in zoom-in-95 duration-300">
-                            
+
                             {/* Left Ad Column */}
                             <div className="w-72 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 p-6 hidden lg:flex flex-col items-center justify-center">
                                 <span className="text-[10px] uppercase font-bold text-slate-400 mb-4">Advertisement</span>
@@ -244,7 +269,7 @@ export const EditorLayout = () => {
                                         </div>
                                         <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Exporting Video...</h3>
                                         <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-xs mx-auto">Your animation is being rendered frame by frame. Please do not close this tab.</p>
-                                        
+
                                         <div className="w-full max-w-md bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
                                             <div className="bg-blue-500 h-full rounded-full animate-pulse w-full origin-left"></div>
                                         </div>
@@ -262,7 +287,7 @@ export const EditorLayout = () => {
                                                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                             </button>
                                         </div>
-                                        
+
                                         {/* Dialog Body */}
                                         <div className="p-8 space-y-8 flex-1 overflow-y-auto">
                                             <div className="grid grid-cols-2 gap-8">
@@ -270,11 +295,11 @@ export const EditorLayout = () => {
                                                     <div>
                                                         <label className="text-xs font-bold uppercase text-slate-500 mb-2 block">Filename</label>
                                                         <div className="flex rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all bg-white dark:bg-slate-800">
-                                                            <input 
-                                                                type="text" 
+                                                            <input
+                                                                type="text"
                                                                 className="flex-1 bg-transparent border-none px-4 py-3 text-slate-900 dark:text-white outline-none placeholder:text-slate-400"
                                                                 value={exportConfig.filename}
-                                                                onChange={(e) => setExportConfig({...exportConfig, filename: e.target.value})}
+                                                                onChange={(e) => setExportConfig({ ...exportConfig, filename: e.target.value })}
                                                                 placeholder="my-video"
                                                             />
                                                             <div className="px-4 py-3 text-slate-400 font-mono text-sm border-l border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
@@ -286,15 +311,15 @@ export const EditorLayout = () => {
                                                     <div>
                                                         <label className="text-xs font-bold uppercase text-slate-500 mb-2 block">Format</label>
                                                         <div className="grid grid-cols-1 gap-3">
-                                                            <button 
-                                                                onClick={() => setExportConfig({...exportConfig, format: "webm"})}
+                                                            <button
+                                                                onClick={() => setExportConfig({ ...exportConfig, format: "webm" })}
                                                                 className={`p-4 rounded-xl border text-left transition-all ${exportConfig.format === "webm" ? "bg-blue-50 border-blue-500 ring-1 ring-blue-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400"}`}
                                                             >
                                                                 <div className={`font-bold mb-1 ${exportConfig.format === "webm" ? "text-blue-700 dark:text-blue-400" : "text-slate-900 dark:text-white"}`}>WebM</div>
                                                                 <div className="text-xs text-slate-500 dark:text-slate-400">Best for web usage. Smaller file size, transparency support.</div>
                                                             </button>
-                                                            <button 
-                                                                onClick={() => setExportConfig({...exportConfig, format: "mp4"})}
+                                                            <button
+                                                                onClick={() => setExportConfig({ ...exportConfig, format: "mp4" })}
                                                                 className={`p-4 rounded-xl border text-left transition-all ${exportConfig.format === "mp4" ? "bg-blue-50 border-blue-500 ring-1 ring-blue-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400"}`}
                                                             >
                                                                 <div className={`font-bold mb-1 ${exportConfig.format === "mp4" ? "text-blue-700 dark:text-blue-400" : "text-slate-900 dark:text-white"}`}>MP4</div>
@@ -308,8 +333,8 @@ export const EditorLayout = () => {
                                                     <div>
                                                         <label className="text-xs font-bold uppercase text-slate-500 mb-2 block">Duration</label>
                                                         <div className="flex flex-col gap-3">
-                                                            <button 
-                                                                onClick={() => setExportConfig({...exportConfig, useFullDuration: true})}
+                                                            <button
+                                                                onClick={() => setExportConfig({ ...exportConfig, useFullDuration: true })}
                                                                 className={`p-4 rounded-xl border text-left transition-all group ${exportConfig.useFullDuration ? "bg-blue-50 border-blue-500 ring-1 ring-blue-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400"}`}
                                                             >
                                                                 <div className="flex justify-between items-center">
@@ -320,9 +345,9 @@ export const EditorLayout = () => {
                                                                     {exportConfig.useFullDuration && <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-blue-500 text-white flex items-center justify-center scale-90"><svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
                                                                 </div>
                                                             </button>
-                                                            
-                                                            <button 
-                                                                onClick={() => setExportConfig({...exportConfig, useFullDuration: false})}
+
+                                                            <button
+                                                                onClick={() => setExportConfig({ ...exportConfig, useFullDuration: false })}
                                                                 className={`p-4 rounded-xl border text-left transition-all group ${!exportConfig.useFullDuration ? "bg-blue-50 border-blue-500 ring-1 ring-blue-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400"}`}
                                                             >
                                                                 <div className="flex justify-between items-start">
@@ -331,13 +356,13 @@ export const EditorLayout = () => {
                                                                         <div className="text-xs text-slate-500 dark:text-slate-400">Specify a custom duration in seconds.</div>
                                                                     </div>
                                                                     {!exportConfig.useFullDuration ? (
-                                                                         <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                                                            <input 
-                                                                                type="number" 
+                                                                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                                                            <input
+                                                                                type="number"
                                                                                 min={1}
                                                                                 max={60}
                                                                                 value={exportConfig.duration}
-                                                                                onChange={(e) => setExportConfig({...exportConfig, duration: Number(e.target.value)})}
+                                                                                onChange={(e) => setExportConfig({ ...exportConfig, duration: Number(e.target.value) })}
                                                                                 className="w-20 bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-500/30 text-blue-900 dark:text-blue-100 rounded-lg px-2 py-1 text-sm text-center font-bold outline-none ring-2 ring-blue-500/20"
                                                                             />
                                                                             <span className="text-xs font-bold text-blue-600 dark:text-blue-400">sec</span>
@@ -370,13 +395,13 @@ export const EditorLayout = () => {
                                                 By exporting, you agree to our <a href="#" className="underline hover:text-slate-800 dark:hover:text-slate-200">Terms of Service</a>.
                                             </div>
                                             <div className="flex gap-3">
-                                                <button 
+                                                <button
                                                     onClick={() => setShowExportDialog(false)}
                                                     className="px-6 py-3 text-slate-600 dark:text-slate-400 font-bold text-sm hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                                                 >
                                                     Cancel
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={handleExportVideo}
                                                     className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-95 flex items-center gap-2"
                                                 >

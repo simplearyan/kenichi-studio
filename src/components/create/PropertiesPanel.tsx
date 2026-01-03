@@ -4,14 +4,14 @@ import { TextObject } from "../../engine/objects/TextObject";
 import { CodeBlockObject } from "../../engine/objects/CodeBlockObject";
 import { ChartObject } from "../../engine/objects/ChartObject";
 
-import { 
-    Layers, 
-    Settings, 
-    Eye, 
-    EyeOff, 
-    Lock, 
-    Unlock, 
-    ArrowUp, 
+import {
+    Layers,
+    Settings,
+    Eye,
+    EyeOff,
+    Lock,
+    Unlock,
+    ArrowUp,
     ArrowDown,
     Copy,
     Trash2,
@@ -42,14 +42,14 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
     const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
     const [editName, setEditName] = useState("");
     const [_, setForceUpdate] = useState(0);
-    
+
     // Export simulation state
     const [isExporting, setIsExporting] = useState(false);
     const [exportProgress, setExportProgress] = useState(0);
 
     const handleExport = () => {
         if (isExporting) return;
-        
+
         setIsExporting(true);
         setExportProgress(0);
 
@@ -74,7 +74,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
         if (!engine) return;
         const onUpdate = () => setForceUpdate(n => n + 1);
         engine.onObjectChange = onUpdate;
-        
+
         return () => { engine.onObjectChange = undefined; }
     }, [engine]);
 
@@ -96,17 +96,17 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
     };
 
     const handleRenameStart = (id: string, currentName: string) => {
-         setEditingLayerId(id);
-         setEditName(currentName);
+        setEditingLayerId(id);
+        setEditName(currentName);
     };
 
     const handleRenameSave = () => {
         if (editingLayerId && engine) {
-             const layer = engine.scene.get(editingLayerId);
-             if (layer) {
-                 layer.name = editName;
-                 setForceUpdate(n => n + 1);
-             }
+            const layer = engine.scene.get(editingLayerId);
+            if (layer) {
+                layer.name = editName;
+                setForceUpdate(n => n + 1);
+            }
         }
         setEditingLayerId(null);
     };
@@ -135,19 +135,19 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
         <div className="flex flex-col h-full">
             {/* Tabs */}
             <div className="flex border-b border-slate-200 dark:border-slate-800">
-                <button 
+                <button
                     onClick={() => setActiveTab("properties")}
                     className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${activeTab === "properties" ? "text-blue-600 border-b-2 border-blue-600" : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                 >
                     <Settings size={14} /> Inspector
                 </button>
-                <button 
+                <button
                     onClick={() => setActiveTab("layers")}
                     className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${activeTab === "layers" ? "text-blue-600 border-b-2 border-blue-600" : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                 >
                     <Layers size={14} /> Layers
                 </button>
-                <button 
+                <button
                     onClick={() => setActiveTab("animations")}
                     className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${activeTab === "animations" ? "text-blue-600 border-b-2 border-blue-600" : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                 >
@@ -156,12 +156,12 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4">
-                
+            <div className="flex-1 min-h-0 overflow-y-auto p-4">
+
                 {/* PROPERTIES TAB */}
                 {activeTab === "properties" && (
                     <>
-                         {!obj ? (
+                        {!obj ? (
                             <div className="space-y-6">
                                 {/* Scene Settings Header */}
                                 <div className="text-center p-4">
@@ -171,10 +171,10 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
 
                                 {/* Background Color */}
                                 <div className="space-y-2">
-                                     <label className="text-[10px] uppercase text-slate-500 font-bold block">Background Color</label>
-                                     <div className="flex gap-2">
-                                         <input 
-                                            type="color" 
+                                    <label className="text-[10px] uppercase text-slate-500 font-bold block">Background Color</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="color"
                                             className="w-10 h-10 p-0.5 rounded cursor-pointer bg-transparent border border-slate-200 dark:border-slate-700"
                                             value={engine.scene.backgroundColor}
                                             onChange={(e) => {
@@ -184,8 +184,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                             }}
                                         />
                                         <div className="flex-1">
-                                             <input 
-                                                type="text" 
+                                            <input
+                                                type="text"
                                                 className="w-full h-10 bg-slate-100 dark:bg-slate-800 border-none rounded px-3 text-xs text-slate-700 dark:text-slate-300 font-mono"
                                                 value={engine.scene.backgroundColor}
                                                 onChange={(e) => {
@@ -195,119 +195,119 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                 }}
                                             />
                                         </div>
-                                     </div>
+                                    </div>
                                 </div>
 
                                 <div className="h-px bg-slate-200 dark:bg-slate-800 my-4" />
 
-                                 {/* Resolution Settings */}
-                                 <div className="space-y-2">
-                                     <label className="text-[10px] uppercase text-slate-500 font-bold block">Resolution</label>
-                                     <div className="grid grid-cols-2 gap-2">
-                                         <button 
+                                {/* Resolution Settings */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] uppercase text-slate-500 font-bold block">Resolution</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button
                                             onClick={() => {
                                                 engine.resize(854, 480);
                                                 setForceUpdate(n => n + 1);
                                             }}
                                             className={`py-2 px-3 rounded text-xs font-medium border transition-all ${engine.scene.height === 480 ? "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-400"}`}
-                                         >
+                                        >
                                             480p
-                                         </button>
-                                         <button 
+                                        </button>
+                                        <button
                                             onClick={() => {
                                                 engine.resize(1280, 720);
                                                 setForceUpdate(n => n + 1);
                                             }}
                                             className={`py-2 px-3 rounded text-xs font-medium border transition-all ${engine.scene.height === 720 ? "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-400"}`}
-                                         >
-                                            720p 
+                                        >
+                                            720p
                                             <span className="opacity-50 ml-1 font-normal">(HD)</span>
-                                         </button>
-                                         <button 
+                                        </button>
+                                        <button
                                             onClick={() => {
                                                 engine.resize(1920, 1080);
                                                 setForceUpdate(n => n + 1);
                                             }}
                                             className={`py-2 px-3 rounded text-xs font-medium border transition-all ${engine.scene.height === 1080 ? "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-400"}`}
-                                         >
+                                        >
                                             1080p
                                             <span className="opacity-50 ml-1 font-normal">(FHD)</span>
-                                         </button>
-                                         <button 
+                                        </button>
+                                        <button
                                             onClick={() => {
                                                 engine.resize(3840, 2160);
                                                 setForceUpdate(n => n + 1);
                                             }}
                                             className={`py-2 px-3 rounded text-xs font-medium border transition-all ${engine.scene.height === 2160 ? "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-400"}`}
-                                         >
+                                        >
                                             4K
                                             <span className="opacity-50 ml-1 font-normal">(UHD)</span>
-                                         </button>
-                                     </div>
-                                     <div className="text-[10px] text-slate-400 text-center mt-2">
+                                        </button>
+                                    </div>
+                                    <div className="text-[10px] text-slate-400 text-center mt-2">
                                         Current: {engine.scene.width} x {engine.scene.height}
-                                     </div>
-                                 </div>
+                                    </div>
+                                </div>
 
-                                 <div className="h-px bg-slate-200 dark:bg-slate-800 my-4" />
+                                <div className="h-px bg-slate-200 dark:bg-slate-800 my-4" />
 
-                                 {/* Export Settings (if available) */}
-                                 {exportConfig && setExportConfig && (
-                                     <div className="space-y-4">
-                                         <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
-                                             <SlidersHorizontal size={14} />
-                                             <span>Export Settings</span>
-                                         </div>
+                                {/* Export Settings (if available) */}
+                                {exportConfig && setExportConfig && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
+                                            <SlidersHorizontal size={14} />
+                                            <span>Export Settings</span>
+                                        </div>
 
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Filename</label>
-                                            <input 
-                                                type="text" 
+                                            <input
+                                                type="text"
                                                 disabled={isExporting}
                                                 className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 disabled:opacity-50"
                                                 value={exportConfig.filename}
-                                                onChange={(e) => setExportConfig({...exportConfig, filename: e.target.value})}
+                                                onChange={(e) => setExportConfig({ ...exportConfig, filename: e.target.value })}
                                             />
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                 <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Format</label>
-                                                 <select 
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Format</label>
+                                                <select
                                                     disabled={isExporting}
                                                     className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 disabled:opacity-50"
                                                     value={exportConfig.format}
-                                                    onChange={(e) => setExportConfig({...exportConfig, format: e.target.value as any})}
-                                                 >
-                                                     <option value="webm">WebM</option>
-                                                     <option value="mp4">MP4</option>
-                                                 </select>
+                                                    onChange={(e) => setExportConfig({ ...exportConfig, format: e.target.value as any })}
+                                                >
+                                                    <option value="webm">WebM</option>
+                                                    <option value="mp4">MP4</option>
+                                                </select>
                                             </div>
                                             <div>
-                                                 <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Duration</label>
-                                                 <select 
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Duration</label>
+                                                <select
                                                     disabled={isExporting}
                                                     className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 disabled:opacity-50"
                                                     value={exportConfig.useFullDuration ? "full" : "custom"}
-                                                    onChange={(e) => setExportConfig({...exportConfig, useFullDuration: e.target.value === "full"})}
-                                                 >
-                                                     <option value="full">Full Timeline</option>
-                                                     <option value="custom">Custom</option>
-                                                 </select>
+                                                    onChange={(e) => setExportConfig({ ...exportConfig, useFullDuration: e.target.value === "full" })}
+                                                >
+                                                    <option value="full">Full Timeline</option>
+                                                    <option value="custom">Custom</option>
+                                                </select>
                                             </div>
                                         </div>
-                                        
+
                                         {!exportConfig.useFullDuration && (
                                             <div>
                                                 <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Custom Duration (s)</label>
-                                                <input 
-                                                    type="number" 
+                                                <input
+                                                    type="number"
                                                     min={1}
                                                     max={60}
                                                     disabled={isExporting}
                                                     className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 disabled:opacity-50"
                                                     value={exportConfig.duration}
-                                                    onChange={(e) => setExportConfig({...exportConfig, duration: Number(e.target.value)})}
+                                                    onChange={(e) => setExportConfig({ ...exportConfig, duration: Number(e.target.value) })}
                                                 />
                                             </div>
                                         )}
@@ -318,7 +318,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                     onClick={handleExport}
                                                     className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-lg shadow-blue-900/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                                                 >
-                                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"/>
+                                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                                                     Export Video
                                                 </button>
                                             ) : (
@@ -328,7 +328,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                         <span className="text-[10px] text-slate-500 font-mono">{Math.round(exportProgress)}%</span>
                                                     </div>
                                                     <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                                        <div 
+                                                        <div
                                                             className="h-full bg-blue-600 transition-all duration-300 ease-out"
                                                             style={{ width: `${exportProgress}%` }}
                                                         />
@@ -336,11 +336,11 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                 </div>
                                             )}
                                         </div>
-                                     </div>
-                                 )}
+                                    </div>
+                                )}
 
                             </div>
-                         ) : (
+                        ) : (
                             <div className="space-y-6">
                                 {/* Selected Object Header */}
                                 <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
@@ -358,8 +358,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">X Position</label>
-                                            <input 
-                                                type="number" 
+                                            <input
+                                                type="number"
                                                 className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
                                                 value={Math.round(obj.x)}
                                                 onChange={(e) => handleChange("x", Number(e.target.value))}
@@ -367,8 +367,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                         </div>
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Y Position</label>
-                                            <input 
-                                                type="number" 
+                                            <input
+                                                type="number"
                                                 className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
                                                 value={Math.round(obj.y)}
                                                 onChange={(e) => handleChange("y", Number(e.target.value))}
@@ -378,8 +378,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Width</label>
-                                            <input 
-                                                type="number" 
+                                            <input
+                                                type="number"
                                                 className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
                                                 value={Math.round(obj.width)}
                                                 onChange={(e) => handleChange("width", Number(e.target.value))}
@@ -387,8 +387,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                         </div>
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Height</label>
-                                            <input 
-                                                type="number" 
+                                            <input
+                                                type="number"
                                                 className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
                                                 value={Math.round(obj.height)}
                                                 onChange={(e) => handleChange("height", Number(e.target.value))}
@@ -404,7 +404,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <div className="space-y-4">
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Content</label>
-                                            <textarea 
+                                            <textarea
                                                 className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-slate-300 min-h-[60px]"
                                                 value={obj.text}
                                                 onChange={(e) => handleChange("text", e.target.value)}
@@ -413,8 +413,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
                                                 <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Color</label>
-                                                <input 
-                                                    type="color" 
+                                                <input
+                                                    type="color"
                                                     className="w-full h-8 cursor-pointer rounded"
                                                     value={obj.color}
                                                     onChange={(e) => handleChange("color", e.target.value)}
@@ -422,8 +422,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                             </div>
                                             <div>
                                                 <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Size</label>
-                                                 <input 
-                                                    type="number" 
+                                                <input
+                                                    type="number"
                                                     className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
                                                     value={obj.fontSize}
                                                     onChange={(e) => handleChange("fontSize", Number(e.target.value))}
@@ -433,7 +433,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
 
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Font Family</label>
-                                            <select 
+                                            <select
                                                 className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-slate-300"
                                                 value={obj.fontFamily}
                                                 onChange={(e) => handleChange("fontFamily", e.target.value)}
@@ -456,22 +456,169 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <div className="space-y-4">
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Code</label>
-                                            <textarea 
+                                            <textarea
                                                 className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-slate-300 font-mono min-h-[100px]"
                                                 value={obj.code}
                                                 onChange={(e) => handleChange("code", e.target.value)}
                                                 spellCheck={false}
                                             />
                                         </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Theme</label>
+                                                <select
+                                                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-slate-300"
+                                                    value={obj.theme}
+                                                    onChange={(e) => handleChange("theme", e.target.value)}
+                                                >
+                                                    <option value="vscode-dark">VS Code Dark</option>
+                                                    <option value="light">Light</option>
+                                                    <option value="monokai">Monokai</option>
+                                                    <option value="github-dark">GitHub Dark</option>
+                                                    <option value="dracula">Dracula</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Font Size</label>
+                                                <input
+                                                    type="number"
+                                                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
+                                                    value={obj.fontSize}
+                                                    onChange={(e) => handleChange("fontSize", Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Padding</label>
+                                                <input
+                                                    type="number"
+                                                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
+                                                    value={obj.padding || 0}
+                                                    onChange={(e) => handleChange("padding", Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Start Line #</label>
+                                                <input
+                                                    type="number"
+                                                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
+                                                    value={obj.startLineNumber || 1}
+                                                    onChange={(e) => handleChange("startLineNumber", Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Line Gap</label>
+                                                <input
+                                                    type="number"
+                                                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
+                                                    value={obj.lineNumberMargin || 15}
+                                                    onChange={(e) => handleChange("lineNumberMargin", Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Highlight Lines (e.g. 1, 3-5)</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
+                                                    placeholder="1, 3-5"
+                                                    defaultValue={(obj.highlightedLines || []).join(", ")}
+                                                    onBlur={(e) => {
+                                                        const val = e.target.value;
+                                                        const lines = val.split(",").flatMap(part => {
+                                                            if (part.includes("-")) {
+                                                                const [start, end] = part.split("-").map(n => parseInt(n.trim()));
+                                                                if (!isNaN(start) && !isNaN(end)) {
+                                                                    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+                                                                }
+                                                                return [];
+                                                            }
+                                                            const num = parseInt(part.trim());
+                                                            return isNaN(num) ? [] : [num];
+                                                        });
+                                                        handleChange("highlightedLines", lines);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Highlight Color</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="color"
+                                                        className="w-8 h-8 cursor-pointer rounded bg-transparent border border-slate-200 dark:border-slate-700 p-0.5"
+                                                        value={obj.highlightColor || "#ffffff"}
+                                                        onChange={(e) => handleChange("highlightColor", e.target.value)}
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 font-mono"
+                                                        value={obj.highlightColor || "rgba(255,255,255,0.1)"}
+                                                        onChange={(e) => handleChange("highlightColor", e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id="syntax-toggle"
+                                                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                    checked={obj.syntaxHighlighting}
+                                                    onChange={(e) => handleChange("syntaxHighlighting", e.target.checked)}
+                                                />
+                                                <label htmlFor="syntax-toggle" className="text-xs text-slate-700 dark:text-slate-300 font-medium select-none cursor-pointer">
+                                                    Enable Syntax Highlighting
+                                                </label>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id="linenumbers-toggle"
+                                                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                    checked={obj.showLineNumbers !== false}
+                                                    onChange={(e) => handleChange("showLineNumbers", e.target.checked)}
+                                                />
+                                                <label htmlFor="linenumbers-toggle" className="text-xs text-slate-700 dark:text-slate-300 font-medium select-none cursor-pointer">
+                                                    Show Line Numbers
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <input
+                                                type="file"
+                                                id="code-import"
+                                                className="hidden"
+                                                accept=".js,.ts,.jsx,.tsx,.html,.css,.json,.py,.java,.cpp,.c,.h,.md,.txt"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = (ev) => {
+                                                            const text = ev.target?.result as string;
+                                                            handleChange("code", text);
+                                                        };
+                                                        reader.readAsText(file);
+                                                    }
+                                                    // Reset input so same file can be selected again
+                                                    e.target.value = '';
+                                                }}
+                                            />
+                                            <button
+                                                onClick={() => document.getElementById('code-import')?.click()}
+                                                className="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                                                Import Code File
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
-                                 {obj instanceof ChartObject && (
+                                {obj instanceof ChartObject && (
                                     <div className="space-y-4">
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Color</label>
-                                            <input 
-                                                type="color" 
+                                            <input
+                                                type="color"
                                                 className="w-full h-8 cursor-pointer rounded"
                                                 value={obj.color}
                                                 onChange={(e) => handleChange("color", e.target.value)}
@@ -481,7 +628,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                 )}
 
                                 <div className="mt-8 pt-4 border-t border-slate-200 dark:border-slate-800">
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             engine.scene.remove(obj.id);
                                             engine.selectObject(null);
@@ -493,7 +640,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     </button>
                                 </div>
                             </div>
-                         )}
+                        )}
                     </>
                 )}
 
@@ -513,7 +660,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                         {obj.name || "Untitled"}
                                     </div>
                                 </div>
-                                
+
                                 <div className="text-[10px] uppercase text-slate-500 font-bold mt-4 mb-2">In Animation</div>
                                 <div className="grid grid-cols-2 gap-2">
                                     {[
@@ -536,7 +683,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                             className={`p-3 rounded-xl border text-left group transition-all relative overflow-hidden ${obj.animation?.type === anim.id ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-blue-300"}`}
                                         >
                                             <div className="mb-2 h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
-                                                {anim.id === "none" ? <div className="w-3 h-3 bg-current rounded-full"/> : <Play size={12} className={anim.className} />}
+                                                {anim.id === "none" ? <div className="w-3 h-3 bg-current rounded-full" /> : <Play size={12} className={anim.className} />}
                                             </div>
                                             <div className="text-xs font-bold">{anim.label}</div>
                                         </button>
@@ -547,10 +694,10 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                                         <div>
                                             <div className="flex justify-between mb-1">
-                                                 <label className="text-[10px] uppercase text-slate-500 font-bold">Duration</label>
-                                                 <span className="text-[10px] font-mono text-slate-500">{obj.animation.duration}ms</span>
+                                                <label className="text-[10px] uppercase text-slate-500 font-bold">Duration</label>
+                                                <span className="text-[10px] font-mono text-slate-500">{obj.animation.duration}ms</span>
                                             </div>
-                                            <input 
+                                            <input
                                                 type="range"
                                                 min={100}
                                                 max={3000}
@@ -576,13 +723,13 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                         {/* Layer List */}
                         <div className="flex-1 overflow-y-auto space-y-1 p-2">
                             {[...engine.scene.objects].reverse().map((o, i) => (
-                                <div 
+                                <div
                                     key={o.id}
                                     className={`flex items-center gap-2 p-2 rounded-lg group transition-colors ${selectedId === o.id ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/50" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
                                     onClick={() => engine.selectObject(o.id)}
                                 >
                                     {/* Visibility Toggle */}
-                                    <button 
+                                    <button
                                         className={`p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 ${!o.visible ? "text-slate-400" : "text-current"}`}
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -596,12 +743,12 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     </button>
 
                                     {/* Lock Toggle */}
-                                    <button 
+                                    <button
                                         className={`p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 ${!o.locked ? "text-slate-400 opacity-0 group-hover:opacity-100" : "text-current opacity-100"}`}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             o.locked = !o.locked;
-                                            engine.render(); 
+                                            engine.render();
                                             setForceUpdate(n => n + 1);
                                         }}
                                         title={o.locked ? "Unlock" : "Lock"}
@@ -611,10 +758,10 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
 
                                     {/* Name / Rename */}
                                     <div className="flex-1 min-w-0" onClick={(e) => {
-                                         if (selectedId === o.id) e.stopPropagation(); // Don't trigger select if already selected (allows double click maybe?)
+                                        if (selectedId === o.id) e.stopPropagation(); // Don't trigger select if already selected (allows double click maybe?)
                                     }}>
                                         {editingLayerId === o.id ? (
-                                            <input 
+                                            <input
                                                 ref={editInputRef}
                                                 className="w-full bg-white dark:bg-slate-950 border border-blue-500 rounded px-1.5 py-0.5 text-xs focus:outline-none"
                                                 value={editName}
@@ -623,7 +770,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                 onKeyDown={(e) => e.key === "Enter" && handleRenameSave()}
                                             />
                                         ) : (
-                                            <div 
+                                            <div
                                                 className="truncate cursor-text"
                                                 onDoubleClick={(e) => {
                                                     e.stopPropagation();
@@ -634,7 +781,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                             </div>
                                         )}
                                     </div>
-                                    
+
                                 </div>
                             ))}
 
@@ -648,7 +795,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                         {/* Bottom Toolbar */}
                         {selectedId && (
                             <div className="p-2 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 grid grid-cols-4 gap-1">
-                                 <button 
+                                <button
                                     onClick={() => handleDuplicate(selectedId)}
                                     className="flex flex-col items-center justify-center p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors gap-1"
                                     title="Duplicate"
@@ -656,7 +803,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <Copy size={16} />
                                     <span className="text-[9px] uppercase font-bold">Duplicate</span>
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => {
                                         engine.scene.moveUp(selectedId);
                                         engine.render();
@@ -668,7 +815,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <ArrowUp size={16} />
                                     <span className="text-[9px] uppercase font-bold">Up</span>
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => {
                                         engine.scene.moveDown(selectedId);
                                         engine.render();
@@ -680,7 +827,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <ArrowDown size={16} />
                                     <span className="text-[9px] uppercase font-bold">Down</span>
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => handleDelete(selectedId)}
                                     className="flex flex-col items-center justify-center p-2 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors gap-1"
                                     title="Delete"
@@ -692,8 +839,7 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                         )}
                     </div>
                 )}
-
             </div>
         </div>
-    );
-};
+    )
+}

@@ -1,11 +1,43 @@
 import { KinetixObject } from "../Object";
 
+export type CodeTheme = "vscode-dark" | "light" | "monokai" | "github-dark" | "dracula";
+
+// Extended Theme Definition
+const THEMES: Record<CodeTheme, { bg: string, text: string, numbers: string, traffic: string[], keyword: string, string: string, comment: string, function: string }> = {
+    "vscode-dark": {
+        bg: "#1e1e1e", text: "#d4d4d4", numbers: "#858585", traffic: ["#ff5f56", "#ffbd2e", "#27c93f"],
+        keyword: "#569cd6", string: "#ce9178", comment: "#6a9955", function: "#dcdcaa"
+    },
+    "light": {
+        bg: "#ffffff", text: "#24292e", numbers: "#6a737d", traffic: ["#ff5f56", "#ffbd2e", "#27c93f"],
+        keyword: "#d73a49", string: "#032f62", comment: "#6a737d", function: "#6f42c1"
+    },
+    "monokai": {
+        bg: "#272822", text: "#f8f8f2", numbers: "#75715e", traffic: ["#ff5f56", "#ffbd2e", "#27c93f"],
+        keyword: "#f92672", string: "#e6db74", comment: "#75715e", function: "#a6e22e"
+    },
+    "github-dark": {
+        bg: "#0d1117", text: "#c9d1d9", numbers: "#6e7681", traffic: ["#ff5f56", "#ffbd2e", "#27c93f"],
+        keyword: "#ff7b72", string: "#a5d6ff", comment: "#8b949e", function: "#d2a8ff"
+    },
+    "dracula": {
+        bg: "#282a36", text: "#f8f8f2", numbers: "#6272a4", traffic: ["#ff5f56", "#ffbd2e", "#27c93f"],
+        keyword: "#ff79c6", string: "#f1fa8c", comment: "#6272a4", function: "#50fa7b"
+    }
+};
+
 export class CodeBlockObject extends KinetixObject {
     code: string;
     language: string;
     fontSize: number;
     showLineNumbers: boolean = true;
-    color: string;
+    syntaxHighlighting: boolean = true; // Default ON
+    theme: CodeTheme = "vscode-dark";
+    padding: number = 20;
+    startLineNumber: number = 1;
+    lineNumberMargin: number = 15;
+    highlightedLines: number[] = [];
+    highlightColor: string = "rgba(255, 255, 255, 0.1)";
 
     constructor(id: string, code: string = "") {
         super(id, "CodeBlock");
@@ -14,52 +46,134 @@ export class CodeBlockObject extends KinetixObject {
         this.fontSize = 16;
         this.width = 400;
         this.height = 200;
-        this.color = "#1e293b"; // Dark bg
+        this.padding = 20;
+        this.startLineNumber = 1;
+        this.lineNumberMargin = 15;
     }
 
     draw(ctx: CanvasRenderingContext2D, time: number) {
+        const theme = THEMES[this.theme] || THEMES["vscode-dark"];
+
         // Window Chrome
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = theme.bg;
         ctx.beginPath();
         ctx.roundRect(this.x, this.y, this.width, this.height, 8);
         ctx.fill();
 
+        // Shadow (subtle)
+        ctx.shadowColor = "rgba(0,0,0,0.3)";
+        ctx.shadowBlur = 20;
+        ctx.shadowOffsetY = 10;
+        ctx.fill();
+        ctx.shadowColor = "transparent"; // Reset
+
         // Mac traffic lights
-        ctx.fillStyle = "#ff5f56";
-        ctx.beginPath(); ctx.arc(this.x + 15, this.y + 15, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#ffbd2e";
-        ctx.beginPath(); ctx.arc(this.x + 35, this.y + 15, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#27c93f";
-        ctx.beginPath(); ctx.arc(this.x + 55, this.y + 15, 6, 0, Math.PI * 2); ctx.fill();
+        theme.traffic.forEach((color, i) => {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(this.x + 15 + (i * 20), this.y + 15, 6, 0, Math.PI * 2);
+            ctx.fill();
+        });
 
         // Content Area
         ctx.font = `normal ${this.fontSize}px "fira-code", monospace`;
-        ctx.fillStyle = "#e2e8f0";
         ctx.textAlign = "left";
         ctx.textBaseline = "top";
 
-        const lines = this.code.split("\n");
-        let lineY = this.y + 40;
+        // Determine visible code based on animation
+        let visibleCode = this.code;
+        if (this.animation.type === "typewriter") {
+            // Calculate progress
+            const start = this.animation.delay || 0;
+            const duration = this.animation.duration || 1000;
+
+            if (time < start) {
+                visibleCode = "";
+            } else if (time >= start + duration) {
+                visibleCode = this.code;
+            } else {
+                const progress = (time - start) / duration;
+                const charCount = Math.floor(this.code.length * progress);
+                visibleCode = this.code.substring(0, charCount);
+            }
+        }
+
+        const lines = visibleCode.split("\n");
+        let lineY = this.y + 40 + this.padding; // Top padding adjustment (header is ~40px)
+        const contentX = this.x + this.padding;
 
         lines.forEach((line, i) => {
-            if (lineY > this.y + this.height - 20) return; // Clip
+            if (lineY > this.y + this.height - this.padding) return; // Clip with bottom padding
+
+            let textX = contentX;
+
+            const currentLineNumber = this.startLineNumber + i;
+
+            // Draw Line Highlight Background
+            if (this.highlightedLines.includes(currentLineNumber)) {
+                ctx.fillStyle = this.highlightColor;
+                ctx.fillRect(this.x, lineY - 2, this.width, (this.fontSize * 1.5));
+            }
 
             if (this.showLineNumbers) {
-                ctx.fillStyle = "#475569";
-                ctx.fillText((i + 1).toString(), this.x + 15, lineY);
-                ctx.fillStyle = "#e2e8f0";
-                ctx.fillText(line, this.x + 50, lineY);
-            } else {
-                ctx.fillText(line, this.x + 15, lineY);
+                // Calculate width needed for line numbers based on total lines/digits
+                const lineNumberWidth = ctx.measureText((this.startLineNumber + lines.length).toString()).width + this.lineNumberMargin;
+
+                ctx.fillStyle = theme.numbers;
+                ctx.fillText(currentLineNumber.toString(), contentX, lineY);
+
+                textX += lineNumberWidth;
             }
+
+            if (this.syntaxHighlighting) {
+                this.drawHighlightedLine(ctx, line, textX, lineY, theme);
+            } else {
+                ctx.fillStyle = theme.text;
+                ctx.fillText(line, textX, lineY);
+            }
+
             lineY += (this.fontSize * 1.5);
         });
+    }
+
+    // Simple Syntax Highlighting (Regex based)
+    drawHighlightedLine(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, theme: any) {
+        // Simple Tokenizer
+        // Matches: strings, comments, keywords, or normal text words
+        // Note: strict validation is not goal, just visual approximation
+        const regex = /(\/\/.*)|(".*?"|'.*?'|`.*?`)|(\b(const|let|var|function|return|import|export|from|class|if|else|new|this|extends|true|false|null|undefined)\b)|(\b\w+\s*(?=\()|console)|(\W+)|(\w+)/g;
+
+        let match;
+        let cursorX = x;
+
+        while ((match = regex.exec(text)) !== null) {
+            const token = match[0];
+            let color = theme.text;
+
+            if (match[1]) color = theme.comment;      // Comments
+            else if (match[2]) color = theme.string;  // Strings
+            else if (match[3]) color = theme.keyword; // Keywords
+            else if (match[5]) color = theme.function; // Functions (looks ahead for paren or is console)
+
+            ctx.fillStyle = color;
+            ctx.fillText(token, cursorX, y);
+            cursorX += ctx.measureText(token).width;
+        }
     }
 
     clone(): CodeBlockObject {
         const clone = new CodeBlockObject(`code-${Date.now()}`, this.code);
         clone.x = this.x + 20;
         clone.y = this.y + 20;
+        clone.theme = this.theme;
+        clone.fontSize = this.fontSize;
+        clone.syntaxHighlighting = this.syntaxHighlighting;
+        clone.padding = this.padding;
+        clone.startLineNumber = this.startLineNumber;
+        clone.showLineNumbers = this.showLineNumbers;
+        clone.lineNumberMargin = this.lineNumberMargin;
+        clone.highlightedLines = [...this.highlightedLines];
+        clone.highlightColor = this.highlightColor;
         return clone;
     }
 }
