@@ -53,50 +53,81 @@ export class Engine {
     }
 
     private _setupInteraction() {
+        // Mouse Events
         this.canvas.addEventListener("mousedown", (e) => {
             const { x, y } = this._getMousePos(e);
-
-            // Check Hit (Top-most first)
-            let hitId = null;
-            for (let i = this.scene.objects.length - 1; i >= 0; i--) {
-                const obj = this.scene.objects[i];
-                if (!obj.visible || obj.locked) continue;
-                if (obj.isHit(x, y)) {
-                    hitId = obj.id;
-                    break;
-                }
-            }
-
-            this.selectObject(hitId);
-
-            if (hitId) {
-                this._isDragging = true;
-                this._dragStartX = x;
-                this._dragStartY = y;
-                const obj = this.scene.get(hitId);
-                if (obj) this._initialObjState = { x: obj.x, y: obj.y };
-            }
+            this._handleStart(x, y);
         });
 
         window.addEventListener("mousemove", (e) => {
             if (this._isDragging && this.selectedObjectId) {
                 const { x, y } = this._getMousePos(e);
-                const obj = this.scene.get(this.selectedObjectId);
-                if (obj && this._initialObjState) {
-                    const dx = x - this._dragStartX;
-                    const dy = y - this._dragStartY;
-                    obj.x = this._initialObjState.x + dx;
-                    obj.y = this._initialObjState.y + dy;
-                    this.render();
-                    this.onObjectChange?.();
-                }
+                this._handleMove(x, y);
             }
         });
 
         window.addEventListener("mouseup", () => {
-            this._isDragging = false;
-            this._initialObjState = null;
+            this._handleEnd();
         });
+
+        // Touch Events
+        this.canvas.addEventListener("touchstart", (e) => {
+            e.preventDefault(); // Prevent scrolling
+            const { x, y } = this._getTouchPos(e);
+            this._handleStart(x, y);
+        }, { passive: false });
+
+        window.addEventListener("touchmove", (e) => {
+            if (this._isDragging && this.selectedObjectId) {
+                e.preventDefault(); // Prevent scrolling
+                const { x, y } = this._getTouchPos(e);
+                this._handleMove(x, y);
+            }
+        }, { passive: false });
+
+        window.addEventListener("touchend", () => {
+            this._handleEnd();
+        });
+    }
+
+    private _handleStart(x: number, y: number) {
+        // Check Hit (Top-most first)
+        let hitId = null;
+        for (let i = this.scene.objects.length - 1; i >= 0; i--) {
+            const obj = this.scene.objects[i];
+            if (!obj.visible || obj.locked) continue;
+            if (obj.isHit(x, y)) {
+                hitId = obj.id;
+                break;
+            }
+        }
+
+        this.selectObject(hitId);
+
+        if (hitId) {
+            this._isDragging = true;
+            this._dragStartX = x;
+            this._dragStartY = y;
+            const obj = this.scene.get(hitId);
+            if (obj) this._initialObjState = { x: obj.x, y: obj.y };
+        }
+    }
+
+    private _handleMove(x: number, y: number) {
+        const obj = this.scene.get(this.selectedObjectId!);
+        if (obj && this._initialObjState) {
+            const dx = x - this._dragStartX;
+            const dy = y - this._dragStartY;
+            obj.x = this._initialObjState.x + dx;
+            obj.y = this._initialObjState.y + dy;
+            this.render();
+            this.onObjectChange?.();
+        }
+    }
+
+    private _handleEnd() {
+        this._isDragging = false;
+        this._initialObjState = null;
     }
 
     private _getMousePos(e: MouseEvent) {
@@ -106,6 +137,17 @@ export class Engine {
         return {
             x: (e.clientX - rect.left) * scaleX,
             y: (e.clientY - rect.top) * scaleY
+        };
+    }
+
+    private _getTouchPos(e: TouchEvent) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const touch = e.touches[0] || e.changedTouches[0];
+        return {
+            x: (touch.clientX - rect.left) * scaleX,
+            y: (touch.clientY - rect.top) * scaleY
         };
     }
 

@@ -375,24 +375,44 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                             />
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="space-y-3">
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Width</label>
-                                            <input
-                                                type="number"
-                                                className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
-                                                value={Math.round(obj.width)}
-                                                onChange={(e) => handleChange("width", Number(e.target.value))}
-                                            />
+                                            <div className="flex gap-2 items-center">
+                                                <input
+                                                    type="range"
+                                                    min="10"
+                                                    max="1920"
+                                                    className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700"
+                                                    value={Math.round(obj.width)}
+                                                    onChange={(e) => handleChange("width", Number(e.target.value))}
+                                                />
+                                                <input
+                                                    type="number"
+                                                    className="w-16 bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 text-right"
+                                                    value={Math.round(obj.width)}
+                                                    onChange={(e) => handleChange("width", Number(e.target.value))}
+                                                />
+                                            </div>
                                         </div>
                                         <div>
                                             <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Height</label>
-                                            <input
-                                                type="number"
-                                                className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
-                                                value={Math.round(obj.height)}
-                                                onChange={(e) => handleChange("height", Number(e.target.value))}
-                                            />
+                                            <div className="flex gap-2 items-center">
+                                                <input
+                                                    type="range"
+                                                    min="10"
+                                                    max="1080"
+                                                    className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700"
+                                                    value={Math.round(obj.height)}
+                                                    onChange={(e) => handleChange("height", Number(e.target.value))}
+                                                />
+                                                <input
+                                                    type="number"
+                                                    className="w-16 bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 text-right"
+                                                    value={Math.round(obj.height)}
+                                                    onChange={(e) => handleChange("height", Number(e.target.value))}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -420,14 +440,24 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                     onChange={(e) => handleChange("color", e.target.value)}
                                                 />
                                             </div>
-                                            <div>
+                                            <div className="col-span-2">
                                                 <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Size</label>
-                                                <input
-                                                    type="number"
-                                                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
-                                                    value={obj.fontSize}
-                                                    onChange={(e) => handleChange("fontSize", Number(e.target.value))}
-                                                />
+                                                <div className="flex gap-2 items-center">
+                                                    <input
+                                                        type="range"
+                                                        min="10"
+                                                        max="400"
+                                                        className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700"
+                                                        value={obj.fontSize}
+                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
+                                                    />
+                                                    <input
+                                                        type="number"
+                                                        className="w-16 bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 text-right"
+                                                        value={obj.fontSize}
+                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 
@@ -478,14 +508,24 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                     <option value="dracula">Dracula</option>
                                                 </select>
                                             </div>
-                                            <div>
+                                            <div className="col-span-2">
                                                 <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Font Size</label>
-                                                <input
-                                                    type="number"
-                                                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300"
-                                                    value={obj.fontSize}
-                                                    onChange={(e) => handleChange("fontSize", Number(e.target.value))}
-                                                />
+                                                <div className="flex gap-2 items-center">
+                                                    <input
+                                                        type="range"
+                                                        min="8"
+                                                        max="100"
+                                                        className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700"
+                                                        value={obj.fontSize}
+                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
+                                                    />
+                                                    <input
+                                                        type="number"
+                                                        className="w-16 bg-slate-100 dark:bg-slate-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-slate-300 text-right"
+                                                        value={obj.fontSize}
+                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
+                                                    />
+                                                </div>
                                             </div>
                                             <div>
                                                 <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Padding</label>
