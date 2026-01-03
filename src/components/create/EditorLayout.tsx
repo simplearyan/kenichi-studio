@@ -1,4 +1,4 @@
-import { Settings, Grid3x3, Coffee, Heart } from "lucide-react";
+import { Settings, Grid3x3, Coffee, Heart, RotateCcw } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import { VerticalAd } from "../ads/VerticalAd";
 import { CanvasWorkspace } from "./CanvasWorkspace";
@@ -117,7 +117,19 @@ export const EditorLayout = () => {
     };
 
     return (
-        <div ref={rootRef} className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-black">
+        <div ref={rootRef} className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-black relative">
+
+            {/* Landscape Lock Overlay */}
+            <div className="fixed inset-0 z-[60] bg-slate-900/90 backdrop-blur-md hidden portrait:flex lg:portrait:hidden flex-col items-center justify-center p-8 text-center text-white animate-in fade-in duration-300">
+                <div className="bg-white/10 p-6 rounded-3xl mb-6 animate-pulse">
+                    <RotateCcw className="w-16 h-16 text-white" />
+                </div>
+                <h2 className="text-3xl font-black mb-4 tracking-tight">Please Rotate Your Device</h2>
+                <p className="text-slate-300 max-w-xs text-lg font-medium leading-relaxed">
+                    Kinetix Create is designed for landscape mode. Please rotate your tablet or phone for the best experience.
+                </p>
+            </div>
+
             {/* Header */}
             <header className="h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 bg-white dark:bg-slate-900 shrink-0 z-20">
                 <a href={import.meta.env.BASE_URL} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
