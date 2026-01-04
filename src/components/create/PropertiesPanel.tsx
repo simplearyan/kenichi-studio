@@ -49,6 +49,7 @@ interface ExportConfig {
     format: "webm" | "mp4";
     duration: number;
     useFullDuration: boolean;
+    fps: number;
 }
 
 interface PropertiesPanelProps {
@@ -69,25 +70,41 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
     // Export simulation state
     const [isExporting, setIsExporting] = useState(false);
     const [exportProgress, setExportProgress] = useState(0);
+    const [exportMode, setExportMode] = useState<'realtime' | 'offline'>('offline');
 
-    const handleExport = () => {
-        if (isExporting) return;
+    const handleExport = async () => {
+        if (isExporting || !engine) return;
 
         setIsExporting(true);
         setExportProgress(0);
 
-        // Simulate export process
-        const interval = setInterval(() => {
-            setExportProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => setIsExporting(false), 500); // Small delay at 100%
-                    return 100;
-                }
-                // Random increment between 2 and 8
-                return Math.min(prev + Math.random() * 6 + 2, 100);
-            });
-        }, 100);
+        try {
+            const duration = exportConfig?.useFullDuration ? engine.totalDuration : (exportConfig?.duration || 5) * 1000;
+
+            const blob = await engine.exportVideo(
+                duration,
+                30, // FPS
+                exportMode,
+                (progress) => setExportProgress(progress)
+            );
+
+            // Download
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${exportConfig?.filename || "video"}.${exportConfig?.format || "webm"}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+        } catch (e) {
+            console.error("Export failed", e);
+            alert("Export failed: " + e);
+        } finally {
+            setIsExporting(false);
+            setExportProgress(0);
+        }
     };
 
     const editInputRef = useRef<HTMLInputElement>(null);
@@ -323,6 +340,15 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                 onChange={(val) => setExportConfig({ ...exportConfig, useFullDuration: val })}
                                                 label="Full Timeline"
                                             />
+                                        </ControlRow>
+
+                                        <ControlRow label="High Quality (Slow)" layout="horizontal">
+                                            <Toggle
+                                                value={exportMode === 'offline'}
+                                                onChange={(val) => setExportMode(val ? 'offline' : 'realtime')}
+                                                label="Offline Render"
+                                            />
+                                            <span className="text-[10px] text-slate-400 ml-2">Fixes lag/stutter</span>
                                         </ControlRow>
 
                                         {!exportConfig.useFullDuration && (

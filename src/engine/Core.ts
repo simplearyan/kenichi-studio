@@ -268,6 +268,110 @@ export class Engine {
         }
     }
 
+    async exportVideo(
+        duration: number,
+        fps: number = 30,
+        mode: 'realtime' | 'offline' = 'offline',
+        onProgress: (percent: number) => void,
+        signal?: AbortSignal
+    ): Promise<Blob> {
+        return new Promise(async (resolve, reject) => {
+            const stream = this.canvas.captureStream(mode === 'realtime' ? fps : 0);
+            const mimeType = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
+                ? "video/webm; codecs=vp9"
+                : "video/webm";
+
+            const recorder = new MediaRecorder(stream, {
+                mimeType,
+                videoBitsPerSecond: 5000000 // 5 Mbps
+            });
+
+            const chunks: Blob[] = [];
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: mimeType });
+                if (signal?.aborted) {
+                    reject(new Error("Export cancelled"));
+                } else {
+                    resolve(blob);
+                }
+                // Restore state
+                if (mode === 'offline') {
+                    this.currentTime = 0;
+                    this.render();
+                }
+            };
+
+            recorder.start();
+
+            if (mode === 'realtime') {
+                // Realtime: Just play
+                this.currentTime = 0;
+                this.play();
+
+                const checkInterval = setInterval(() => {
+                    if (signal?.aborted) {
+                        clearInterval(checkInterval);
+                        this.pause();
+                        recorder.stop();
+                        return;
+                    }
+
+                    const progress = (this.currentTime / duration) * 100;
+                    onProgress(Math.min(progress, 99));
+
+                    if (this.currentTime >= duration) {
+                        clearInterval(checkInterval);
+                        this.pause(); // Stop
+                        recorder.stop();
+                        onProgress(100);
+                    }
+                }, 100);
+
+            } else {
+                // Offline: Frame-by-Frame
+                this.pause();
+                const totalFrames = Math.ceil(duration * fps);
+                const dt = 1000 / fps; // in ms
+                const track = stream.getVideoTracks()[0] as any;
+
+                // We need to wait for recorder to be ready
+                await new Promise(r => setTimeout(r, 100));
+
+                for (let i = 0; i <= totalFrames; i++) {
+                    if (signal?.aborted) {
+                        recorder.stop();
+                        return;
+                    }
+
+                    const time = i * dt;
+                    this.seek(time); // Sets currentTime and calls render()
+
+                    // Wait for render to effectively paint? 
+                    // Usually sync in canvas 2d, but just in case
+                    // await new Promise(r => requestAnimationFrame(r)); 
+
+                    if (track.requestFrame) {
+                        track.requestFrame();
+                    }
+
+                    // Artificial delay to let MediaRecorder process? 
+                    // Usually requestFrame is enough, but sometimes tight loops choke it.
+                    await new Promise(r => setTimeout(r, 10)); // Tiny yield
+
+                    onProgress((i / totalFrames) * 100);
+                }
+
+                if (!signal?.aborted) {
+                    recorder.stop();
+                }
+            }
+        });
+    }
+
     dispose() {
         this.pause();
         // Cleanup if needed
