@@ -44,6 +44,7 @@ interface IconGridProps {
     onChange: (val: string) => void;
     cols?: number;
     size?: "sm" | "md";
+    layout?: "vertical" | "horizontal";
 }
 
 
@@ -150,7 +151,7 @@ export const SliderInput: React.FC<SliderProps> = (props) => {
                 type="number"
                 value={props.value}
                 onChange={(e) => props.onChange(Number(e.target.value))}
-                className="inspector-input-number"
+                className="inspector-input-number w-16"
             />
         </div>
     )
@@ -176,7 +177,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({ options, val
     );
 };
 
-export const IconGrid: React.FC<IconGridProps> = ({ options, value, onChange, cols = 3, size = "md" }) => {
+export const IconGrid: React.FC<IconGridProps> = ({ options, value, onChange, cols = 3, size = "md", layout = "vertical" }) => {
     return (
         <div className={`inspector-icon-grid grid grid-cols-${cols} gap-2`}>
             {options.map((option) => {
@@ -185,10 +186,10 @@ export const IconGrid: React.FC<IconGridProps> = ({ options, value, onChange, co
                     <button
                         key={option.value}
                         onClick={() => onChange(option.value)}
-                        className={`inspector-grid-item ${size} ${isSelected ? "selected" : ""}`}
+                        className={`inspector-grid-item ${size} ${layout} ${isSelected ? "selected" : ""}`}
                     >
-                        <div className={`inspector-grid-item-icon ${size}`}>{option.icon}</div>
-                        <span className={`inspector-grid-item-label ${size}`}>{option.label}</span>
+                        <div className={`inspector-grid-item-icon ${size} ${layout}`}>{option.icon}</div>
+                        <span className={`inspector-grid-item-label ${size} ${layout}`}>{option.label}</span>
                         {isSelected && <div className="inspector-grid-item-indicator" />}
                     </button>
                 );

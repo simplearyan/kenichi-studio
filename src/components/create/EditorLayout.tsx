@@ -1,4 +1,4 @@
-import { Settings, Grid3x3, Coffee, Heart, RotateCcw } from "lucide-react";
+import { Settings, Grid3x3, Coffee, Heart, RotateCcw, X, SlidersHorizontal, Camera, Download } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import { VerticalAd } from "../ads/VerticalAd";
 import { CanvasWorkspace } from "./CanvasWorkspace";
@@ -119,19 +119,10 @@ export const EditorLayout = () => {
     return (
         <div ref={rootRef} className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-black relative">
 
-            {/* Landscape Lock Overlay */}
-            <div className="fixed inset-0 z-[60] bg-slate-900/90 backdrop-blur-md hidden portrait:flex lg:portrait:hidden flex-col items-center justify-center p-8 text-center text-white animate-in fade-in duration-300">
-                <div className="bg-white/10 p-6 rounded-3xl mb-6 animate-pulse">
-                    <RotateCcw className="w-16 h-16 text-white" />
-                </div>
-                <h2 className="text-3xl font-black mb-4 tracking-tight">Please Rotate Your Device</h2>
-                <p className="text-slate-300 max-w-xs text-lg font-medium leading-relaxed">
-                    Kinetix Create is designed for landscape mode. Please rotate your tablet or phone for the best experience.
-                </p>
-            </div>
+            {/* Landscape Lock Overlay Removed */}
 
             {/* Header */}
-            <header className="h-14 border-b border-slate-200 dark:border-neutral-800 flex items-center justify-between px-4 bg-white dark:bg-neutral-900 shrink-0 z-20">
+            <header className="h-14 border-b border-slate-200 dark:border-neutral-800 flex items-center justify-between px-4 bg-white dark:bg-neutral-900 shrink-0 z-[60] relative">
                 <a href={import.meta.env.BASE_URL} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">K</div>
                     <span className="font-bold text-lg hidden sm:block text-slate-900 dark:text-white">Kinetix Create</span>
@@ -235,22 +226,29 @@ export const EditorLayout = () => {
 
                     <button
                         onClick={handleExportImage}
-                        className="px-3 py-2 bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 rounded-lg font-medium text-sm hover:bg-slate-200 transition-colors"
+                        className="px-3 py-2 bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-300 rounded-lg font-medium text-sm hover:bg-slate-200 transition-colors flex items-center gap-2"
+                        title="Snapshot"
                     >
-                        Snapshot
+                        <Camera size={18} />
+                        <span className="hidden lg:inline">Snapshot</span>
                     </button>
                     <button
                         onClick={() => setShowExportDialog(true)}
                         disabled={isExporting}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                        className="px-3 lg:px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                        title="Export Video"
                     >
                         {isExporting ? (
                             <>
                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                Exporting...
+                                <span className="hidden sm:inline">Exporting...</span>
                             </>
                         ) : (
-                            "Export Video"
+                            <>
+                                <Download size={18} className="lg:hidden" />
+                                <span className="hidden lg:inline">Export Video</span>
+                                <span className="hidden sm:inline lg:hidden">Export</span>
+                            </>
                         )}
                     </button>
                 </div>
@@ -279,22 +277,60 @@ export const EditorLayout = () => {
                     </div>
                 </div>
 
+                {/* Mobile Floating Inspector Toggle */}
+                <button
+                    onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
+                    className={`
+                        lg:hidden fixed bottom-8 transform left-1/2 -translate-x-1/2 z-40 
+                        flex items-center gap-2 px-6 py-3 rounded-full shadow-2xl 
+                        transition-all duration-300 font-bold text-sm
+                        ${rightSidebarOpen
+                            ? "bg-blue-600 text-white shadow-blue-500/50 scale-105 ring-2 ring-white/20"
+                            : "bg-white dark:bg-neutral-800 text-slate-900 dark:text-white border border-slate-200 dark:border-neutral-700 shadow-slate-200/50 dark:shadow-black/50 hover:bg-slate-50"
+                        }
+                    `}
+                >
+                    {rightSidebarOpen ? (
+                        <>
+                            <X size={18} />
+                            <span>Close</span>
+                        </>
+                    ) : (
+                        <>
+                            <SlidersHorizontal size={18} className="text-blue-600 dark:text-blue-400" />
+                            <span>Inspector</span>
+                        </>
+                    )}
+                </button>
+
+                {/* Mobile Backdrop */}
                 {rightSidebarOpen && (
-                    <div className="w-80 border-l border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shrink-0 flex flex-col overflow-hidden min-h-0">
-                        <PropertiesPanel
-                            engine={engine}
-                            selectedId={selectedId}
-                            exportConfig={exportConfig}
-                            setExportConfig={setExportConfig}
-                        />
-                    </div>
+                    <div
+                        className="fixed inset-0 bg-black/50 z-20 lg:hidden animate-in fade-in duration-200"
+                        onClick={() => setRightSidebarOpen(false)}
+                    />
                 )}
+
+                {/* Right Sidebar */}
+                <div className={`
+                    w-80 border-l border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shrink-0 flex flex-col overflow-hidden min-h-0
+                    fixed right-0 top-14 bottom-0 z-30 shadow-2xl lg:relative lg:top-0 lg:shadow-none lg:z-auto lg:h-auto
+                    transition-transform duration-300 ease-in-out
+                    ${rightSidebarOpen ? 'translate-x-0' : 'translate-x-full lg:hidden'}
+                `}>
+                    <PropertiesPanel
+                        engine={engine}
+                        selectedId={selectedId}
+                        exportConfig={exportConfig}
+                        setExportConfig={setExportConfig}
+                    />
+                </div>
 
                 {/* Export Dialog / Native Window Design */}
                 {(showExportDialog || isExporting) && (
                     <div className="absolute inset-0 z-50 flex items-center justify-center p-8 animate-in fade-in duration-200 pointer-events-none">
 
-                        <div className="pointer-events-auto bg-white dark:bg-neutral-900 rounded-xl shadow-2xl shadow-black/20 border border-slate-200 dark:border-neutral-800 overflow-hidden w-full max-w-6xl flex h-[650px] animate-in zoom-in-95 duration-300">
+                        <div className="pointer-events-auto bg-white dark:bg-neutral-900 rounded-xl shadow-2xl shadow-black/20 border border-slate-200 dark:border-neutral-800 overflow-hidden w-full max-w-6xl flex flex-col lg:flex-row h-auto max-h-[90vh] lg:h-[650px] animate-in zoom-in-95 duration-300">
 
                             {/* Left Ad Column */}
                             <div className="w-72 bg-slate-50 dark:bg-neutral-950 border-r border-slate-200 dark:border-neutral-800 p-6 hidden lg:flex flex-col items-center justify-center">
@@ -332,8 +368,8 @@ export const EditorLayout = () => {
                                         </div>
 
                                         {/* Dialog Body */}
-                                        <div className="p-8 space-y-8 flex-1 overflow-y-auto">
-                                            <div className="grid grid-cols-2 gap-8">
+                                        <div className="p-4 lg:p-8 space-y-8 flex-1 overflow-y-auto">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                                 <div className="space-y-6">
                                                     <div>
                                                         <label className="text-xs font-bold uppercase text-slate-500 mb-2 block">Filename</label>

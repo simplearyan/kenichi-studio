@@ -41,6 +41,14 @@ export class ChartObject extends KinetixObject {
             globalProgress = 1;
         }
 
+        ctx.save();
+        const cx = this.x + this.width / 2;
+        const cy = this.y + this.height / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate((this.rotation || 0) * Math.PI / 180);
+        ctx.scale(this.scaleX || 1, this.scaleY || 1);
+        ctx.translate(-cx, -cy);
+
         ctx.globalAlpha = this.opacity;
 
         const padding = { top: 20, right: 20, bottom: 40, left: 40 };
@@ -337,6 +345,7 @@ export class ChartObject extends KinetixObject {
                 currentAngle += sliceAngle;
             });
         }
+        ctx.restore();
     }
 
     clone(): ChartObject {

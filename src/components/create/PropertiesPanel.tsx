@@ -166,13 +166,13 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                 </button>
                 <button
                     onClick={() => setActiveTab("layers")}
-                    className={`inspector-tab-item ${activeTab === "layers" ? "active" : ""}`}
+                    className={`inspector-tab-item hidden lg:flex ${activeTab === "layers" ? "active" : ""}`}
                 >
                     <Layers size={14} /> Layers
                 </button>
                 <button
                     onClick={() => setActiveTab("animations")}
-                    className={`inspector-tab-item ${activeTab === "animations" ? "active" : ""}`}
+                    className={`inspector-tab-item hidden lg:flex ${activeTab === "animations" ? "active" : ""}`}
                 >
                     <MonitorPlay size={14} /> Motion
                 </button>
@@ -368,35 +368,36 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                             </div>
                                         </div>
                                     </ControlRow>
-                                    <ControlRow label="Dimensions">
-                                        <div className="inspector-labeled-input-group">
-                                            <div className="inspector-labeled-input-container">
-                                                <span className="inspector-input-label">W</span>
-                                                <input
-                                                    type="number"
-                                                    className="inspector-input-number"
-                                                    value={Math.round(obj.width)}
-                                                    onChange={(e) => handleChange("width", Number(e.target.value))}
-                                                />
-                                            </div>
-                                            <div className="inspector-labeled-input-container">
-                                                <span className="inspector-input-label">H</span>
-                                                <input
-                                                    type="number"
-                                                    className="inspector-input-number"
-                                                    value={Math.round(obj.height)}
-                                                    onChange={(e) => handleChange("height", Number(e.target.value))}
-                                                />
-                                            </div>
-                                        </div>
+                                    <ControlRow label="Width">
+                                        <SliderInput
+                                            value={Math.round(obj.width)}
+                                            min={10}
+                                            max={1920}
+                                            onChange={(v) => handleChange("width", v)}
+                                            formatValue={(v) => `${v}px`}
+                                        />
+                                    </ControlRow>
+                                    <ControlRow label="Height">
+                                        <SliderInput
+                                            value={Math.round(obj.height)}
+                                            min={10}
+                                            max={1080}
+                                            onChange={(v) => handleChange("height", v)}
+                                            formatValue={(v) => `${v}px`}
+                                        />
                                     </ControlRow>
                                     <ControlRow label="Scale" layout="horizontal">
                                         <div className="flex-1">
                                             <SliderInput
-                                                value={100} // Placeholder for scale logic if it existed, or mapping W/H
+                                                value={Math.round((obj.scaleX || 1) * 100)}
                                                 min={10}
                                                 max={200}
-                                                onChange={() => { }} // No unified scale prop yet
+                                                onChange={(v) => {
+                                                    const s = v / 100;
+                                                    obj.scaleX = s;
+                                                    obj.scaleY = s;
+                                                    setForceUpdate(n => n + 1);
+                                                }}
                                                 formatValue={(v) => `${v}%`}
                                             />
                                         </div>
@@ -429,16 +430,18 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
 
                                 {/* Type Specific */}
                                 {/* Type Specific Properties */}
-                                {obj instanceof TextObject && (
+                                {(obj instanceof TextObject || obj instanceof ChartObject) && (
                                     <>
-                                        <PropertySection title="Content">
-                                            <textarea
-                                                className="inspector-textarea"
-                                                value={obj.text}
-                                                onChange={(e) => handleChange("text", e.target.value)}
-                                                placeholder="Type your text here..."
-                                            />
-                                        </PropertySection>
+                                        {obj instanceof TextObject && (
+                                            <PropertySection title="Content">
+                                                <textarea
+                                                    className="inspector-textarea"
+                                                    value={obj.text}
+                                                    onChange={(e) => handleChange("text", e.target.value)}
+                                                    placeholder="Type your text here..."
+                                                />
+                                            </PropertySection>
+                                        )}
 
                                         <PropertySection title="Typography">
                                             <ControlRow label="Font Family">
@@ -457,6 +460,15 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                     <option value="Impact">Impact</option>
                                                     <option value="Comic Sans MS">Comic Sans</option>
                                                 </select>
+                                            </ControlRow>
+                                            <ControlRow label="Font Size">
+                                                <SliderInput
+                                                    value={obj.fontSize || 16}
+                                                    min={8}
+                                                    max={120}
+                                                    onChange={(v) => handleChange("fontSize", v)}
+                                                    formatValue={(v) => `${v}px`}
+                                                />
                                             </ControlRow>
                                             <ControlRow label="Color" layout="horizontal">
                                                 <div className="flex justify-end gap-2 items-center">
@@ -636,7 +648,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                 value={obj.chartType}
                                                 onChange={(v) => handleChange("chartType", v)}
                                                 size="sm"
-                                                cols={4}
+                                                cols={2}
+                                                layout="horizontal"
                                                 options={[
                                                     { value: "bar", label: "Bar", icon: <BarChart size={16} /> },
                                                     { value: "line", label: "Line", icon: <LineChart size={16} /> },
@@ -812,7 +825,8 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                 setForceUpdate(n => n + 1);
                                             }}
                                             size="sm"
-                                            cols={3}
+                                            cols={2}
+                                            layout="horizontal"
                                             options={[
                                                 { value: "none", label: "None", icon: <div className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-600" /> },
                                                 ...(obj instanceof TextObject ? [{ value: "typewriter", label: "Typewriter", icon: <Type size={14} /> }] : []),
@@ -876,57 +890,57 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                 </div>
 
                                 <div className="text-[10px] uppercase text-slate-500 font-bold mt-4 mb-2">In Animation</div>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {(() => {
-                                        const commonAnims = [
-                                            { id: "none", label: "None", icon: <div className="w-8 h-8 rounded bg-slate-200 dark:bg-slate-700" /> },
+                                {(() => {
+                                    const commonAnims = [
+                                        { id: "none", label: "None", className: "" },
+                                        { id: "fadeIn", label: "Fade In", className: "group-hover:animate-pulse" },
+                                        { id: "slideUp", label: "Slide Up", className: "group-hover:animate-bounce" },
+                                        { id: "scaleIn", label: "Scale In", className: "group-hover:scale-75 transition-transform" },
+                                    ];
+
+                                    let displayAnims = commonAnims;
+
+                                    if (obj instanceof ChartObject) {
+                                        displayAnims = [
+                                            { id: "none", label: "None", className: "" },
+                                            { id: "grow", label: "Grow", className: "group-hover:scale-y-110 transition-transform origin-bottom" },
                                             { id: "fadeIn", label: "Fade In", className: "group-hover:animate-pulse" },
-                                            { id: "slideUp", label: "Slide Up", className: "group-hover:animate-bounce" },
-                                            { id: "scaleIn", label: "Scale In", className: "group-hover:scale-75 transition-transform" },
                                         ];
+                                    } else if (obj instanceof TextObject) {
+                                        displayAnims = [
+                                            ...commonAnims,
+                                            { id: "typewriter", label: "Typewriter", className: "" },
+                                        ];
+                                    } else if (obj instanceof CodeBlockObject) {
+                                        displayAnims = [
+                                            { id: "none", label: "None", className: "" },
+                                            { id: "typewriter", label: "Typewriter", className: "" },
+                                            { id: "fadeIn", label: "Fade In", className: "group-hover:animate-pulse" },
+                                        ];
+                                    }
 
-                                        let displayAnims = commonAnims;
-
-                                        if (obj instanceof ChartObject) {
-                                            displayAnims = [
-                                                { id: "none", label: "None", icon: <div className="w-8 h-8 rounded bg-slate-200 dark:bg-slate-700" /> },
-                                                { id: "grow", label: "Grow", className: "group-hover:scale-y-110 transition-transform origin-bottom" },
-                                                { id: "fadeIn", label: "Fade In", className: "group-hover:animate-pulse" },
-                                            ];
-                                        } else if (obj instanceof TextObject) {
-                                            displayAnims = [
-                                                ...commonAnims,
-                                                { id: "typewriter", label: "Typewriter", className: "" },
-                                            ];
-                                        } else if (obj instanceof CodeBlockObject) {
-                                            displayAnims = [
-                                                { id: "none", label: "None", icon: <div className="w-8 h-8 rounded bg-slate-200 dark:bg-slate-700" /> },
-                                                { id: "typewriter", label: "Typewriter", className: "" },
-                                                { id: "fadeIn", label: "Fade In", className: "group-hover:animate-pulse" },
-                                            ];
-                                        }
-
-                                        return displayAnims.map((anim) => (
-                                            <button
-                                                key={anim.id}
-                                                onClick={() => {
-                                                    if (obj.animation) {
-                                                        obj.animation.type = anim.id as any;
-                                                        engine.currentTime = 0; // Reset to preview
-                                                        engine.play();
-                                                        setForceUpdate(n => n + 1);
-                                                    }
-                                                }}
-                                                className={`p-3 rounded-xl border text-left group transition-all relative overflow-hidden ${obj.animation?.type === anim.id ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-blue-300"}`}
-                                            >
-                                                <div className="mb-2 h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
-                                                    {anim.id === "none" ? <div className="w-3 h-3 bg-current rounded-full" /> : <Play size={12} className={anim.className} />}
-                                                </div>
-                                                <div className="text-xs font-bold">{anim.label}</div>
-                                            </button>
-                                        ));
-                                    })()}
-                                </div>
+                                    return (
+                                        <IconGrid
+                                            value={obj.animation?.type || "none"}
+                                            onChange={(v) => {
+                                                if (obj.animation) {
+                                                    obj.animation.type = v as any;
+                                                    engine.currentTime = 0;
+                                                    engine.play();
+                                                    setForceUpdate(n => n + 1);
+                                                }
+                                            }}
+                                            cols={2}
+                                            layout="horizontal"
+                                            size="sm"
+                                            options={displayAnims.map(anim => ({
+                                                value: anim.id,
+                                                label: anim.label,
+                                                icon: anim.id === "none" ? <div className="w-1.5 h-1.5 bg-current rounded-full" /> : <Play size={14} className={anim.className} />
+                                            }))}
+                                        />
+                                    );
+                                })()}
 
                                 {obj.animation?.type !== "none" && (
                                     <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">

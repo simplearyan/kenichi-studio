@@ -4,7 +4,9 @@ import {
     Image as ImageIcon,
     Square,
     ChevronLeft,
-    MonitorPlay
+    MonitorPlay,
+    LayoutGrid,
+    X
 } from "lucide-react";
 import { Engine } from "../../engine/Core";
 import { TextObject } from "../../engine/objects/TextObject";
@@ -18,10 +20,12 @@ type Tab = "templates" | "text" | "media" | "shapes" | null;
 
 export const Sidebar = ({ engine }: SidebarProps) => {
     const [activeTab, setActiveTab] = useState<Tab>("text");
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const handleTabClick = (tab: Tab) => {
         if (activeTab === tab) {
             setActiveTab(null); // Toggle close
+            setIsMobileMenuOpen(false);
         } else {
             setActiveTab(tab);
         }
@@ -118,7 +122,9 @@ export const Sidebar = ({ engine }: SidebarProps) => {
     return (
         <div className="flex h-full z-10 shadow-xl shadow-slate-200 dark:shadow-neutral-900/50 relative">
             {/* 1. Slim Activity Bar */}
-            <aside className="w-16 bg-white dark:bg-neutral-900 border-r border-slate-200 dark:border-neutral-800 flex flex-col items-center py-4 gap-4 z-[60]">
+            <aside className={`w-16 bg-white dark:bg-neutral-900 border-r border-slate-200 dark:border-neutral-800 flex flex-col items-center py-4 gap-4 
+            fixed left-0 top-14 bottom-0 z-[60] transition-transform duration-300 lg:static lg:h-full lg:translate-x-0 lg:z-auto
+            ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <button
                     onClick={() => handleTabClick("text")}
                     className={`p-3 rounded-xl transition-all ${activeTab === "text" ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-slate-500 hover:bg-slate-100 dark:hover:bg-neutral-800"}`}
@@ -150,7 +156,10 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                 </div>
 
                 <button
-                    onClick={() => setActiveTab(null)}
+                    onClick={() => {
+                        setActiveTab(null);
+                        setIsMobileMenuOpen(false);
+                    }}
                     className="p-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
                     title="Collapse"
                 >
@@ -158,15 +167,41 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                 </button>
             </aside>
 
+
+            {/* Mobile Toggle Button (FAB) */}
+            <button
+                onClick={() => {
+                    if (isMobileMenuOpen) {
+                        setIsMobileMenuOpen(false);
+                        setActiveTab(null);
+                    } else {
+                        setIsMobileMenuOpen(true);
+                    }
+                }}
+                className={`
+                    lg:hidden fixed top-20 right-4 z-[100] p-3 rounded-full shadow-xl transition-all duration-300
+                    flex items-center justify-center border border-slate-200 dark:border-slate-700
+                    ${isMobileMenuOpen
+                        ? "bg-white text-slate-900 dark:bg-neutral-800 dark:text-white"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    }
+                `}
+            >
+                {isMobileMenuOpen ? <X size={24} /> : <LayoutGrid size={24} />}
+            </button>
+
             {/* 2. Expandable Drawer */}
             {activeTab && (
                 <>
                     {/* Backdrop for mobile overlay */}
                     <div
-                        className="fixed inset-0 z-40 min-[1100px]:hidden"
-                        onClick={() => setActiveTab(null)}
+                        className="fixed inset-0 z-40 lg:hidden bg-black/50 animate-in fade-in duration-200"
+                        onClick={() => {
+                            setActiveTab(null);
+                            setIsMobileMenuOpen(false);
+                        }}
                     />
-                    <aside className="w-64 min-[1100px]:w-80 bg-slate-50 dark:bg-neutral-950 border-r border-slate-200 dark:border-neutral-800 flex flex-col animate-in slide-in-from-left-4 duration-200 absolute left-16 top-0 bottom-0 min-[1100px]:static z-50 shadow-2xl min-[1100px]:shadow-none">
+                    <aside className="w-80 bg-slate-50 dark:bg-neutral-950 border-r border-slate-200 dark:border-neutral-800 flex flex-col animate-in slide-in-from-left-4 duration-200 fixed left-16 top-14 bottom-0 lg:static lg:h-full z-50 shadow-2xl lg:shadow-none">
                         <div className="p-4 border-b border-slate-200 dark:border-neutral-800 flex justify-between items-center bg-white/50 dark:bg-neutral-900/50">
                             <span className="font-bold text-sm uppercase tracking-wider text-slate-500 dark:text-neutral-400">
                                 {activeTab === "text" && "Typography"}

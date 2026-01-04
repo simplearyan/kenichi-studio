@@ -78,22 +78,24 @@ export class TextObject extends KinetixObject {
         // or just use fontSize as a safe simple bounding box height for now
         this.height = this.fontSize;
 
-        // Apply Scale if needed (offset to center for scaling)
-        if (scale !== 1) {
-            const cx = this.x + this.width / 2;
-            const cy = this.y + this.height / 2;
-            ctx.translate(cx, cy);
-            ctx.scale(scale, scale);
-            ctx.translate(-cx, -cy);
-        }
+        ctx.save();
+        const cx = this.x + this.width / 2;
+        const cy = this.y + this.height / 2;
 
-        // Additional padding for selection comfort
-        // this.width += 10;
-        // this.height += 10;
+        ctx.translate(cx, cy);
+        ctx.rotate((this.rotation || 0) * Math.PI / 180);
 
-        // Simple draw for now
-        // TODO: Multi-line support
-        ctx.fillText(textToDraw, this.x, y); // Use animated 'y'
+        const animScale = scale;
+        ctx.scale((this.scaleX || 1) * animScale, (this.scaleY || 1) * animScale);
+
+        // Draw centered relative to the new origin
+        // Since we translated to center, top-left is (-width/2, -height/2)
+        // Adjust for animated Y offset
+        const yOffset = y - this.y;
+
+        ctx.fillText(textToDraw, -this.width / 2, -this.height / 2 + yOffset);
+
+        ctx.restore();
     }
 
     clone(): TextObject {
