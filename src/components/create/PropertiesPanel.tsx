@@ -5,6 +5,15 @@ import { CodeBlockObject } from "../../engine/objects/CodeBlockObject";
 import { ChartObject } from "../../engine/objects/ChartObject";
 
 import {
+    PropertySection,
+    ControlRow,
+    SliderInput,
+    Toggle,
+    SegmentedControl,
+    IconGrid
+} from "./InspectorUI";
+
+import {
     Layers,
     Settings,
     Eye,
@@ -18,7 +27,21 @@ import {
     Pencil,
     MonitorPlay,
     Play,
-    SlidersHorizontal
+    SlidersHorizontal,
+    AlignLeft,
+    AlignCenter,
+    AlignRight,
+    Type,
+    Image,
+    Box,
+    PieChart,
+    BarChart,
+    LineChart,
+    Activity,
+    Circle,
+    Square,
+    ChevronUp,
+    Minimize
 } from "lucide-react";
 
 interface ExportConfig {
@@ -162,31 +185,13 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                 {activeTab === "properties" && (
                     <>
                         {!obj ? (
-                            <div className="space-y-6">
-                                {/* Scene Settings Header */}
-                                <div className="text-center p-4">
-                                    <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">Scene Settings</div>
-                                    <div className="text-xs text-slate-500">Global project configuration</div>
-                                </div>
-
-                                {/* Background Color */}
-                                <div className="space-y-2">
-                                    <label className="text-[10px] uppercase text-slate-500 font-bold block">Background Color</label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="color"
-                                            className="w-10 h-10 p-0.5 rounded cursor-pointer bg-transparent border border-slate-200 dark:border-neutral-700"
-                                            value={engine.scene.backgroundColor}
-                                            onChange={(e) => {
-                                                engine.scene.backgroundColor = e.target.value;
-                                                engine.render();
-                                                setForceUpdate(n => n + 1);
-                                            }}
-                                        />
-                                        <div className="flex-1">
+                            <div className="p-1">
+                                <PropertySection title="Canvas Settings" defaultOpen={true}>
+                                    <ControlRow label="Background Color" layout="horizontal">
+                                        <div className="flex justify-end items-center gap-2">
                                             <input
-                                                type="text"
-                                                className="w-full h-10 bg-slate-100 dark:bg-neutral-800 border-none rounded px-3 text-xs text-slate-700 dark:text-neutral-300 font-mono"
+                                                type="color"
+                                                className="w-8 h-8 p-0 border-none rounded-full overflow-hidden cursor-pointer shadow-sm"
                                                 value={engine.scene.backgroundColor}
                                                 onChange={(e) => {
                                                     engine.scene.backgroundColor = e.target.value;
@@ -194,310 +199,338 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                     setForceUpdate(n => n + 1);
                                                 }}
                                             />
+                                            <span className="text-xs font-mono text-slate-500">{engine.scene.backgroundColor}</span>
                                         </div>
-                                    </div>
-                                </div>
+                                    </ControlRow>
 
-                                <div className="h-px bg-slate-200 dark:bg-neutral-800 my-4" />
+                                    <ControlRow label="Resolution">
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {[
+                                                { w: 854, h: 480, label: "480p" },
+                                                { w: 1280, h: 720, label: "720p" },
+                                                { w: 1920, h: 1080, label: "1080p" },
+                                                { w: 3840, h: 2160, label: "4K" }
+                                            ].map((res) => (
+                                                <button
+                                                    key={res.label}
+                                                    onClick={() => {
+                                                        engine.resize(res.w, res.h);
+                                                        setForceUpdate(n => n + 1);
+                                                    }}
+                                                    className={`
+                                                        py-2 px-3 rounded-lg text-xs font-medium border transition-all
+                                                        ${engine.scene.height === res.h
+                                                            ? "bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 dark:border-blue-500 dark:text-blue-300 ring-1 ring-blue-500"
+                                                            : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-slate-300"
+                                                        }
+                                                    `}
+                                                >
+                                                    {res.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <div className="text-[10px] text-slate-400 mt-2 text-center">
+                                            {engine.scene.width} x {engine.scene.height} px
+                                        </div>
+                                    </ControlRow>
+                                </PropertySection>
 
-                                {/* Resolution Settings */}
-                                <div className="space-y-2">
-                                    <label className="text-[10px] uppercase text-slate-500 font-bold block">Resolution</label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <button
-                                            onClick={() => {
-                                                engine.resize(854, 480);
-                                                setForceUpdate(n => n + 1);
-                                            }}
-                                            className={`py-2 px-3 rounded text-xs font-medium border transition-all ${engine.scene.height === 480 ? "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-blue-400"}`}
-                                        >
-                                            480p
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                engine.resize(1280, 720);
-                                                setForceUpdate(n => n + 1);
-                                            }}
-                                            className={`py-2 px-3 rounded text-xs font-medium border transition-all ${engine.scene.height === 720 ? "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-blue-400"}`}
-                                        >
-                                            720p
-                                            <span className="opacity-50 ml-1 font-normal">(HD)</span>
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                engine.resize(1920, 1080);
-                                                setForceUpdate(n => n + 1);
-                                            }}
-                                            className={`py-2 px-3 rounded text-xs font-medium border transition-all ${engine.scene.height === 1080 ? "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-blue-400"}`}
-                                        >
-                                            1080p
-                                            <span className="opacity-50 ml-1 font-normal">(FHD)</span>
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                engine.resize(3840, 2160);
-                                                setForceUpdate(n => n + 1);
-                                            }}
-                                            className={`py-2 px-3 rounded text-xs font-medium border transition-all ${engine.scene.height === 2160 ? "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-blue-400"}`}
-                                        >
-                                            4K
-                                            <span className="opacity-50 ml-1 font-normal">(UHD)</span>
-                                        </button>
-                                    </div>
-                                    <div className="text-[10px] text-slate-400 text-center mt-2">
-                                        Current: {engine.scene.width} x {engine.scene.height}
-                                    </div>
-                                </div>
-
-                                <div className="h-px bg-slate-200 dark:bg-slate-800 my-4" />
-
-                                {/* Export Settings (if available) */}
                                 {exportConfig && setExportConfig && (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
-                                            <SlidersHorizontal size={14} />
-                                            <span>Export Settings</span>
-                                        </div>
-
-                                        <div>
-                                            <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Filename</label>
+                                    <PropertySection title="Export Video" defaultOpen={false}>
+                                        <ControlRow label="Filename">
                                             <input
                                                 type="text"
                                                 disabled={isExporting}
-                                                className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 disabled:opacity-50"
+                                                className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-neutral-300 disabled:opacity-50 focus:ring-2 focus:ring-blue-500 outline-none"
                                                 value={exportConfig.filename}
                                                 onChange={(e) => setExportConfig({ ...exportConfig, filename: e.target.value })}
                                             />
-                                        </div>
+                                        </ControlRow>
 
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Format</label>
-                                                <select
-                                                    disabled={isExporting}
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 disabled:opacity-50"
-                                                    value={exportConfig.format}
-                                                    onChange={(e) => setExportConfig({ ...exportConfig, format: e.target.value as any })}
-                                                >
-                                                    <option value="webm">WebM</option>
-                                                    <option value="mp4">MP4</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Duration</label>
-                                                <select
-                                                    disabled={isExporting}
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 disabled:opacity-50"
-                                                    value={exportConfig.useFullDuration ? "full" : "custom"}
-                                                    onChange={(e) => setExportConfig({ ...exportConfig, useFullDuration: e.target.value === "full" })}
-                                                >
-                                                    <option value="full">Full Timeline</option>
-                                                    <option value="custom">Custom</option>
-                                                </select>
-                                            </div>
-                                        </div>
+                                        <ControlRow label="Format">
+                                            <SegmentedControl
+                                                value={exportConfig.format}
+                                                onChange={(val) => setExportConfig({ ...exportConfig, format: val as any })}
+                                                options={[
+                                                    { value: "webm", label: "WebM" },
+                                                    { value: "mp4", label: "MP4" }
+                                                ]}
+                                            />
+                                        </ControlRow>
+
+                                        <ControlRow label="Duration" layout="horizontal">
+                                            <Toggle
+                                                value={exportConfig.useFullDuration}
+                                                onChange={(val) => setExportConfig({ ...exportConfig, useFullDuration: val })}
+                                                label="Full Timeline"
+                                            />
+                                        </ControlRow>
 
                                         {!exportConfig.useFullDuration && (
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Custom Duration (s)</label>
-                                                <input
-                                                    type="number"
+                                            <ControlRow label="Custom Duration (s)">
+                                                <SliderInput
                                                     min={1}
                                                     max={60}
-                                                    disabled={isExporting}
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 disabled:opacity-50"
                                                     value={exportConfig.duration}
-                                                    onChange={(e) => setExportConfig({ ...exportConfig, duration: Number(e.target.value) })}
+                                                    onChange={(val) => setExportConfig({ ...exportConfig, duration: val })}
                                                 />
-                                            </div>
+                                            </ControlRow>
                                         )}
 
                                         <div className="pt-2">
                                             {!isExporting ? (
                                                 <button
                                                     onClick={handleExport}
-                                                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-lg shadow-blue-900/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-900/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                                                 >
-                                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                                    <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse shadow-[0_0_10px_rgba(248,113,113,0.5)]" />
                                                     Export Video
                                                 </button>
                                             ) : (
-                                                <div className="space-y-2">
+                                                <div className="space-y-2 p-3 bg-slate-50 dark:bg-neutral-800/50 rounded-xl border border-blue-100 dark:border-blue-900/30">
                                                     <div className="flex justify-between items-end">
                                                         <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase animate-pulse">Rendering...</span>
                                                         <span className="text-[10px] text-slate-500 font-mono">{Math.round(exportProgress)}%</span>
                                                     </div>
-                                                    <div className="h-2 w-full bg-slate-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                                                    <div className="h-1.5 w-full bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
                                                         <div
-                                                            className="h-full bg-blue-600 transition-all duration-300 ease-out"
+                                                            className="h-full bg-blue-500 transition-all duration-300 ease-out"
                                                             style={{ width: `${exportProgress}%` }}
                                                         />
                                                     </div>
                                                 </div>
                                             )}
                                         </div>
-                                    </div>
+                                    </PropertySection>
                                 )}
-
                             </div>
                         ) : (
-                            <div className="space-y-6">
+                            <div className="p-1 space-y-1">
                                 {/* Selected Object Header */}
-                                <div className="p-4 bg-slate-50 dark:bg-neutral-800/50 rounded-xl border border-slate-100 dark:border-neutral-800">
-                                    <div className="text-[10px] uppercase text-blue-500 font-bold mb-1 tracking-wider">Selected Layer</div>
-                                    <div className="text-xl font-bold text-slate-900 dark:text-white truncate" title={obj.name}>
-                                        {obj.name || "Untitled"}
+                                <div className="px-4 py-3 mb-2 bg-slate-50 dark:bg-neutral-800/50 rounded-xl border border-slate-100 dark:border-neutral-800 flex items-center justify-between">
+                                    <div className="flex items-center gap-3 overflow-hidden">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                            {obj instanceof ChartObject ? <BarChart size={16} /> :
+                                                obj instanceof TextObject ? <Type size={16} /> :
+                                                    obj instanceof CodeBlockObject ? <Box size={16} /> :
+                                                        <Square size={16} />}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[120px]" title={obj.name}>
+                                                {obj.name || "Untitled"}
+                                            </div>
+                                            <div className="text-[10px] text-slate-500 font-mono truncate">
+                                                {obj.constructor.name.replace('Object', '')}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="text-xs text-slate-500 mt-1 font-mono">
-                                        {obj.constructor.name.replace('Object', '')}
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            onClick={() => {
+                                                const newObj = obj.clone();
+                                                newObj.x += 20;
+                                                newObj.y += 20;
+                                                engine.scene.add(newObj);
+                                                setForceUpdate(n => n + 1);
+                                            }}
+                                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-white dark:hover:bg-neutral-700 rounded-lg transition-colors"
+                                            title="Duplicate"
+                                        >
+                                            <Copy size={14} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                engine.scene.remove(obj.id);
+                                                setForceUpdate(n => n + 1);
+                                            }}
+                                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-white dark:hover:bg-neutral-700 rounded-lg transition-colors"
+                                            title="Delete"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
                                     </div>
                                 </div>
 
-                                {/* Common Transforms */}
-                                <div className="space-y-3">
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">X Position</label>
-                                            <input
-                                                type="number"
-                                                className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300"
-                                                value={Math.round(obj.x)}
-                                                onChange={(e) => handleChange("x", Number(e.target.value))}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Y Position</label>
-                                            <input
-                                                type="number"
-                                                className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300"
-                                                value={Math.round(obj.y)}
-                                                onChange={(e) => handleChange("y", Number(e.target.value))}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Width</label>
-                                            <div className="flex gap-2 items-center">
-                                                <input
-                                                    type="range"
-                                                    min="10"
-                                                    max="1920"
-                                                    className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-700"
-                                                    value={Math.round(obj.width)}
-                                                    onChange={(e) => handleChange("width", Number(e.target.value))}
-                                                />
+                                <PropertySection title="Layout">
+                                    <ControlRow label="Position">
+                                        <div className="flex gap-2">
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-2 top-1.5 text-[10px] font-bold text-slate-400">X</span>
                                                 <input
                                                     type="number"
-                                                    className="w-16 bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 text-right"
+                                                    className="inspector-input-number w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg pl-6 pr-2 py-1.5 text-xs text-slate-700 dark:text-neutral-300 font-mono text-right focus:ring-1 focus:ring-blue-500 outline-none"
+                                                    value={Math.round(obj.x)}
+                                                    onChange={(e) => handleChange("x", Number(e.target.value))}
+                                                />
+                                            </div>
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-2 top-1.5 text-[10px] font-bold text-slate-400">Y</span>
+                                                <input
+                                                    type="number"
+                                                    className="inspector-input-number w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg pl-6 pr-2 py-1.5 text-xs text-slate-700 dark:text-neutral-300 font-mono text-right focus:ring-1 focus:ring-blue-500 outline-none"
+                                                    value={Math.round(obj.y)}
+                                                    onChange={(e) => handleChange("y", Number(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
+                                    </ControlRow>
+                                    <ControlRow label="Dimensions">
+                                        <div className="flex gap-2">
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-2 top-1.5 text-[10px] font-bold text-slate-400">W</span>
+                                                <input
+                                                    type="number"
+                                                    className="inspector-input-number w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg pl-6 pr-2 py-1.5 text-xs text-slate-700 dark:text-neutral-300 font-mono text-right focus:ring-1 focus:ring-blue-500 outline-none"
                                                     value={Math.round(obj.width)}
                                                     onChange={(e) => handleChange("width", Number(e.target.value))}
                                                 />
                                             </div>
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Height</label>
-                                            <div className="flex gap-2 items-center">
-                                                <input
-                                                    type="range"
-                                                    min="10"
-                                                    max="1080"
-                                                    className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-700"
-                                                    value={Math.round(obj.height)}
-                                                    onChange={(e) => handleChange("height", Number(e.target.value))}
-                                                />
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-2 top-1.5 text-[10px] font-bold text-slate-400">H</span>
                                                 <input
                                                     type="number"
-                                                    className="w-16 bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 text-right"
+                                                    className="inspector-input-number w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg pl-6 pr-2 py-1.5 text-xs text-slate-700 dark:text-neutral-300 font-mono text-right focus:ring-1 focus:ring-blue-500 outline-none"
                                                     value={Math.round(obj.height)}
                                                     onChange={(e) => handleChange("height", Number(e.target.value))}
                                                 />
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    </ControlRow>
+                                    <ControlRow label="Scale" layout="horizontal">
+                                        <div className="flex-1">
+                                            <SliderInput
+                                                value={100} // Placeholder for scale logic if it existed, or mapping W/H
+                                                min={10}
+                                                max={200}
+                                                onChange={() => { }} // No unified scale prop yet
+                                                formatValue={(v) => `${v}%`}
+                                            />
+                                        </div>
+                                    </ControlRow>
+                                </PropertySection>
+
+                                <PropertySection title="Appearance" defaultOpen={false}>
+                                    <ControlRow label="Opacity">
+                                        <SliderInput
+                                            value={obj.opacity ?? 1}
+                                            min={0}
+                                            max={1}
+                                            step={0.01}
+                                            onChange={(v) => handleChange("opacity", v)}
+                                            formatValue={(v) => `${Math.round(v * 100)}%`}
+                                        />
+                                    </ControlRow>
+                                    <ControlRow label="Rotation">
+                                        <SliderInput
+                                            value={obj.rotation ?? 0}
+                                            min={-180}
+                                            max={180}
+                                            onChange={(v) => handleChange("rotation", v)}
+                                            formatValue={(v) => `${v}°`}
+                                        />
+                                    </ControlRow>
+                                </PropertySection>
 
                                 <div className="h-px bg-slate-200 dark:bg-slate-800 my-4" />
 
                                 {/* Type Specific */}
+                                {/* Type Specific Properties */}
                                 {obj instanceof TextObject && (
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Content</label>
+                                    <>
+                                        <PropertySection title="Content">
                                             <textarea
-                                                className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300 min-h-[60px]"
+                                                className="inspector-textarea w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg p-3 text-xs text-slate-700 dark:text-neutral-300 min-h-[80px] focus:ring-1 focus:ring-blue-500 outline-none resize-none"
                                                 value={obj.text}
                                                 onChange={(e) => handleChange("text", e.target.value)}
+                                                placeholder="Type your text here..."
                                             />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Color</label>
-                                                <input
-                                                    type="color"
-                                                    className="w-full h-8 cursor-pointer rounded"
-                                                    value={obj.color}
-                                                    onChange={(e) => handleChange("color", e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="col-span-2">
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Size</label>
-                                                <div className="flex gap-2 items-center">
-                                                    <input
-                                                        type="range"
-                                                        min="10"
-                                                        max="400"
-                                                        className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-700"
-                                                        value={obj.fontSize}
-                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
-                                                    />
-                                                    <input
-                                                        type="number"
-                                                        className="w-16 bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 text-right"
-                                                        value={obj.fontSize}
-                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+                                        </PropertySection>
 
-                                        <div>
-                                            <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Font Family</label>
-                                            <select
-                                                className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300"
-                                                value={obj.fontFamily}
-                                                onChange={(e) => handleChange("fontFamily", e.target.value)}
-                                            >
-                                                <option value="Inter">Inter (Default)</option>
-                                                <option value="Arial">Arial</option>
-                                                <option value="Helvetica">Helvetica</option>
-                                                <option value="Times New Roman">Times New Roman</option>
-                                                <option value="Courier New">Courier New</option>
-                                                <option value="Georgia">Georgia</option>
-                                                <option value="Verdana">Verdana</option>
-                                                <option value="Impact">Impact</option>
-                                                <option value="Comic Sans MS">Comic Sans MS</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                        <PropertySection title="Typography">
+                                            <ControlRow label="Font Family">
+                                                <select
+                                                    className="inspector-select w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-neutral-300 outline-none focus:ring-1 focus:ring-blue-500"
+                                                    value={obj.fontFamily}
+                                                    onChange={(e) => handleChange("fontFamily", e.target.value)}
+                                                >
+                                                    <option value="Inter">Inter</option>
+                                                    <option value="Arial">Arial</option>
+                                                    <option value="Helvetica">Helvetica</option>
+                                                    <option value="Times New Roman">Times New Roman</option>
+                                                    <option value="Courier New">Courier New</option>
+                                                    <option value="Georgia">Georgia</option>
+                                                    <option value="Verdana">Verdana</option>
+                                                    <option value="Impact">Impact</option>
+                                                    <option value="Comic Sans MS">Comic Sans</option>
+                                                </select>
+                                            </ControlRow>
+                                            <ControlRow label="Color" layout="horizontal">
+                                                <div className="flex justify-end gap-2 items-center">
+                                                    <input
+                                                        type="color"
+                                                        className="inspector-input-color w-8 h-8 p-0 border-none rounded-full overflow-hidden cursor-pointer shadow-sm"
+                                                        value={obj.color}
+                                                        onChange={(e) => handleChange("color", e.target.value)}
+                                                    />
+                                                    <span className="text-xs font-mono text-slate-500">{obj.color}</span>
+                                                </div>
+                                            </ControlRow>
+                                            <ControlRow label="Font Size">
+                                                <SliderInput
+                                                    value={obj.fontSize}
+                                                    min={10}
+                                                    max={400}
+                                                    onChange={(v) => handleChange("fontSize", v)}
+                                                    formatValue={(v) => `${v}px`}
+                                                />
+                                            </ControlRow>
+                                        </PropertySection>
+                                    </>
                                 )}
 
                                 {obj instanceof CodeBlockObject && (
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Code</label>
-                                            <textarea
-                                                className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300 font-mono min-h-[100px]"
-                                                value={obj.code}
-                                                onChange={(e) => handleChange("code", e.target.value)}
-                                                spellCheck={false}
-                                            />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Theme</label>
+                                    <>
+                                        <PropertySection title="Code Content">
+                                            <div className="space-y-2">
+                                                <textarea
+                                                    className="inspector-textarea w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg p-3 text-xs text-slate-700 dark:text-neutral-300 font-mono min-h-[120px] focus:ring-1 focus:ring-blue-500 outline-none resize-none"
+                                                    value={obj.code}
+                                                    onChange={(e) => handleChange("code", e.target.value)}
+                                                    spellCheck={false}
+                                                    placeholder="// Insert code here..."
+                                                />
+                                                <div className="flex justify-end">
+                                                    <button
+                                                        onClick={() => document.getElementById('code-import')?.click()}
+                                                        className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                                                    >
+                                                        <Box size={12} /> Import File
+                                                    </button>
+                                                    <input
+                                                        type="file"
+                                                        id="code-import"
+                                                        className="hidden"
+                                                        accept=".js,.ts,.jsx,.tsx,.html,.css,.json,.py,.java,.cpp,.c,.h,.md,.txt"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                const reader = new FileReader();
+                                                                reader.onload = (ev) => {
+                                                                    handleChange("code", ev.target?.result as string);
+                                                                };
+                                                                reader.readAsText(file);
+                                                            }
+                                                            e.target.value = '';
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </PropertySection>
+
+                                        <PropertySection title="Syntax & Theme">
+                                            <ControlRow label="Theme">
                                                 <select
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300"
+                                                    className="inspector-select w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-neutral-300 outline-none focus:ring-1 focus:ring-blue-500"
                                                     value={obj.theme}
                                                     onChange={(e) => handleChange("theme", e.target.value)}
                                                 >
@@ -507,67 +540,87 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                     <option value="github-dark">GitHub Dark</option>
                                                     <option value="dracula">Dracula</option>
                                                 </select>
-                                            </div>
-                                            <div className="col-span-2">
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Font Size</label>
-                                                <div className="flex gap-2 items-center">
-                                                    <input
-                                                        type="range"
-                                                        min="8"
-                                                        max="100"
-                                                        className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-700"
-                                                        value={obj.fontSize}
-                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
-                                                    />
-                                                    <input
-                                                        type="number"
-                                                        className="w-16 bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 text-right"
-                                                        value={obj.fontSize}
-                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Padding</label>
-                                                <input
-                                                    type="number"
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300"
-                                                    value={obj.padding || 0}
-                                                    onChange={(e) => handleChange("padding", Number(e.target.value))}
+                                            </ControlRow>
+                                            <ControlRow label="Font Size">
+                                                <SliderInput
+                                                    value={obj.fontSize}
+                                                    min={8}
+                                                    max={100}
+                                                    onChange={(v) => handleChange("fontSize", v)}
+                                                    formatValue={(v) => `${v}px`}
                                                 />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Start Line #</label>
+                                            </ControlRow>
+                                            <ControlRow label="Settings" layout="horizontal">
+                                                <div className="flex gap-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <Toggle
+                                                            value={obj.syntaxHighlighting}
+                                                            onChange={(v) => handleChange("syntaxHighlighting", v)}
+                                                        />
+                                                        <span className="text-xs text-slate-600 dark:text-slate-400">Syntax</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Toggle
+                                                            value={obj.showLineNumbers !== false}
+                                                            onChange={(v) => handleChange("showLineNumbers", v)}
+                                                        />
+                                                        <span className="text-xs text-slate-600 dark:text-slate-400">Line nums</span>
+                                                    </div>
+                                                </div>
+                                            </ControlRow>
+                                        </PropertySection>
+
+                                        <PropertySection title="Layout & Spacing" defaultOpen={false}>
+                                            <ControlRow label="Padding">
+                                                <SliderInput
+                                                    value={obj.padding || 0}
+                                                    min={0}
+                                                    max={100}
+                                                    onChange={(v) => handleChange("padding", v)}
+                                                />
+                                            </ControlRow>
+                                            <ControlRow label="Line Gap">
+                                                <SliderInput
+                                                    value={obj.lineNumberMargin || 15}
+                                                    min={0}
+                                                    max={100}
+                                                    onChange={(v) => handleChange("lineNumberMargin", v)}
+                                                />
+                                            </ControlRow>
+                                            <ControlRow label="Start Line #">
                                                 <input
                                                     type="number"
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300"
+                                                    className="inspector-input-number w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-neutral-300 outline-none"
                                                     value={obj.startLineNumber || 1}
                                                     onChange={(e) => handleChange("startLineNumber", Number(e.target.value))}
                                                 />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Line Gap</label>
-                                                <input
-                                                    type="number"
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300"
-                                                    value={obj.lineNumberMargin || 15}
-                                                    onChange={(e) => handleChange("lineNumberMargin", Number(e.target.value))}
-                                                />
-                                            </div>
-                                            <div className="col-span-2">
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Highlight Lines (e.g. 1, 3-5)</label>
+                                            </ControlRow>
+                                        </PropertySection>
+
+                                        <PropertySection title="Line Highlighting" defaultOpen={false}>
+                                            <ControlRow label="Highlight Color" layout="horizontal">
+                                                <div className="flex justify-end gap-2 items-center">
+                                                    <input
+                                                        type="color"
+                                                        className="inspector-input-color w-8 h-8 p-0 border-none rounded-full overflow-hidden cursor-pointer shadow-sm"
+                                                        value={obj.highlightColor || "#ffffff"}
+                                                        onChange={(e) => handleChange("highlightColor", e.target.value)}
+                                                    />
+                                                </div>
+                                            </ControlRow>
+                                            <ControlRow label="Lines (e.g. 1, 3-5)">
                                                 <input
                                                     type="text"
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300"
+                                                    className="inspector-input-text w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-neutral-300 outline-none focus:ring-1 focus:ring-blue-500 font-mono"
                                                     placeholder="1, 3-5"
                                                     defaultValue={(obj.highlightedLines || []).join(", ")}
                                                     onBlur={(e) => {
                                                         const val = e.target.value;
                                                         const lines = val.split(",").flatMap(part => {
                                                             if (part.includes("-")) {
-                                                                const [start, end] = part.split("-").map(n => parseInt(n.trim()));
-                                                                if (!isNaN(start) && !isNaN(end)) {
-                                                                    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+                                                                const parts = part.split("-").map(n => parseInt(n.trim()));
+                                                                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                                                                    return Array.from({ length: parts[1] - parts[0] + 1 }, (_, i) => parts[0] + i);
                                                                 }
                                                                 return [];
                                                             }
@@ -577,401 +630,233 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                                         handleChange("highlightedLines", lines);
                                                     }}
                                                 />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Highlight Color</label>
-                                                <div className="flex gap-2">
-                                                    <input
-                                                        type="color"
-                                                        className="w-8 h-8 cursor-pointer rounded bg-transparent border border-slate-200 dark:border-neutral-700 p-0.5"
-                                                        value={obj.highlightColor || "#ffffff"}
-                                                        onChange={(e) => handleChange("highlightColor", e.target.value)}
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 font-mono"
-                                                        value={obj.highlightColor || "rgba(255,255,255,0.1)"}
-                                                        onChange={(e) => handleChange("highlightColor", e.target.value)}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="checkbox"
-                                                    id="syntax-toggle"
-                                                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                                                    checked={obj.syntaxHighlighting}
-                                                    onChange={(e) => handleChange("syntaxHighlighting", e.target.checked)}
-                                                />
-                                                <label htmlFor="syntax-toggle" className="text-xs text-slate-700 dark:text-neutral-300 font-medium select-none cursor-pointer">
-                                                    Enable Syntax Highlighting
-                                                </label>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="checkbox"
-                                                    id="linenumbers-toggle"
-                                                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                                                    checked={obj.showLineNumbers !== false}
-                                                    onChange={(e) => handleChange("showLineNumbers", e.target.checked)}
-                                                />
-                                                <label htmlFor="linenumbers-toggle" className="text-xs text-slate-700 dark:text-neutral-300 font-medium select-none cursor-pointer">
-                                                    Show Line Numbers
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <input
-                                                type="file"
-                                                id="code-import"
-                                                className="hidden"
-                                                accept=".js,.ts,.jsx,.tsx,.html,.css,.json,.py,.java,.cpp,.c,.h,.md,.txt"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onload = (ev) => {
-                                                            const text = ev.target?.result as string;
-                                                            handleChange("code", text);
-                                                        };
-                                                        reader.readAsText(file);
-                                                    }
-                                                    // Reset input so same file can be selected again
-                                                    e.target.value = '';
-                                                }}
-                                            />
-                                            <button
-                                                onClick={() => document.getElementById('code-import')?.click()}
-                                                className="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
-                                                Import Code File
-                                            </button>
-                                        </div>
-                                    </div>
+                                            </ControlRow>
+                                        </PropertySection>
+                                    </>
                                 )}
 
                                 {obj instanceof ChartObject && (
-                                    <div className="space-y-4">
-                                        {/* Data Editor */}
-                                        <div>
-                                            <div className="text-[10px] uppercase text-slate-500 font-bold mb-2">Data & Configuration</div>
-                                            <div className="space-y-3">
-                                                <div>
-                                                    <label className="text-[10px] text-slate-400 font-bold block mb-1">Chart Type</label>
-                                                    <select
-                                                        className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300"
-                                                        value={obj.chartType}
-                                                        onChange={(e) => handleChange("chartType", e.target.value)}
-                                                    >
-                                                        <option value="bar">Bar Chart</option>
-                                                        <option value="line">Line Chart</option>
-                                                        <option value="area">Area Chart</option>
-                                                        <option value="scatter">Scatter Plot</option>
-                                                        <option value="pie">Pie Chart</option>
-                                                        <option value="donut">Donut Chart</option>
-                                                    </select>
-                                                </div>
+                                    <>
+                                        <PropertySection title="Chart Type">
+                                            <IconGrid
+                                                value={obj.chartType}
+                                                onChange={(v) => handleChange("chartType", v)}
+                                                size="sm"
+                                                cols={4}
+                                                options={[
+                                                    { value: "bar", label: "Bar", icon: <BarChart size={16} /> },
+                                                    { value: "line", label: "Line", icon: <LineChart size={16} /> },
+                                                    { value: "area", label: "Area", icon: <Activity size={16} /> },
+                                                    { value: "scatter", label: "Scatter", icon: <Circle size={16} /> },
+                                                    { value: "pie", label: "Pie", icon: <PieChart size={16} /> },
+                                                    { value: "donut", label: "Donut", icon: <Circle size={16} strokeWidth={2.5} /> }
+                                                ]}
+                                            />
+                                        </PropertySection>
 
-                                                {(obj.chartType === "donut") && (
-                                                    <div>
-                                                        <label className="text-[10px] text-slate-400 font-bold block mb-1">Hole Radius ({(obj.innerRadius * 100).toFixed(0)}%)</label>
-                                                        <input
-                                                            type="range"
-                                                            min="10"
-                                                            max="90"
-                                                            value={obj.innerRadius * 100}
-                                                            onChange={(e) => handleChange("innerRadius", Number(e.target.value) / 100)}
-                                                            className="w-full h-1 bg-slate-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                                                        />
-                                                    </div>
-                                                )}
-
-                                                <div>
-                                                    <label className="text-[10px] text-slate-400 font-bold block mb-1">Label Position</label>
-                                                    <select
-                                                        className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300"
-                                                        value={obj.labelPosition}
-                                                        onChange={(e) => handleChange("labelPosition", e.target.value)}
-                                                    >
-                                                        <option value="axis">Axis (Bottom)</option>
-                                                        <option value="top">Top (Values)</option>
-                                                        <option value="center">Center (Pie/Donut)</option>
-                                                        <option value="none">None</option>
-                                                    </select>
-                                                </div>
-
-                                                <div>
-                                                    <label className="text-[10px] text-slate-400 font-bold block mb-1">Labels (comma separated)</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 font-mono"
-                                                        value={obj.labels.join(", ")}
-                                                        onChange={(e) => {
-                                                            const labels = e.target.value.split(",").map(s => s.trim());
-                                                            handleChange("labels", labels);
-                                                        }}
+                                        <PropertySection title="Chart Configuration">
+                                            {obj.chartType === "donut" && (
+                                                <ControlRow label="Hole Radius">
+                                                    <SliderInput
+                                                        value={Math.round(obj.innerRadius * 100)}
+                                                        min={10}
+                                                        max={90}
+                                                        onChange={(v) => handleChange("innerRadius", v / 100)}
+                                                        formatValue={(v) => `${v}%`}
                                                     />
-                                                </div>
-                                                <div>
-                                                    <label className="text-[10px] text-slate-400 font-bold block mb-1">Values (comma separated)</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 font-mono"
-                                                        value={obj.data.join(", ")}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value;
-                                                            const data = val.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
-                                                            // Only update if we have valid data, or empty
-                                                            if (data.length > 0 || val === "") {
-                                                                handleChange("data", data);
-                                                            }
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="h-px bg-slate-200 dark:bg-slate-800 my-2" />
-
-                                        <div>
-                                            <div className="flex justify-between items-center mb-1">
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold">Chart Appearance</label>
-                                                <div className="flex items-center gap-2">
-                                                    <label className="text-[10px] uppercase text-slate-400 font-bold cursor-pointer select-none" htmlFor="multicolor">Multi-color</label>
-                                                    <input
-                                                        type="checkbox"
-                                                        id="multicolor"
-                                                        className="rounded text-blue-600 focus:ring-blue-500"
-                                                        checked={obj.useMultiColor}
-                                                        onChange={(e) => handleChange("useMultiColor", e.target.checked)}
-                                                    />
-                                                </div>
-                                            </div>
-                                            {!obj.useMultiColor ? (
-                                                <div className="flex gap-2">
-                                                    <input
-                                                        type="color"
-                                                        className="w-10 h-10 p-0.5 rounded cursor-pointer bg-transparent border border-slate-200 dark:border-neutral-700"
-                                                        value={obj.color}
-                                                        onChange={(e) => handleChange("color", e.target.value)}
-                                                    />
-                                                    <div className="flex-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full h-10 bg-slate-100 dark:bg-neutral-800 border-none rounded px-3 text-xs text-slate-700 dark:text-neutral-300 font-mono"
-                                                            value={obj.color}
-                                                            onChange={(e) => handleChange("color", e.target.value)}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="space-y-2">
-                                                    <div className="grid grid-cols-5 gap-2">
-                                                        {obj.colorPalette.map((color: string, i: number) => (
-                                                            <div key={i} className="relative group">
-                                                                <input
-                                                                    type="color"
-                                                                    className="w-full h-8 rounded cursor-pointer p-0 border-none"
-                                                                    value={color}
-                                                                    onChange={(e) => {
-                                                                        const newPalette = [...obj.colorPalette];
-                                                                        newPalette[i] = e.target.value;
-                                                                        handleChange("colorPalette", newPalette);
-                                                                    }}
-                                                                />
-                                                                {obj.colorPalette.length > 1 && (
-                                                                    <button
-                                                                        className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px]"
-                                                                        onClick={() => {
-                                                                            const newPalette = obj.colorPalette.filter((_: any, idx: number) => idx !== i);
-                                                                            handleChange("colorPalette", newPalette);
-                                                                        }}
-                                                                    >
-                                                                        ×
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                        <button
-                                                            className="w-full h-8 rounded border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-500 transition-colors"
-                                                            onClick={() => {
-                                                                const newPalette = [...obj.colorPalette, "#888888"];
-                                                                handleChange("colorPalette", newPalette);
-                                                            }}
-                                                        >
-                                                            +
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                </ControlRow>
                                             )}
-                                        </div>
 
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Axis Color</label>
-                                                <div className="flex gap-2">
+                                            <ControlRow label="Label Position">
+                                                <SegmentedControl
+                                                    value={obj.labelPosition}
+                                                    onChange={(v) => handleChange("labelPosition", v)}
+                                                    options={[
+                                                        { value: "axis", label: "Axis" },
+                                                        { value: "top", label: "Top" },
+                                                        { value: "center", label: "Center" },
+                                                        { value: "none", label: "None" }
+                                                    ]}
+                                                />
+                                            </ControlRow>
+
+                                            <ControlRow label="Show Grid" layout="horizontal">
+                                                <Toggle
+                                                    value={obj.showGrid}
+                                                    onChange={(v) => handleChange("showGrid", v)}
+                                                />
+                                            </ControlRow>
+
+                                            <ControlRow label="Axis Color" layout="horizontal">
+                                                <div className="flex justify-end gap-2 items-center">
                                                     <input
                                                         type="color"
-                                                        className="w-8 h-8 p-0.5 rounded cursor-pointer bg-transparent border border-slate-200 dark:border-neutral-700"
-                                                        value={obj.axisColor}
-                                                        onChange={(e) => handleChange("axisColor", e.target.value)}
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 font-mono"
+                                                        className="inspector-input-color w-8 h-8 p-0 border-none rounded-full overflow-hidden cursor-pointer shadow-sm"
                                                         value={obj.axisColor}
                                                         onChange={(e) => handleChange("axisColor", e.target.value)}
                                                     />
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Show Grid</label>
-                                                <div className="flex items-center h-8">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="rounded text-blue-600 focus:ring-blue-500 mr-2"
-                                                        checked={obj.showGrid}
-                                                        onChange={(e) => handleChange("showGrid", e.target.checked)}
-                                                    />
-                                                    <span className="text-xs text-slate-700 dark:text-neutral-300">Enabled</span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            </ControlRow>
+                                        </PropertySection>
 
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div className="col-span-2">
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Font Size</label>
-                                                <div className="flex gap-2 items-center">
-                                                    <input
-                                                        type="range"
-                                                        min="8"
-                                                        max="48"
-                                                        className="flex-1 accent-blue-600 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-700"
-                                                        value={obj.fontSize}
-                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
-                                                    />
-                                                    <input
-                                                        type="number"
-                                                        className="w-16 bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-1 text-xs text-slate-700 dark:text-neutral-300 text-right"
-                                                        value={obj.fontSize}
-                                                        onChange={(e) => handleChange("fontSize", Number(e.target.value))}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-span-2">
-                                                <label className="text-[10px] uppercase text-slate-500 font-bold block mb-1">Font Family</label>
-                                                <select
-                                                    className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300"
-                                                    value={obj.fontFamily}
-                                                    onChange={(e) => handleChange("fontFamily", e.target.value)}
-                                                >
-                                                    <option value="Inter">Inter (Default)</option>
-                                                    <option value="Arial">Arial</option>
-                                                    <option value="Helvetica">Helvetica</option>
-                                                    <option value="Times New Roman">Times New Roman</option>
-                                                    <option value="Courier New">Courier New</option>
-                                                    <option value="Georgia">Georgia</option>
-                                                    <option value="Comic Sans MS">Comic Sans MS</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="h-px bg-slate-200 dark:bg-slate-800 my-4" />
-
-                                {/* Quick Animation Controls */}
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className="text-[10px] uppercase text-slate-500 font-bold">Animation</div>
-                                        {obj.animation.type !== "none" && (
-                                            <div className="text-[10px] text-slate-400 font-mono">{obj.animation.duration}ms</div>
-                                        )}
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {(() => {
-                                            const commonAnims = [
-                                                { id: "none", label: "None" },
-                                                { id: "fadeIn", label: "Fade In" },
-                                                { id: "slideUp", label: "Slide Up" },
-                                                { id: "scaleIn", label: "Scale In" },
-                                            ];
-
-                                            let displayAnims = commonAnims;
-
-                                            if (obj instanceof ChartObject) {
-                                                displayAnims = [
-                                                    { id: "none", label: "None" },
-                                                    { id: "grow", label: "Grow" },
-                                                    { id: "fadeIn", label: "Fade In" },
-                                                ];
-                                            } else if (obj instanceof TextObject) {
-                                                displayAnims = [
-                                                    ...commonAnims,
-                                                    { id: "typewriter", label: "Typewriter" },
-                                                ];
-                                            } else if (obj instanceof CodeBlockObject) {
-                                                displayAnims = [
-                                                    { id: "none", label: "None" },
-                                                    { id: "typewriter", label: "Typewriter" },
-                                                    { id: "fadeIn", label: "Fade In" },
-                                                ];
-                                            }
-
-                                            return displayAnims.map((anim) => (
-                                                <button
-                                                    key={anim.id}
-                                                    onClick={() => {
-                                                        if (obj.animation) {
-                                                            const isSame = obj.animation.type === anim.id;
-                                                            if (!isSame) {
-                                                                obj.animation.type = anim.id as any;
-                                                                engine.currentTime = 0;
-                                                                engine.play();
-                                                                setForceUpdate(n => n + 1);
-                                                            }
+                                        <PropertySection title="Data">
+                                            <ControlRow label="Values (comma separated)">
+                                                <input
+                                                    type="text"
+                                                    className="inspector-input-text w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-neutral-300 font-mono outline-none focus:ring-1 focus:ring-blue-500"
+                                                    value={obj.data.join(", ")}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        const data = val.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+                                                        if (data.length > 0 || val === "") {
+                                                            handleChange("data", data);
                                                         }
                                                     }}
-                                                    className={`py-2 px-3 rounded-lg text-xs font-bold border transition-all ${obj.animation?.type === anim.id ? "bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-400" : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-blue-400"}`}
-                                                >
-                                                    {anim.label}
-                                                </button>
-                                            ));
-                                        })()}
-                                    </div>
+                                                />
+                                            </ControlRow>
+                                            <ControlRow label="Labels (comma separated)">
+                                                <input
+                                                    type="text"
+                                                    className="inspector-input-text w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-neutral-300 font-mono outline-none focus:ring-1 focus:ring-blue-500"
+                                                    value={obj.labels.join(", ")}
+                                                    onChange={(e) => {
+                                                        const labels = e.target.value.split(",").map(s => s.trim());
+                                                        handleChange("labels", labels);
+                                                    }}
+                                                />
+                                            </ControlRow>
+                                        </PropertySection>
+
+                                        <PropertySection title="Colors">
+                                            <ControlRow label="Color Mode" layout="horizontal">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] text-slate-500 uppercase font-bold">Multi-color</span>
+                                                    <Toggle
+                                                        value={obj.useMultiColor}
+                                                        onChange={(v) => handleChange("useMultiColor", v)}
+                                                    />
+                                                </div>
+                                            </ControlRow>
+
+                                            {!obj.useMultiColor ? (
+                                                <ControlRow label="Base Color" layout="horizontal">
+                                                    <div className="flex gap-2">
+                                                        {['#3b82f6', '#ef4444', '#22c55e', '#eab308', '#a855f7', '#6366f1'].map(c => (
+                                                            <button
+                                                                key={c}
+                                                                onClick={(e) => handleChange("color", c)}
+                                                                className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 shadow-sm ${obj.color === c ? 'border-slate-600 dark:border-white ring-1 ring-white dark:ring-slate-900' : 'border-transparent'}`}
+                                                                style={{ backgroundColor: c }}
+                                                            />
+                                                        ))}
+                                                        <div className="relative group ml-1">
+                                                            <input
+                                                                type="color"
+                                                                className="inspector-input-color w-6 h-6 rounded-full p-0 border-0 overflow-hidden cursor-pointer shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 hover:ring-2 hover:ring-blue-500 transition-all opacity-0 absolute inset-0 z-10"
+                                                                value={obj.color}
+                                                                onChange={(e) => handleChange("color", e.target.value)}
+                                                            />
+                                                            <div
+                                                                className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center bg-conic-gradient"
+                                                                style={{ background: `linear-gradient(135deg, ${obj.color} 0%, ${obj.color} 100%)` }}
+                                                            >
+                                                                <div className="w-full h-full rounded-full ring-1 ring-inset ring-black/10" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ControlRow>
+                                            ) : (
+                                                <div className="grid grid-cols-5 gap-2 pt-2">
+                                                    {obj.colorPalette.map((color: string, i: number) => (
+                                                        <div key={i} className="relative group">
+                                                            <input
+                                                                type="color"
+                                                                className="inspector-input-color w-8 h-8 rounded-full cursor-pointer p-0 border-none overflow-hidden shadow-sm"
+                                                                value={color}
+                                                                onChange={(e) => {
+                                                                    const newPalette = [...obj.colorPalette];
+                                                                    newPalette[i] = e.target.value;
+                                                                    handleChange("colorPalette", newPalette);
+                                                                }}
+                                                            />
+                                                            {obj.colorPalette.length > 1 && (
+                                                                <button
+                                                                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px]"
+                                                                    onClick={() => {
+                                                                        const newPalette = obj.colorPalette.filter((_: any, idx: number) => idx !== i);
+                                                                        handleChange("colorPalette", newPalette);
+                                                                    }}
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                    <button
+                                                        className="w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-500 transition-colors bg-slate-50 dark:bg-neutral-800"
+                                                        onClick={() => {
+                                                            const newPalette = [...obj.colorPalette, "#888888"];
+                                                            handleChange("colorPalette", newPalette);
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </PropertySection>
+                                    </>
+                                )}
+
+                                <PropertySection title="Animation">
+                                    <ControlRow label="Effect">
+                                        <IconGrid
+                                            value={obj.animation.type}
+                                            onChange={(v) => {
+                                                obj.animation.type = v as any;
+                                                engine.currentTime = 0;
+                                                engine.play();
+                                                setForceUpdate(n => n + 1);
+                                            }}
+                                            size="sm"
+                                            cols={3}
+                                            options={[
+                                                { value: "none", label: "None", icon: <div className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-600" /> },
+                                                ...(obj instanceof TextObject ? [{ value: "typewriter", label: "Typewriter", icon: <Type size={14} /> }] : []),
+                                                { value: "fadeIn", label: "Fade", icon: <Activity size={14} className="opacity-50" /> },
+                                                { value: "slideUp", label: "Slide", icon: <ChevronUp size={14} /> },
+                                                { value: "scaleIn", label: "Scale", icon: <Minimize size={14} /> },
+                                                ...(obj instanceof ChartObject ? [{ value: "grow", label: "Grow", icon: <BarChart size={14} /> }] : [])
+                                            ]}
+                                        />
+                                    </ControlRow>
 
                                     {obj.animation.type !== "none" && (
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] text-slate-400 font-bold block">Duration</label>
-                                            <input
-                                                type="range"
+                                        <ControlRow label="Duration">
+                                            <SliderInput
+                                                value={obj.animation.duration}
                                                 min={100}
                                                 max={3000}
                                                 step={100}
-                                                value={obj.animation.duration}
-                                                onChange={(e) => {
-                                                    obj.animation.duration = Number(e.target.value);
+                                                onChange={(v) => {
+                                                    obj.animation.duration = v;
                                                     setForceUpdate(n => n + 1);
                                                 }}
-                                                className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-neutral-700 accent-blue-600"
+                                                formatValue={(v) => `${v}ms`}
                                             />
-                                        </div>
+                                        </ControlRow>
                                     )}
-                                </div>
+                                </PropertySection>
 
-                                <div className="mt-8 pt-4 border-t border-slate-200 dark:border-slate-800">
+                                <div className="pt-4 px-1">
                                     <button
                                         onClick={() => {
                                             engine.scene.remove(obj.id);
-                                            engine.selectObject(null);
-                                            engine.render();
+                                            setForceUpdate(n => n + 1);
                                         }}
-                                        className="w-full py-2 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                                        className="w-full py-3 bg-red-50 text-red-600 dark:bg-red-900/10 dark:text-red-400 rounded-xl text-xs font-bold hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2"
                                     >
-                                        Delete Object
+                                        <Trash2 size={14} />
+                                        Delete Layer
                                     </button>
                                 </div>
                             </div>
