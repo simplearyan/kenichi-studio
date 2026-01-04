@@ -657,8 +657,52 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                     <div className="space-y-4">
                                         {/* Data Editor */}
                                         <div>
-                                            <div className="text-[10px] uppercase text-slate-500 font-bold mb-2">Data & Labels</div>
-                                            <div className="space-y-2">
+                                            <div className="text-[10px] uppercase text-slate-500 font-bold mb-2">Data & Configuration</div>
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <label className="text-[10px] text-slate-400 font-bold block mb-1">Chart Type</label>
+                                                    <select
+                                                        className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300"
+                                                        value={obj.chartType}
+                                                        onChange={(e) => handleChange("chartType", e.target.value)}
+                                                    >
+                                                        <option value="bar">Bar Chart</option>
+                                                        <option value="line">Line Chart</option>
+                                                        <option value="area">Area Chart</option>
+                                                        <option value="scatter">Scatter Plot</option>
+                                                        <option value="pie">Pie Chart</option>
+                                                        <option value="donut">Donut Chart</option>
+                                                    </select>
+                                                </div>
+
+                                                {(obj.chartType === "donut") && (
+                                                    <div>
+                                                        <label className="text-[10px] text-slate-400 font-bold block mb-1">Hole Radius ({(obj.innerRadius * 100).toFixed(0)}%)</label>
+                                                        <input
+                                                            type="range"
+                                                            min="10"
+                                                            max="90"
+                                                            value={obj.innerRadius * 100}
+                                                            onChange={(e) => handleChange("innerRadius", Number(e.target.value) / 100)}
+                                                            className="w-full h-1 bg-slate-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                <div>
+                                                    <label className="text-[10px] text-slate-400 font-bold block mb-1">Label Position</label>
+                                                    <select
+                                                        className="w-full bg-slate-100 dark:bg-neutral-800 border-none rounded px-2 py-2 text-xs text-slate-700 dark:text-neutral-300"
+                                                        value={obj.labelPosition}
+                                                        onChange={(e) => handleChange("labelPosition", e.target.value)}
+                                                    >
+                                                        <option value="axis">Axis (Bottom)</option>
+                                                        <option value="top">Top (Values)</option>
+                                                        <option value="center">Center (Pie/Donut)</option>
+                                                        <option value="none">None</option>
+                                                    </select>
+                                                </div>
+
                                                 <div>
                                                     <label className="text-[10px] text-slate-400 font-bold block mb-1">Labels (comma separated)</label>
                                                     <input

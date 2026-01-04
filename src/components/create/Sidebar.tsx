@@ -85,14 +85,32 @@ export const Sidebar = ({ engine }: SidebarProps) => {
         engine.render();
     };
 
-    const handleAddChart = (type: "bar" | "line" | "pie") => {
+    const handleAddChart = (type: "bar" | "line" | "area" | "scatter" | "pie" | "donut") => {
         if (!engine) return;
         if (window.innerWidth < 1100) setActiveTab(null);
-        const name = getNextName(type === "bar" ? "Bar Chart" : "Line Chart");
+
+        let nameBase = "Chart";
+        if (type === "bar") nameBase = "Bar Chart";
+        if (type === "line") nameBase = "Line Chart";
+        if (type === "area") nameBase = "Area Chart";
+        if (type === "scatter") nameBase = "Scatter Plot";
+        if (type === "pie") nameBase = "Pie Chart";
+        if (type === "donut") nameBase = "Donut Chart";
+
+        const name = getNextName(nameBase);
         const chart = new ChartObject(`chart-${Date.now()}`, type);
         chart.name = name;
         chart.x = engine.scene.width / 2 - 200;
         chart.y = engine.scene.height / 2 - 150;
+
+        if (type === "pie" || type === "donut") {
+            chart.width = 300;
+            chart.height = 300;
+            chart.labels = ["A", "B", "C", "D"];
+            chart.data = [30, 20, 15, 35];
+            chart.animation.type = "grow"; // Radial grow
+        }
+
         engine.scene.add(chart);
         engine.render();
     };
@@ -183,18 +201,47 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-2 gap-3">
                                         <button onClick={() => handleAddChart("bar")} className="aspect-square bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 flex flex-col items-center justify-center hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-200 transition-all gap-3 group">
-                                            <div className="flex items-end gap-1 h-12 w-12 justify-center">
-                                                <div className="w-2 bg-blue-500/80 h-6 rounded-t-sm group-hover:h-8 transition-all"></div>
-                                                <div className="w-2 bg-blue-500 h-10 rounded-t-sm group-hover:h-12 transition-all"></div>
-                                                <div className="w-2 bg-blue-500/80 h-8 rounded-t-sm group-hover:h-6 transition-all"></div>
+                                            <div className="flex items-end gap-1 h-8 w-8 justify-center">
+                                                <div className="w-1.5 bg-blue-500/80 h-4 rounded-t-sm group-hover:h-5 transition-all"></div>
+                                                <div className="w-1.5 bg-blue-500 h-6 rounded-t-sm group-hover:h-8 transition-all"></div>
+                                                <div className="w-1.5 bg-blue-500/80 h-5 rounded-t-sm group-hover:h-4 transition-all"></div>
                                             </div>
-                                            <span className="text-xs font-bold text-slate-600 dark:text-neutral-400">Bar Chart</span>
+                                            <span className="text-[10px] font-bold text-slate-600 dark:text-neutral-400">Bar</span>
                                         </button>
                                         <button onClick={() => handleAddChart("line")} className="aspect-square bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 flex flex-col items-center justify-center hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-200 transition-all gap-3 group">
-                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-500 group-hover:scale-110 transition-transform">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-500 group-hover:scale-110 transition-transform">
                                                 <path d="M3 18 L9 12 L14 16 L21 8" />
                                             </svg>
-                                            <span className="text-xs font-bold text-slate-600 dark:text-neutral-400">Line Chart</span>
+                                            <span className="text-[10px] font-bold text-slate-600 dark:text-neutral-400">Line</span>
+                                        </button>
+                                        <button onClick={() => handleAddChart("area")} className="aspect-square bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 flex flex-col items-center justify-center hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-200 transition-all gap-3 group">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-500 group-hover:scale-110 transition-transform">
+                                                <path d="M3 18 L9 12 L14 16 L21 8 V 18 H 3" fill="currentColor" fillOpacity="0.2" />
+                                                <path d="M3 18 L9 12 L14 16 L21 8" />
+                                            </svg>
+                                            <span className="text-[10px] font-bold text-slate-600 dark:text-neutral-400">Area</span>
+                                        </button>
+                                        <button onClick={() => handleAddChart("scatter")} className="aspect-square bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 flex flex-col items-center justify-center hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-200 transition-all gap-3 group">
+                                            <div className="h-8 w-8 relative">
+                                                <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                                                <div className="absolute top-4 left-4 w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                                                <div className="absolute bottom-2 right-2 w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                                            </div>
+                                            <span className="text-[10px] font-bold text-slate-600 dark:text-neutral-400">Scatter</span>
+                                        </button>
+                                        <button onClick={() => handleAddChart("pie")} className="aspect-square bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 flex flex-col items-center justify-center hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-200 transition-all gap-3 group">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pink-500 group-hover:scale-110 transition-transform">
+                                                <path d="M21.21 15.89 A 10 10 0 1 1 8 2.83" />
+                                                <path d="M22 12 A 10 10 0 0 0 12 2 v 10 z" />
+                                            </svg>
+                                            <span className="text-[10px] font-bold text-slate-600 dark:text-neutral-400">Pie</span>
+                                        </button>
+                                        <button onClick={() => handleAddChart("donut")} className="aspect-square bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 flex flex-col items-center justify-center hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-200 transition-all gap-3 group">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-500 group-hover:scale-110 transition-transform">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <circle cx="12" cy="12" r="4" />
+                                            </svg>
+                                            <span className="text-[10px] font-bold text-slate-600 dark:text-neutral-400">Donut</span>
                                         </button>
                                     </div>
                                 </div>
