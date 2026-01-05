@@ -371,6 +371,8 @@ export class Engine {
                 try {
                     this.pause();
                     const totalFrames = Math.ceil((duration / 1000) * fps); // Fix: duration is in ms
+                    console.log("Offline Export Params:", { duration, fps, totalFrames });
+
                     const dt = 1000 / fps; // in ms
                     const frameDurationUs = 1000000 / fps;
 
@@ -383,7 +385,8 @@ export class Engine {
                             width: evenWidth,
                             height: evenHeight,
                             fps,
-                            bitrate: 5_000_000
+                            bitrate: 5_000_000,
+                            duration // in ms
                         }
                     });
 
@@ -445,7 +448,8 @@ export class Engine {
                             data: {
                                 bitmap,
                                 timestamp: i * frameDurationUs, // Microseconds
-                                keyFrame: i % fps === 0
+                                keyFrame: i % fps === 0,
+                                duration: frameDurationUs
                             }
                         }, [bitmap]);
 
