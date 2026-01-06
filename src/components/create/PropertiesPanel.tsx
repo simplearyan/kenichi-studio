@@ -220,6 +220,24 @@ export const PropertiesPanel = ({ engine, selectedId, exportConfig, setExportCon
                                         </div>
                                     </ControlRow>
 
+                                    <ControlRow label="Duration" layout="horizontal">
+                                        <div className="flex items-center gap-2 justify-end">
+                                            <input
+                                                type="number"
+                                                min={1}
+                                                max={300}
+                                                className="inspector-input-number w-16 text-right"
+                                                value={Math.round(engine.totalDuration / 1000)}
+                                                onChange={(e) => {
+                                                    const val = Math.max(1, Number(e.target.value));
+                                                    engine.setTotalDuration(val * 1000);
+                                                    setForceUpdate(n => n + 1);
+                                                }}
+                                            />
+                                            <span className="text-xs text-slate-500">sec</span>
+                                        </div>
+                                    </ControlRow>
+
                                     <ControlRow label="Aspect Ratio">
                                         <div className="inspector-resolution-grid">
                                             {[

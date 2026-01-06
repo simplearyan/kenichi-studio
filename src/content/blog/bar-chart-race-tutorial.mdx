@@ -1,0 +1,89 @@
+---
+title: "Building a Bar Chart Race in Kinetix"
+description: "How we implemented a data-driven Bar Chart Race animation using the Kinetix engine."
+pubDate: 2024-01-06
+heroImage: "/blog-placeholder-3.jpg"
+tags: ["dev", "charts", "animation"]
+---
+
+import { CodeBlock } from '../../components/blog/CodeBlock';
+
+# Building a Bar Chart Race
+
+Data visualization is a core part of video creation today. One of the most popular formats is the **Bar Chart Race**, where bars overtake each other as values change over time.
+
+In this update, we added a dedicated `BarChartRaceObject` to Kinetix. Here's how it works under the hood.
+
+## The Challenge
+
+Unlike a standard Bar Chart which shows a single snapshot, a Race needs to:
+1.  **Interpolate Values**: Smoothly transition between data points (e.g., years).
+2.  **handle Ranking**: Re-sort bars as their values change.
+3.  **Animate Positions**: Visually swap bars when their rank changes.
+
+## The Implementation
+
+We built a custom `KinetixObject` that stores time-series data.
+
+### 1. Data Structure
+
+We use a simple array of snapshots:
+
+```typescript
+interface DataPoint {
+    year: number;
+    values: Record<string, number>;
+}
+
+const DATA = [
+    { year: 2000, values: { "A": 10, "B": 20 } },
+    { year: 2001, values: { "A": 15, "B": 18 } },
+    // ...
+];
+```
+
+### 2. The Draw Loop
+
+The magic happens in the `draw(ctx, time)` method. We map the current animation time to the data's timeline (e.g., 2000 to 2010).
+
+```typescript
+// Map time to Year
+const progress = time / totalDuration;
+const currentYear = startYear + (endYear - startYear) * progress;
+```
+
+Then, we find the two closest data points (Previous Year and Next Year) and interpolate the values:
+
+```typescript
+const t = (currentYear - prev.year) / (next.year - prev.year);
+const currentValue = prevValue + (nextValue - prevValue) * t;
+```
+
+### 3. Rendering
+
+Once we have the interpolated values for the current frame, we:
+1.  **Sort** the categories by value.
+2.  **Take the Top N** (e.g., Top 10).
+3.  **Draw** them in order.
+
+```typescript
+currentValues.sort((a, b) => b.value - a.value);
+
+visibleBars.forEach((item, index) => {
+    // Y position is determined by current rank (index)
+    const y = index * (barHeight + gap);
+    const width = (item.value / maxValue) * availableWidth;
+    
+    ctx.fillRect(0, y, width, barHeight);
+});
+```
+
+This creates a smooth value animation. While the position swaps are instantaneous in this version (rank-based), at 60 FPS it creates the classic "race" effect.
+
+## Timeline Duration
+
+To support long races, we also added a **Duration** setting to the canvas. You can now set the video length from 1s up to 5 minutes, allowing for detailed, slow-motion data stories.
+
+## Try it Out
+
+Open the **Charts & Media** tab in the editor and click the **Race** button. It comes pre-loaded with a "Social Networks Popularity" dataset!

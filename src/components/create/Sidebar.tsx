@@ -11,7 +11,9 @@ import {
 import { Engine } from "../../engine/Core";
 import { TextObject } from "../../engine/objects/TextObject";
 import { CodeBlockObject } from "../../engine/objects/CodeBlockObject";
-import { ChartObject } from "../../engine/objects/ChartObject"; interface SidebarProps {
+import { ChartObject } from "../../engine/objects/ChartObject";
+import { BarChartRaceObject } from "../../engine/objects/BarChartRaceObject";
+interface SidebarProps {
     engine: Engine | null;
 }
 import { SquareAd } from "../ads/SquareAd";
@@ -116,6 +118,18 @@ export const Sidebar = ({ engine }: SidebarProps) => {
         }
 
         engine.scene.add(chart);
+        engine.render();
+    };
+
+    const handleAddRace = () => {
+        if (!engine) return;
+        if (window.innerWidth < 1100) setActiveTab(null);
+        const name = getNextName("Bar Race");
+        const race = new BarChartRaceObject(`race-${Date.now()}`);
+        race.name = name;
+        race.x = engine.scene.width / 2 - 300;
+        race.y = engine.scene.height / 2 - 200;
+        engine.scene.add(race);
         engine.render();
     };
 
@@ -277,6 +291,14 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                                                 <circle cx="12" cy="12" r="4" />
                                             </svg>
                                             <span className="text-[10px] font-bold text-slate-600 dark:text-neutral-400">Donut</span>
+                                        </button>
+                                        <button onClick={handleAddRace} className="aspect-square bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 flex flex-col items-center justify-center hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-200 transition-all gap-3 group">
+                                            <div className="flex flex-col gap-0.5 items-start justify-center h-8 w-8">
+                                                <div className="w-6 h-1.5 bg-indigo-500 rounded-sm group-hover:w-8 transition-all duration-300"></div>
+                                                <div className="w-4 h-1.5 bg-purple-500 rounded-sm group-hover:w-6 transition-all duration-300 delay-75"></div>
+                                                <div className="w-5 h-1.5 bg-pink-500 rounded-sm group-hover:w-3 transition-all duration-300 delay-150"></div>
+                                            </div>
+                                            <span className="text-[10px] font-bold text-slate-600 dark:text-neutral-400">Race</span>
                                         </button>
                                     </div>
                                 </div>

@@ -77,11 +77,22 @@ export class Engine {
     private _initialObjState: { x: number, y: number } | null = null;
 
     // Event hooks
+    // Event hooks
     onTimeUpdate?: (time: number) => void;
     onPlayStateChange?: (isPlaying: boolean) => void;
     onSelectionChange?: (id: string | null) => void;
     onObjectChange?: () => void; // Generic update for props
     onResize?: (width: number, height: number) => void;
+    onDurationChange?: (duration: number) => void;
+
+    setTotalDuration(duration: number) {
+        this.totalDuration = Math.max(1000, duration); // Minimum 1 second
+        if (this.currentTime > this.totalDuration) {
+            this.currentTime = this.totalDuration;
+            this.onTimeUpdate?.(this.currentTime);
+        }
+        this.onDurationChange?.(this.totalDuration);
+    }
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -276,7 +287,8 @@ export class Engine {
         onProgress: (percent: number) => void,
         signal?: AbortSignal,
         engine: 'legacy' | 'mediabunny' = 'legacy',
-        format: 'webm' | 'mp4' | 'mov' = 'webm'
+        format: 'webm' | 'mp4' | 'mov' = 'webm',
+        onLog?: (msg: string) => void
     ): Promise<Blob> {
         return new Promise(async (resolve, reject) => {
             // Force even dimensions for encoder stability
@@ -291,8 +303,8 @@ export class Engine {
                 try {
                     const stream = this.canvas.captureStream(fps);
 
-                    if (engine === 'mediabunny' && format !== 'webm') {
-                        // Realtime MP4/MOV via MediaBunny Worker
+                    if (engine === 'mediabunny') {
+                        // Realtime MP4/MOV/WebM via MediaBunny Worker
                         console.log("Starting Realtime MediaBunny Stream...");
 
                         // Initialize Worker
@@ -481,23 +493,26 @@ export class Engine {
             } else {
                 // Offline: Worker-based Frame-by-Frame
                 const startTime = performance.now();
-                console.log("Starting Offline Export...");
+                onLog?.(`[Core] Starting Offline Export...`);
+
+                let cleanup = () => { this.isLooping = wasLooping; };
 
                 try {
                     this.pause();
                     const totalFrames = Math.ceil((duration / 1000) * fps); // Fix: duration is in ms
-                    console.log("Offline Export Params:", { duration, fps, totalFrames });
+                    onLog?.(`[Core] Params: ${duration}ms, ${fps}fps, ${totalFrames} frames`);
 
                     const dt = 1000 / fps; // in ms
                     const frameDurationUs = 1000000 / fps;
 
                     // Initialize Worker
-                    let worker: Worker;
-                    if (engine === 'mediabunny') {
-                        worker = new Worker(new URL('./workers/mediabunny.worker.ts', import.meta.url), { type: 'module' });
-                    } else {
-                        worker = new Worker(new URL('./workers/export.worker.ts', import.meta.url), { type: 'module' });
-                    }
+                    // Unified pipeline: Always use MediaBunny for offline export
+                    const worker = new Worker(new URL('./workers/mediabunny.worker.ts', import.meta.url), { type: 'module' });
+
+                    cleanup = () => {
+                        worker.terminate();
+                        this.isLooping = wasLooping;
+                    };
 
                     worker.postMessage({
                         type: 'CONFIG',
@@ -515,6 +530,7 @@ export class Engine {
                     await new Promise<void>((resolveW, rejectW) => {
                         const initHandler = (e: MessageEvent) => {
                             if (e.data.type === 'READY') {
+                                onLog?.("[Worker] Ready");
                                 worker.removeEventListener('message', initHandler);
                                 resolveW();
                             } else if (e.data.type === 'ERROR') {
@@ -526,34 +542,70 @@ export class Engine {
                     });
 
                     let queueSize = 0;
+                    let hasError = false;
+                    let workerError: string | null = null;
+
+                    // Semaphore for Backpressure
+                    const MAX_IN_FLIGHT = 3;
+                    let credits = MAX_IN_FLIGHT;
+
                     const progressHandler = (e: MessageEvent) => {
                         if (e.data.type === 'PROGRESS') {
                             queueSize = e.data.data.queueSize;
+                        } else if (e.data.type === 'FRAME_DONE') {
+                            credits++;
+                            // onLog?.(`[Core] Credit returned: ${credits}`);
+                        } else if (e.data.type === 'LOG' && onLog) {
+                            onLog(`[Worker] ${e.data.message}`);
+                        } else if (e.data.type === 'ERROR') {
+                            console.error("Worker Error during export:", e.data.error);
+                            onLog?.(`[Worker Error] ${e.data.error}`);
+                            hasError = true;
+                            workerError = e.data.error;
                         }
                     };
                     worker.addEventListener('message', progressHandler);
 
-                    const BATCH_SIZE = 10; // Process 10 frames before yielding
+                    const BATCH_SIZE = 2; // Process fewer frames before yielding
 
                     for (let i = 0; i <= totalFrames; i++) {
                         if (signal?.aborted) {
-                            worker.terminate();
-                            this.isLooping = wasLooping;
+                            cleanup();
                             return reject(new Error("Export cancelled"));
+                        }
+
+                        if (hasError) {
+                            cleanup();
+                            return reject(new Error(`Export Failed: ${workerError || "Unknown Worker Error"}`));
                         }
 
                         // Debug Performance
                         const t0 = performance.now();
 
-                        // Backpressure: Check often to prevent OOM
-                        while (queueSize > 10) {
+                        // Backpressure: Semaphore Wait
+                        let waitStart = performance.now();
+                        while (credits <= 0) {
+                            if (hasError) break;
+
+                            if (performance.now() - waitStart > 15000) { // 15s timeout
+                                onLog?.(`[Core] Backpressure Timeout. Credits: ${credits}, Queue: ${queueSize}`);
+                                cleanup();
+                                return reject(new Error("Export Timeout: Worker stalled (No credits returned)."));
+                            }
                             await new Promise(r => setTimeout(r, 10));
                         }
+                        if (hasError) {
+                            cleanup();
+                            return reject(new Error(`Export Failed: ${workerError}`));
+                        }
+
+                        // Consume Credit
+                        credits--;
+
                         const t1 = performance.now();
 
                         const time = i * dt;
                         this.seek(time); // Sets currentTime and calls render() synchronously
-                        const t2 = performance.now();
 
                         // Create Bitmap (Efficient snapshot)
                         // No need to wait for repaint/setTimeout(0) as render is synchronous
@@ -577,31 +629,18 @@ export class Engine {
                         // Update progress periodically
                         if (i % 5 === 0) onProgress((i / totalFrames) * 100);
 
-                        // Yield to UI loop only once per batch
+                        // Yield to UI loop frequently
                         if (i % BATCH_SIZE === 0) {
-                            await new Promise(r => setTimeout(r, 0));
-                        }
-                        const t4 = performance.now();
-
-                        if (i % 10 === 0) {
-                            console.log(`Frame ${i} Stats:`, {
-                                backpressure: (t1 - t0).toFixed(2),
-                                seek: (t2 - t1).toFixed(2),
-                                bitmap: (t3 - t2).toFixed(2),
-                                yield: (t4 - t3).toFixed(2),
-                                total: (t4 - t0).toFixed(2),
-                                queueSize
-                            });
+                            await new Promise(r => setTimeout(r, 2)); // Small yield
                         }
                     }
 
-                    // Finalize
-                    worker.postMessage({ type: 'FINALIZE' });
+                    onLog?.("[Core] Render loop finished. Finalizing worker...");
 
-                    const blob = await new Promise<Blob>((resolveB, rejectB) => {
+                    const blobPromise = new Promise<Blob>((resolveB, rejectB) => {
                         const finishHandler = (e: MessageEvent) => {
                             if (e.data.type === 'COMPLETE') {
-                                const blob = new Blob([e.data.data], { type: 'video/webm' });
+                                const blob = new Blob([e.data.data], { type: format === 'mp4' ? 'video/mp4' : 'video/webm' });
                                 worker.removeEventListener('message', finishHandler);
                                 worker.terminate();
                                 resolveB(blob);
@@ -614,20 +653,24 @@ export class Engine {
                         worker.addEventListener('message', finishHandler);
                     });
 
+                    worker.postMessage({ type: 'FINALIZE' });
+
+                    const blob = await blobPromise;
+
                     if (signal?.aborted) {
-                        this.isLooping = wasLooping;
                         return reject(new Error("Export cancelled"));
                     }
 
-                    console.log(`Export Finished. Total time: ${(performance.now() - startTime).toFixed(2)}ms`);
+                    onLog?.(`[Core] Export Finished. Blob size: ${blob.size}`);
                     this.isLooping = wasLooping;
                     resolve(blob);
 
                     // Restore state
                     this.currentTime = 0;
                     this.render();
-                } catch (e) {
-                    this.isLooping = wasLooping;
+
+                } catch (e: any) {
+                    cleanup();
                     reject(e);
                 }
             }

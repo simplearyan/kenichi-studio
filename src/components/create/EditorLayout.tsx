@@ -6,7 +6,9 @@ import { PropertiesPanel } from "./PropertiesPanel";
 import { Timeline } from "./Timeline";
 import { Engine } from "../../engine/Core";
 import { Exporter } from "../../engine/Export";
+import { HardwareDetector, type HardwareInfo } from "../../utils/HardwareDetector";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { AlertTriangle } from "lucide-react";
 
 // Use a simple local context or prop drilling for this "one-page app"
 // to keep it self-contained for now.
@@ -60,6 +62,10 @@ export const EditorLayout = () => {
         newEngine.onPlayStateChange = (p) => setIsPlaying(p);
         newEngine.onSelectionChange = (id) => setSelectedId(id);
         newEngine.onResize = (w, h) => setCanvasAspectRatio(w / h);
+        newEngine.onDurationChange = (d) => {
+            // Force re-render of Timeline/UI
+            setCurrentTime(t => t); // fast way to trigger update? or maybe add a state?
+        };
 
         setEngine(newEngine);
 
@@ -98,6 +104,18 @@ export const EditorLayout = () => {
     });
 
     const [exportTab, setExportTab] = useState<'offline' | 'realtime'>('offline');
+    const [hardwareInfo, setHardwareInfo] = useState<HardwareInfo | null>(null);
+    const [exportLogs, setExportLogs] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (showExportDialog && !hardwareInfo) {
+            const info = HardwareDetector.getHardwareInfo();
+            setHardwareInfo(info);
+            console.log("Hardware Detected:", info);
+        }
+    }, [showExportDialog]);
+
+    const isPerformanceWarning = hardwareInfo?.tier === 'low' && (exportConfig.fps > 30 || (engine?.canvas?.width ?? 0) > 1920);
 
 
     const abortController = useRef<AbortController | null>(null);
@@ -134,7 +152,8 @@ export const EditorLayout = () => {
                 (p) => setExportProgress(p),
                 abortController.current.signal,
                 engineType,
-                exportConfig.format
+                exportConfig.format,
+                (msg) => setExportLogs(prev => [...prev, msg].slice(-50))
             );
 
             // Download
@@ -392,7 +411,7 @@ export const EditorLayout = () => {
                             </div>
 
                             {/* Center Content Column */}
-                            <div className="flex-1 flex flex-col relative bg-white dark:bg-neutral-900">
+                            <div className="flex-1 flex flex-col relative bg-white dark:bg-neutral-900 overflow-y-auto">
                                 {isExporting ? (
                                     <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                                         <div className="w-24 h-24 mb-6 relative">
@@ -419,6 +438,17 @@ export const EditorLayout = () => {
                                         >
                                             Cancel
                                         </button>
+
+                                        {/* Export Logs Terminal */}
+                                        <div className="w-full max-w-md mt-6 bg-slate-900 rounded-lg p-3 h-32 overflow-y-auto text-left border border-slate-800 font-mono text-[10px] text-slate-400">
+                                            {exportLogs.length === 0 ? (
+                                                <div className="text-slate-600 italic">Waiting for logs...</div>
+                                            ) : (
+                                                exportLogs.map((log, i) => (
+                                                    <div key={i} className="whitespace-nowrap">{log}</div>
+                                                ))
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
                                     <>
@@ -578,25 +608,45 @@ export const EditorLayout = () => {
                                                 </div>
                                             )}
 
+                                            {isPerformanceWarning && (
+                                                <div className="flex items-start gap-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-700/50">
+                                                    <div className="w-5 h-5 text-orange-600 dark:text-orange-400 shrink-0 mt-0.5">
+                                                        <AlertTriangle size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-orange-900 dark:text-orange-100 text-sm">Performance Warning</div>
+                                                        <div className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                                                            Your device seems to have limited hardware acceleration. Exporting at 60 FPS or High Resolution might cause freezing or crashes. Try 30 FPS if issues occur.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             <div className="space-y-2">
                                                 <label className="text-xs font-bold uppercase text-slate-500 block">Frame Rate (FPS)</label>
                                                 <div className="flex gap-2">
-                                                    {[12, 24, 30, 60].map(fps => (
+                                                    {[30, 60].map(fps => (
                                                         <button
                                                             key={fps}
                                                             onClick={() => setExportConfig({ ...exportConfig, fps })}
-                                                            className={`px-3 py-2 rounded-lg text-sm font-bold border transition-colors ${exportConfig.fps === fps
-                                                                ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400"
-                                                                : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 hover:border-blue-400"
-                                                                }`}
+                                                            className={`
+                                                                flex-1 py-2 rounded-xl text-sm font-bold border transition-all
+                                                                ${exportConfig.fps === fps
+                                                                    ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400 ring-1 ring-blue-500"
+                                                                    : "bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 hover:border-blue-400 text-slate-700 dark:text-neutral-300"
+                                                                }
+                                                                ${fps === 60 && hardwareInfo?.tier === 'low' ? "opacity-90 ring-2 ring-orange-500/20 border-orange-200" : ""}
+                                                            `}
                                                         >
-                                                            {fps}
+                                                            {fps} FPS
+                                                            {fps === 60 && <span className="ml-1 text-[10px] text-slate-400 font-normal opacity-70">(High Quality)</span>}
                                                         </button>
                                                     ))}
                                                 </div>
                                             </div>
-                                        </div>
 
+
+                                        </div>
 
                                         {/* Dialog Footer */}
                                         <div className="p-4 lg:p-6 border-t border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-800/50 flex justify-between items-center">
@@ -634,6 +684,6 @@ export const EditorLayout = () => {
                     </div>
                 )}
             </div>
-        </div >
+        </div>
     );
 };

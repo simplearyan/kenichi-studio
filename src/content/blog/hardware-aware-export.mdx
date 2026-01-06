@@ -1,0 +1,104 @@
+---
+title: "Avoiding the Freeze: Optimizing Heavy Client-Side Video Exports"
+pubDate: 2024-01-06
+description: "How we implemented hardware detection and performance throttling to prevent UI freezes during 4K/60fps video exports in the browser."
+tags: ["performance", "webgl", "browser", "engineering"]
+---
+
+Building a video editor in the browser pushes the limits of what web applications can do. One of the biggest challenges we faced with **Kinetix** was handling "offline" exports (frame-by-frame rendering) without freezing the entire browser UI.
+
+When a user requests a 4K export at 60 FPS, the browser has to render, capture, encoded, and package thousands of high-resolution frames. If we do this in a tight loop, the main thread gets blocked, making the "Stop" button unresponsive and the progress bar freeze.
+
+Here is how we solved it using **Backpressure Throttling** and **Hardware Detection**.
+
+## The Problem: The "Death Spiral"
+
+In our initial implementation, our export loop was too aggressive:
+
+```typescript
+// Naive implementation
+for (let i = 0; i < totalFrames; i++) {
+    engine.seek(time);
+    const bitmap = await createImageBitmap(canvas);
+    worker.postMessage({ bitmap }); // Queue up thousands of frames instantly
+}
+```
+
+This flooded the encoding worker with thousands of messages. The browser's memory usage spiked, and the main thread became unresponsive processing the message overhead.
+
+## Solution 1: Backpressure & Throttling
+
+We moved to a "pull-like" system where we respect the worker's processing speed. We interpret "backpressure" by monitoring the queue size of the worker.
+
+### 1. Worker Queue Reporting
+The worker now reports its queue size back to the main thread periodically (throttled to 50ms to avoid message spam):
+
+```typescript
+// mediabunny.worker.ts
+let lastProgressUpdate = 0;
+const sendProgress = () => {
+    if (Date.now() - lastProgressUpdate > 50) {
+        self.postMessage({ type: 'PROGRESS', queueSize: pendingFrames });
+        lastProgressUpdate = Date.now();
+    }
+}
+```
+
+### 2. Main Thread Yielding
+In the main loop, we pause if the queue gets too full, and we explicitly yield to the UI thread every few frames.
+
+```typescript
+// Core.ts
+const BATCH_SIZE = 2; 
+
+for (let i = 0; i < totalFrames; i++) {
+    // Backpressure: Wait if worker is overwhelmed
+    while (queueSize > 5) {
+        await new Promise(r => setTimeout(r, 20));
+    }
+
+    // ... Render & Capture ...
+
+    // Yield to UI to keep "Cancel" button clickable
+    if (i % BATCH_SIZE === 0) {
+        await new Promise(r => setTimeout(r, 2));
+    }
+}
+```
+Reducing the batch size to **2 frames** and adding a **2ms sleep** made the UI silky smooth even during 4K renders.
+
+## Solution 2: Client-Side Hardware Detection
+
+Not all devices can handle 4K@60fps. A low-end Chromebook will crash where a MacBook Pro flies. We implemented a `HardwareDetector` to sniff the user's capabilities.
+
+```typescript
+// utils/HardwareDetector.ts
+export class HardwareDetector {
+    static getHardwareInfo() {
+        // Core Count
+        const cores = navigator.hardwareConcurrency || 4;
+        
+        // GPU Heuristics via WebGL Debug Info
+        const gl = document.createElement('canvas').getContext('webgl');
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        
+        // Calculate abstract score
+        const score = calculateScore(cores, renderer); // Custom scoring logic
+        
+        return { 
+            tier: score > 80 ? 'high' : (score < 40 ? 'low' : 'medium'), 
+            renderer 
+        };
+    }
+}
+```
+
+### Smart Warnings
+Instead of blocking users, we provide helpful warnings. If a 'low tier' device attempts a 60FPS or 4K export, we show a performance warning:
+
+> "Your device seems to have limited hardware acceleration. Exporting at 60 FPS or High Resolution might cause freezing. Try 30 FPS if issues occur."
+
+## Conclusion
+
+Client-side video generation is heavy. By respecting the main thread with micro-yielding and implementing proactive hardware detection, we transformed a "browser crash" experience into a reliable, professional workflow.
