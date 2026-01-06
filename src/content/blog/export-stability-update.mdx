@@ -1,0 +1,91 @@
+---
+title: "Eliminating the Freeze: How We Stabilized Long Video Exports"
+pubDate: 2024-01-06
+description: "A deep dive into how we fixed system freezes during long MP4 exports by serializing worker tasks and implementing semaphore-based backpressure."
+tags: ["engineering", "performance", "web-workers", "concurrency"]
+---
+
+We've just pushed a major update to the **Kinetix** export engine. While our previous update introduced hardware detection, we found that long exports (15s+) could still freeze low-to-mid-range systems entirely.
+
+Here is a technical breakdown of how we solved the "System Freeze" and made the export process robust.
+
+## The Problem: Memory Overload
+
+Even with our previous batching optimizations, our worker architecture had a critical flaw: **Parallelism without Bounds**.
+
+When exporting a video, the main thread captures frames (`createImageBitmap`) and sends them to the worker. The worker handles encoding asynchronously.
+However, because `worker.postMessage` is instantaneous, the main thread could dump **hundreds of pending frames** into the worker's message queue before the worker could encode even one.
+
+For a 30-second 4K video:
+- **30s * 30fps = 900 frames**.
+- Each uncompressed frame is ~32MB (RGBA).
+- **900 * 32MB = ~28 GB of RAM** attempted to be allocated instantly.
+
+Result: **System limitation reached. The OS freezes.**
+
+## The Solution: Serialized Control
+
+We implemented a two-sided control system to strictly limit "in-flight" frames.
+
+### 1. Serialized Worker Queue
+We rewrote the worker's `onmessage` handler. Instead of starting an async encode job immediately, we now push tasks to a local queue.
+
+```typescript
+// mediabunny.worker.ts
+const taskQueue = [];
+
+self.onmessage = async (e) => {
+    // ...
+    if (type === 'ENCODE_FRAME') {
+        taskQueue.push(data); // Don't process yet!
+        processQueue();       // Trigger sequential processor
+    }
+}
+```
+
+The `processQueue` function ensures we only touch the GPU encoder with **one frame at a time**, waiting for it to finish before picking up the next. This flattened our memory usage curve from a vertical spike to a flat line.
+
+### 2. Semaphore Backpressure
+On the main thread, we replaced our "loose" queue check with a strict **Semaphore**.
+
+We start with **3 Credits**.
+1. To send a frame, we must spend 1 Credit.
+2. If Credits are 0, we **wait**.
+3. When the worker finishes a frame, it sends a `FRAME_DONE` message.
+4. We receive `FRAME_DONE` -> **Credits++**.
+
+```typescript
+// Core.ts
+const MAX_IN_FLIGHT = 3;
+let credits = MAX_IN_FLIGHT;
+
+while (credits <= 0) {
+    // Hardware pause: The main thread effectively sleeps here
+    await new Promise(r => setTimeout(r, 10));
+}
+credits--;
+worker.postMessage(frame);
+```
+
+This guarantees that, mathematically, there can never be more than 3 large bitmaps in memory at once. The main thread automagically slows down to exactly match the speed of the user's specific GPU encoder.
+
+## Better Visibility: Export Terminal
+
+To help users (and us) verify this stability, we added a real-time **Log Terminal** to the export dialog.
+
+- You can now see exactly what the worker is doing.
+- If an export is "waiting," you'll know if it's backpressure or processing.
+- Error messages are surfaced immediately instead of failing silently.
+
+## UI Improvements
+
+We noticed that on landscape mobile devices or smaller laptop screens, the "Export" button was cut off. We've updated the Export Dialog to be fully responsive with a vertical scrollbar, ensuring you can always reach the controls.
+
+## Summary
+
+- **Fixed:** System freeze during long exports (>10s).
+- **Fixed:** Dialog cutoff on small screens.
+- **Added:** Real-time log terminal.
+- **Improved:** Strict memory safety via semaphore pattern.
+
+Happy Creating!
