@@ -15,18 +15,36 @@ interface FrameData {
     data: BarData[];
 }
 
+interface BarChartStyle {
+    barHeight: number;
+    gap: number;
+    fontSize: number;
+    labelColor: string;
+    containerPadding: number;
+}
+
 interface BarChartRaceProps {
     data?: FrameData[];
     maxItems?: number;
-    style?: React.CSSProperties;
+    style?: React.CSSProperties & {
+        barChartStyle?: BarChartStyle;
+    };
 }
-
-const BAR_HEIGHT = 60;
-const GAP = 20;
 
 export const BarChartRace: React.FC<BarChartRaceProps> = ({ data, maxItems = 5, style }) => {
     const frame = useCurrentFrame();
     const { fps, width } = useVideoConfig();
+
+    // Defaults
+    const chartStyle = style?.barChartStyle || {
+        barHeight: 60,
+        gap: 20,
+        fontSize: 24,
+        labelColor: '#cbd5e1',
+        containerPadding: 80
+    };
+
+    const { barHeight, gap, fontSize, labelColor, containerPadding } = chartStyle;
 
     // 1. Determine "Time"
     // Assume 1 year = 60 frames (2 seconds)
@@ -79,17 +97,26 @@ export const BarChartRace: React.FC<BarChartRaceProps> = ({ data, maxItems = 5, 
     const maxValue = visibleItems[0]?.value || 100;
 
     // Scale
+    // Use containerPadding for margins
+    const chartWidth = width - (containerPadding * 2) - 300; // 300 for right side number label space? Adjust as needed.
     const xScale = scaleLinear()
         .domain([0, maxValue])
-        .range([0, width - 400]); // Margin right for text
+        .range([0, Math.max(100, chartWidth)]); // Ensure positive width
 
     return (
-        <div style={{ ...style, backgroundColor: style?.backgroundColor || '#1E293B' }} className="w-full h-full flex flex-col items-center justify-center p-20 font-sans text-white">
-            <h1 className="text-9xl font-bold mb-10 text-slate-700 absolute bottom-20 right-20 tabular-nums opacity-50">
+        <div
+            style={{
+                ...style,
+                backgroundColor: style?.backgroundColor || '#1E293B',
+                padding: containerPadding
+            }}
+            className="w-full h-full flex flex-col items-center justify-center font-sans text-white box-border"
+        >
+            <h1 className="font-bold mb-10 text-slate-700 absolute bottom-20 right-20 tabular-nums opacity-50" style={{ fontSize: fontSize * 4 }}>
                 {Math.round(interpolate(currentYearData.year, nextYearData.year)(progressInYear))}
             </h1>
 
-            <div className="relative w-full" style={{ height: maxItems * (BAR_HEIGHT + GAP) }}>
+            <div className="relative w-full" style={{ height: maxItems * (barHeight + gap) }}>
                 {interpolatedItems.map((item, index) => {
                     // Check if in top N
                     const rank = index;
@@ -100,20 +127,18 @@ export const BarChartRace: React.FC<BarChartRaceProps> = ({ data, maxItems = 5, 
                             key={item.id}
                             style={{
                                 position: 'absolute',
-                                top: rank * (BAR_HEIGHT + GAP),
+                                top: rank * (barHeight + gap),
                                 left: 0,
                                 width: '100%', // container width
-                                transition: 'top 0.2s linear', // smooth rank swap? No, we render every frame, top changes instantly? 
-                                // Actually, for smooth swapping, we need to interpolate position Y too.
-                                // But since we sort every frame, the 'rank' integer jumps.
-                                // Remotion renders every frame, so simple sorting causes instant jumps.
-                                // Professional implementation uses a "rank" interpolation. 
-                                // For MVP, instant jump is acceptable, or we use React Flip Move logic, but here we just render absolute.
+                                transition: 'top 0.2s linear',
                             }}
                             className="flex items-center"
                         >
                             {/* Label */}
-                            <div className="w-48 text-right pr-4 font-bold text-slate-300 truncate">
+                            <div
+                                className="w-48 text-right pr-4 font-bold truncate"
+                                style={{ color: labelColor, fontSize: Math.max(12, fontSize * 0.7) }}
+                            >
                                 {item.label}
                             </div>
 
@@ -122,12 +147,15 @@ export const BarChartRace: React.FC<BarChartRaceProps> = ({ data, maxItems = 5, 
                                 style={{
                                     width: xScale(item.value),
                                     backgroundColor: item.color,
-                                    height: BAR_HEIGHT
+                                    height: barHeight
                                 }}
                                 className="rounded-r-lg flex items-center shadow-lg relative"
                             >
                                 {/* Percentage/Value inside or outside */}
-                                <span className="absolute left-[100%] ml-3 font-mono font-bold text-slate-200">
+                                <span
+                                    className="absolute left-[100%] ml-3 font-mono font-bold text-slate-200"
+                                    style={{ fontSize: fontSize }}
+                                >
                                     {Math.round(item.value).toLocaleString()}
                                 </span>
                             </div>

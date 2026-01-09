@@ -26,7 +26,8 @@ const EditorLayout: React.FC = () => {
         currentCode,
         setIsInterstitialOpen,
         backgroundColor, // Get background color
-        canvasSize // Get canvas size
+        canvasSize, // Get canvas size
+        isPropertyPanelExpanded
     } = useAnimatorStore();
 
     const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -206,7 +207,10 @@ const EditorLayout: React.FC = () => {
                     </div>
 
                     {/* Mobile: Bottom Sheet / Property Panel Area */}
-                    <div className="lg:hidden h-[55%] bg-[#0F172A] border-t border-slate-700 flex flex-col shadow-[0_-10px_40px_-5px_rgba(0,0,0,0.5)] z-20">
+                    <div className={`lg:hidden bg-[#0F172A] border-t border-slate-700 flex flex-col shadow-[0_-10px_40px_-5px_rgba(0,0,0,0.5)] z-20 transition-all duration-300 ${isPropertyPanelExpanded
+                            ? 'absolute inset-0 h-full'
+                            : 'h-[55%]'
+                        }`}>
                         <PropertyPanel />
                     </div>
                 </div>

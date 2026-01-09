@@ -2,7 +2,12 @@ import React from 'react';
 import { useAnimatorStore } from '../../../store/animatorStore';
 
 const StyleEditor: React.FC = () => {
-    const { backgroundColor, setBackgroundColor, aspectRatio, setAspectRatio } = useAnimatorStore();
+    const {
+        backgroundColor, setBackgroundColor,
+        aspectRatio, setAspectRatio,
+        activeCompositionId,
+        barChartStyle, setBarChartStyle
+    } = useAnimatorStore();
 
     const presets = [
         '#1E1E1E', // Default Dark
@@ -38,6 +43,77 @@ const StyleEditor: React.FC = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Contextual: Bar Chart Settings */}
+            {activeCompositionId === 'BarChartRace' && (
+                <div className="space-y-4 pt-4 border-t border-slate-700/50">
+                    <h4 className="text-sm font-medium text-slate-300">Chart Settings</h4>
+
+                    {/* Font Size */}
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-xs text-slate-400">
+                            <span>Font Size</span>
+                            <span>{barChartStyle.fontSize}px</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="12"
+                            max="72"
+                            value={barChartStyle.fontSize}
+                            onChange={(e) => setBarChartStyle({ fontSize: Number(e.target.value) })}
+                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                        />
+                    </div>
+
+                    {/* Bar Height */}
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-xs text-slate-400">
+                            <span>Bar Height</span>
+                            <span>{barChartStyle.barHeight}px</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="20"
+                            max="150"
+                            value={barChartStyle.barHeight}
+                            onChange={(e) => setBarChartStyle({ barHeight: Number(e.target.value) })}
+                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                        />
+                    </div>
+
+                    {/* Gap */}
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-xs text-slate-400">
+                            <span>Bar Gap</span>
+                            <span>{barChartStyle.gap}px</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="0"
+                            max="50"
+                            value={barChartStyle.gap}
+                            onChange={(e) => setBarChartStyle({ gap: Number(e.target.value) })}
+                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                        />
+                    </div>
+
+                    {/* Padding / Scale */}
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-xs text-slate-400">
+                            <span>Padding</span>
+                            <span>{barChartStyle.containerPadding}px</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="0"
+                            max="400"
+                            value={barChartStyle.containerPadding}
+                            onChange={(e) => setBarChartStyle({ containerPadding: Number(e.target.value) })}
+                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* Background Color Section */}
             <div className="space-y-3">

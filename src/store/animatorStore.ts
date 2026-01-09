@@ -17,6 +17,14 @@ export interface BarChartFrame {
     data: BarChartDataPoint[];
 }
 
+export interface BarChartStyle {
+    barHeight: number;
+    gap: number;
+    fontSize: number;
+    labelColor: string;
+    containerPadding: number;
+}
+
 interface AnimatorState {
     activeTab: 'library' | 'data' | 'math' | 'code' | 'style' | 'motion';
     setActiveTab: (tab: 'library' | 'data' | 'math' | 'code' | 'style' | 'motion') => void;
@@ -28,6 +36,10 @@ interface AnimatorState {
     // Data State (Bar Chart Race)
     barChartData: BarChartFrame[];
     setBarChartData: (data: BarChartFrame[]) => void;
+
+    // Bar Chart Style
+    barChartStyle: BarChartStyle;
+    setBarChartStyle: (style: Partial<BarChartStyle>) => void;
 
     // Composition State
     activeCompositionId: string;
@@ -48,6 +60,8 @@ interface AnimatorState {
     setIsCloudRenderOpen: (isOpen: boolean) => void;
     isInterstitialOpen: boolean;
     setIsInterstitialOpen: (isOpen: boolean) => void;
+    isPropertyPanelExpanded: boolean;
+    setIsPropertyPanelExpanded: (isExpanded: boolean) => void;
 
     // Style State
     backgroundColor: string;
@@ -79,6 +93,15 @@ export const useAnimatorStore = create<AnimatorState>((set) => ({
     })),
     setBarChartData: (data: BarChartFrame[]) => set({ barChartData: data }),
 
+    barChartStyle: {
+        barHeight: 60,
+        gap: 20,
+        fontSize: 24, // Value font size
+        labelColor: '#cbd5e1', // slate-300
+        containerPadding: 80
+    },
+    setBarChartStyle: (style) => set((state) => ({ barChartStyle: { ...state.barChartStyle, ...style } })),
+
     activeCompositionId: 'MathFormula', // Default
     setActiveCompositionId: (id: string) => set({ activeCompositionId: id }),
 
@@ -97,6 +120,8 @@ export const useAnimatorStore = create<AnimatorState>((set) => ({
     setIsCloudRenderOpen: (isOpen) => set({ isCloudRenderOpen: isOpen }),
     isInterstitialOpen: false,
     setIsInterstitialOpen: (isOpen) => set({ isInterstitialOpen: isOpen }),
+    isPropertyPanelExpanded: false,
+    setIsPropertyPanelExpanded: (isExpanded) => set({ isPropertyPanelExpanded: isExpanded }),
 
     // Style State
     backgroundColor: '#1E1E1E',
