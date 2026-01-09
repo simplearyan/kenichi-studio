@@ -191,12 +191,12 @@ export const EditorLayout = () => {
     };
 
     return (
-        <div ref={rootRef} className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-black relative">
+        <div ref={rootRef} className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 relative font-sans text-slate-900 dark:text-slate-200 selection:bg-indigo-500/30">
 
             {/* Landscape Lock Overlay Removed */}
 
             {/* Header */}
-            <header className="h-14 border-b border-slate-200 dark:border-neutral-800 flex items-center justify-between px-4 bg-white dark:bg-neutral-900 shrink-0 z-[60] relative">
+            <header className="h-12 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 bg-white dark:bg-slate-900 shrink-0 z-[60] relative">
                 <a href={import.meta.env.BASE_URL} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">K</div>
                     <span className="font-bold text-lg hidden sm:block text-slate-900 dark:text-white">Kinetix Create</span>
@@ -334,7 +334,7 @@ export const EditorLayout = () => {
                 <Sidebar engine={engine} />
 
                 {/* Center Canvas */}
-                <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-slate-100 dark:bg-black relative">
+                <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-slate-100 dark:bg-[#020617] relative">
                     <CanvasWorkspace ref={canvasRef} aspectRatio={canvasAspectRatio} />
 
                     {/* Timeline */}
@@ -387,7 +387,7 @@ export const EditorLayout = () => {
 
                 {/* Right Sidebar */}
                 <div className={`
-                    w-80 border-l border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shrink-0 flex flex-col overflow-hidden min-h-0
+                    w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 flex flex-col overflow-hidden min-h-0
                     fixed right-0 top-14 bottom-0 z-30 shadow-2xl lg:relative lg:top-0 lg:shadow-none lg:z-auto lg:h-auto
                     transition-transform duration-300 ease-in-out
                     ${rightSidebarOpen ? 'translate-x-0' : 'translate-x-full lg:hidden'}

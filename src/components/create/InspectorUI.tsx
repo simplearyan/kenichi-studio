@@ -7,19 +7,31 @@ interface PropertySectionProps {
     children: React.ReactNode;
     defaultOpen?: boolean;
     rightElement?: React.ReactNode;
+    compact?: boolean;
 }
 
 interface ControlRowProps {
-    label: string;
+    label?: string; // Optional for grid layouts
+    icon?: React.ReactNode;
     children: React.ReactNode;
     description?: string;
     layout?: "horizontal" | "vertical";
+    className?: string;
+    labelClassName?: string;
+}
+
+interface CompactControlRowProps {
+    label: string;
+    icon?: React.ReactNode;
+    children: React.ReactNode;
+    className?: string;
 }
 
 interface ToggleProps {
     value: boolean;
     onChange: (val: boolean) => void;
     label?: string;
+    size?: "sm" | "md";
 }
 
 interface SliderProps {
@@ -30,12 +42,14 @@ interface SliderProps {
     onChange: (val: number) => void;
     label?: string; // Optional label for the value display
     formatValue?: (val: number) => string;
+    compact?: boolean;
 }
 
 interface SegmentedControlProps {
     options: { value: string; label?: string; icon?: React.ReactNode }[];
     value: string;
     onChange: (val: string) => void;
+    size?: "sm" | "md";
 }
 
 interface IconGridProps {
@@ -50,23 +64,25 @@ interface IconGridProps {
 
 // --- Components ---
 
-export const PropertySection: React.FC<PropertySectionProps> = ({ title, children, defaultOpen = true, rightElement }) => {
+export const PropertySection: React.FC<PropertySectionProps> = ({ title, children, defaultOpen = true, rightElement, compact = false }) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
     return (
-        <div className="inspector-section">
+        <div className={`border-b border-slate-100 dark:border-slate-800 last:border-0 ${compact ? 'py-1' : ''}`}>
             <div
-                className="inspector-section-header"
+                className={`flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors select-none rounded-md px-2 ${compact ? 'py-1.5' : 'py-3'}`}
                 onClick={() => setIsOpen(!isOpen)}
             >
                 <div className="flex items-center gap-2">
-                    {isOpen ? <ChevronDown size={14} className="text-slate-400" /> : <ChevronRight size={14} className="text-slate-400" />}
-                    <span className="inspector-section-title">{title}</span>
+                    {isOpen ? <ChevronDown size={12} className="text-slate-400" /> : <ChevronRight size={12} className="text-slate-400" />}
+                    <span className={`font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest ${compact ? 'text-[10px]' : 'text-[11px]'}`}>
+                        {title}
+                    </span>
                 </div>
                 {rightElement && <div onClick={e => e.stopPropagation()}>{rightElement}</div>}
             </div>
             {isOpen && (
-                <div className="inspector-section-content">
+                <div className={`px-2 pb-4 pt-1 space-y-3 ${compact ? 'space-y-2' : ''}`}>
                     {children}
                 </div>
             )}
@@ -74,44 +90,91 @@ export const PropertySection: React.FC<PropertySectionProps> = ({ title, childre
     );
 };
 
-export const ControlRow: React.FC<ControlRowProps> = ({ label, children, description, layout = "vertical" }) => {
-    return (
-        <div className={`inspector-row ${layout}`}>
-            <div className="inspector-label-container">
-                <label className="inspector-label">{label}</label>
-                {description && <span className="inspector-description">{description}</span>}
+export const ControlRow: React.FC<ControlRowProps> = ({ label, icon, children, description, layout = "vertical", className = "", labelClassName = "" }) => {
+    if (layout === "horizontal") {
+        return (
+            <div className={`flex items-center justify-between gap-3 min-h-[28px] ${className}`}>
+                {(label || icon) && (
+                    <div className="flex items-center gap-2 shrink-0 max-w-[50%]">
+                        {icon && <span className="text-slate-400">{icon}</span>}
+                        {label && (
+                            <div className="flex flex-col">
+                                <label className={`text-[11px] font-medium text-slate-600 dark:text-slate-300 ${labelClassName}`}>{label}</label>
+                                {description && <span className="text-[9px] text-slate-400">{description}</span>}
+                            </div>
+                        )}
+                    </div>
+                )}
+                <div className="flex-1 min-w-0 flex justify-end">
+                    {children}
+                </div>
             </div>
-            <div className={`inspector-control-container ${layout}`}>
+        );
+    }
+
+    return (
+        <div className={`flex flex-col gap-1.5 ${className}`}>
+            {(label || icon) && (
+                <div className="flex items-center gap-2">
+                    {icon && <span className="text-slate-400">{icon}</span>}
+                    {label && (
+                        <div className="flex flex-col">
+                            <label className={`text-[11px] font-medium text-slate-600 dark:text-slate-300 ${labelClassName}`}>{label}</label>
+                            {description && <span className="text-[9px] text-slate-400">{description}</span>}
+                        </div>
+                    )}
+                </div>
+            )}
+            <div className="w-full">
                 {children}
             </div>
         </div>
     );
 };
 
-export const Toggle: React.FC<ToggleProps> = ({ value, onChange, label }) => {
+export const CompactControlRow: React.FC<CompactControlRowProps> = ({ label, icon, children, className = "" }) => {
+    return (
+        <div className={`flex items-center gap-2 bg-slate-100 dark:bg-slate-900/50 rounded-lg p-1.5 ${className}`}>
+            {icon ? (
+                <span className="text-slate-400 shrink-0" title={label}>{icon}</span>
+            ) : (
+                <span className="text-[10px] font-bold text-slate-500 w-4 text-center shrink-0" title={label}>{label[0]}</span>
+            )}
+            <div className="flex-1 min-w-0">
+                {children}
+            </div>
+        </div>
+    )
+}
+
+export const Toggle: React.FC<ToggleProps> = ({ value, onChange, label, size = "md" }) => {
+    const h = size === "sm" ? "h-5 w-9" : "h-6 w-11";
+    const ball = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
+    const translate = size === "sm" ? "translate-x-4" : "translate-x-6";
+
     return (
         <button
-            className={`inspector-toggle ${value ? "active" : ""}`}
+            className={`relative inline-flex ${h} items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${value ? "bg-indigo-600" : "bg-slate-200 dark:bg-slate-700"}`}
             onClick={() => onChange(!value)}
         >
             <span className="sr-only">{label || "Toggle"}</span>
             <span
-                className={`inspector-toggle-thumb ${value ? "active" : ""}`}
+                className={`inline-block ${ball} transform rounded-full bg-white shadow transition-transform ${value ? translate : "translate-x-1"}`}
             />
         </button>
     );
 };
 
-export const Slider: React.FC<SliderProps> = ({ value, min, max, step = 1, onChange, formatValue }) => {
-    const percentage = ((value - min) / (max - min)) * 100;
+export const Slider: React.FC<SliderProps> = ({ value, min, max, step = 1, onChange, formatValue, compact }) => {
+    const percentage = Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
 
     return (
-        <div className="inspector-slider group">
+        <div className={`relative flex w-full items-center cursor-pointer touch-none select-none group ${compact ? 'h-6' : 'h-8'}`}>
             {/* Track Background */}
-            <div className="inspector-slider-track">
+            <div className={`w-full rounded-full overflow-hidden bg-slate-200 dark:bg-slate-800 ${compact ? 'h-1' : 'h-1.5'}`}>
                 {/* Fill */}
                 <div
-                    className="inspector-slider-fill"
+                    className="h-full bg-indigo-500 rounded-full"
                     style={{ width: `${percentage}%` }}
                 />
             </div>
@@ -124,26 +187,26 @@ export const Slider: React.FC<SliderProps> = ({ value, min, max, step = 1, onCha
                 step={step}
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
-                className="inspector-slider-input"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
 
-            {/* Visual Value Label (Optional floating or fixed) */}
-            <div className="inspector-slider-label">
+            {/* Thumb Visual */}
+            <div
+                className={`absolute bg-white border border-slate-300 dark:border-slate-600 rounded-full shadow-sm pointer-events-none transition-transform group-hover:scale-110 group-active:scale-95 ${compact ? 'h-3 w-3 top-1.5' : 'h-4 w-4 top-2'}`}
+                style={{ left: `calc(${percentage}% - ${compact ? 6 : 8}px)` }}
+            />
+
+            {/* Hover Tooltip (if needed) */}
+            <div className="absolute right-0 -top-6 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-slate-100 dark:border-slate-700 z-10">
                 {formatValue ? formatValue(value) : value}
             </div>
-
-            {/* Always visible Value inside control if space allows, or specialized display */}
-            <div
-                className="inspector-slider-thumb"
-                style={{ left: `calc(${percentage}% - 8px)` }}
-            />
         </div>
     );
 };
 
 export const SliderInput: React.FC<SliderProps> = (props) => {
     return (
-        <div className="inspector-slider-input-group">
+        <div className="flex items-center gap-3 w-full">
             <div className="flex-1">
                 <Slider {...props} />
             </div>
@@ -151,25 +214,26 @@ export const SliderInput: React.FC<SliderProps> = (props) => {
                 type="number"
                 value={props.value}
                 onChange={(e) => props.onChange(Number(e.target.value))}
-                className="inspector-input-number w-16"
+                className="w-14 bg-transparent border-b border-transparent hover:border-slate-300 dark:hover:border-slate-600 focus:border-indigo-500 dark:focus:border-indigo-500 text-xs text-right font-mono text-slate-700 dark:text-slate-200 outline-none p-0 transition-colors"
             />
         </div>
     )
 }
 
-export const SegmentedControl: React.FC<SegmentedControlProps> = ({ options, value, onChange }) => {
+export const SegmentedControl: React.FC<SegmentedControlProps> = ({ options, value, onChange, size = "md" }) => {
     return (
-        <div className="inspector-segmented-control">
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg w-full">
             {options.map((option) => {
                 const isSelected = value === option.value;
                 return (
                     <button
                         key={option.value}
                         onClick={() => onChange(option.value)}
-                        className={`inspector-segmented-item ${isSelected ? "selected" : ""}`}
+                        className={`flex-1 flex items-center justify-center gap-2 rounded-md text-xs font-medium transition-all ${size === 'sm' ? 'py-1' : 'py-1.5'} ${isSelected ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"}`}
+                        title={option.label}
                     >
                         {option.icon}
-                        {option.label}
+                        {option.label && <span>{option.label}</span>}
                     </button>
                 );
             })}
@@ -179,18 +243,20 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({ options, val
 
 export const IconGrid: React.FC<IconGridProps> = ({ options, value, onChange, cols = 3, size = "md", layout = "vertical" }) => {
     return (
-        <div className={`inspector-icon-grid grid grid-cols-${cols} gap-2`}>
+        <div className={`grid grid-cols-${cols} gap-2 w-full`}>
             {options.map((option) => {
                 const isSelected = value === option.value;
                 return (
                     <button
                         key={option.value}
                         onClick={() => onChange(option.value)}
-                        className={`inspector-grid-item ${size} ${layout} ${isSelected ? "selected" : ""}`}
+                        className={`flex flex-col items-center justify-center rounded-xl border transition-all relative overflow-hidden ${isSelected ? "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 text-indigo-600 dark:text-indigo-400 ring-1 ring-indigo-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800/80"} ${size === 'sm' ? 'p-1.5 aspect-[4/3] gap-1' : 'p-2 aspect-square gap-1.5'} ${layout === 'horizontal' ? '!flex-row !aspect-auto !justify-start px-3 py-2 text-left' : ''}`}
                     >
-                        <div className={`inspector-grid-item-icon ${size} ${layout}`}>{option.icon}</div>
-                        <span className={`inspector-grid-item-label ${size} ${layout}`}>{option.label}</span>
-                        {isSelected && <div className="inspector-grid-item-indicator" />}
+                        <div className={`${size === 'sm' ? 'scale-75 origin-bottom' : ''}`}>{option.icon}</div>
+                        {layout !== 'horizontal' && <span className={`font-bold uppercase truncate max-w-full ${size === 'sm' ? 'text-[8px] leading-tight' : 'text-[9px]'}`}>{option.label}</span>}
+                        {layout === 'horizontal' && <span className="text-[10px] ml-2">{option.label}</span>}
+
+                        {isSelected && <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-indigo-500 rounded-full" />}
                     </button>
                 );
             })}

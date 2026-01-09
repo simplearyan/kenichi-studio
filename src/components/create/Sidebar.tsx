@@ -179,8 +179,8 @@ export const Sidebar = ({ engine }: SidebarProps) => {
     return (
         <div className="flex h-full z-10 shadow-xl shadow-slate-200 dark:shadow-neutral-900/50 relative">
             {/* 1. Slim Activity Bar */}
-            <aside className={`w-16 bg-white dark:bg-neutral-900 border-r border-slate-200 dark:border-neutral-800 flex flex-col items-center py-4 gap-4 
-            fixed left-0 top-14 bottom-0 z-[60] transition-transform duration-300 lg:static lg:h-full lg:translate-x-0 lg:z-auto
+            <aside className={`w-16 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col items-center py-4 gap-4 
+            fixed left-0 top-12 bottom-0 z-[60] transition-transform duration-300 lg:static lg:h-full lg:translate-x-0 lg:z-auto
             ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <button
                     onClick={() => handleTabClick("text")}
@@ -258,9 +258,9 @@ export const Sidebar = ({ engine }: SidebarProps) => {
                             setIsMobileMenuOpen(false);
                         }}
                     />
-                    <aside className="w-64 sm:w-80 bg-slate-50 dark:bg-neutral-950 border-r border-slate-200 dark:border-neutral-800 flex flex-col animate-in slide-in-from-left-4 duration-200 fixed left-16 top-14 bottom-0 lg:static lg:h-full z-50 shadow-2xl lg:shadow-none">
-                        <div className="p-4 border-b border-slate-200 dark:border-neutral-800 flex justify-between items-center bg-white/50 dark:bg-neutral-900/50">
-                            <span className="font-bold text-sm uppercase tracking-wider text-slate-500 dark:text-neutral-400">
+                    <aside className="w-64 sm:w-72 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex flex-col animate-in slide-in-from-left-4 duration-200 fixed left-16 top-12 bottom-0 lg:static lg:h-full z-50 shadow-2xl lg:shadow-none">
+                        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+                            <span className="font-bold text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">
                                 {activeTab === "text" && "Typography"}
                                 {activeTab === "media" && "Charts & Data"}
                                 {activeTab === "shapes" && "Shapes & Assets"}

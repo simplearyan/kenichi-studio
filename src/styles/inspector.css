@@ -47,17 +47,17 @@
 
     /* --- Inputs --- */
     .inspector-input-number {
-        @apply w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg text-xs text-slate-700 dark:text-neutral-300 font-mono text-right focus:ring-1 focus:ring-blue-500 outline-none;
+        @apply w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-xs text-slate-700 dark:text-slate-300 font-mono text-right focus:ring-1 focus:ring-indigo-500 outline-none transition-all;
         /* Padding handled individually or standardize here: pl-6 pr-2 py-1.5 usually */
-        @apply pl-6 pr-2 py-1.5;
+        @apply pl-6 pr-2 py-1.5 shadow-sm shadow-inner;
     }
 
     .inspector-input-text {
-        @apply w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-neutral-300 outline-none focus:ring-1 focus:ring-blue-500 font-mono disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-slate-300 outline-none focus:ring-1 focus:ring-indigo-500 font-mono disabled:opacity-50 disabled:cursor-not-allowed shadow-sm;
     }
 
     .inspector-textarea {
-        @apply w-full bg-slate-100 dark:bg-neutral-800 border-none rounded-lg p-3 text-xs text-slate-700 dark:text-neutral-300 min-h-[80px] focus:ring-1 focus:ring-blue-500 outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-3 text-xs text-slate-700 dark:text-slate-300 min-h-[80px] focus:ring-1 focus:ring-indigo-500 outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed shadow-sm;
     }
 
     .inspector-select {

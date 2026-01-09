@@ -200,7 +200,7 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                     </ControlRow>
 
                                     <ControlRow label="Aspect Ratio">
-                                        <div className="inspector-resolution-grid">
+                                        <div className="grid grid-cols-3 gap-2">
                                             {[
                                                 { label: "16:9", val: 16 / 9 },
                                                 { label: "9:16", val: 9 / 16 },
@@ -214,15 +214,8 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                                     <button
                                                         key={ratio.label}
                                                         onClick={() => {
-                                                            // Maintain current quality (height or short edge based)
-                                                            // Heuristic: Quality is usually the smaller dimension or standard height like 1080
-                                                            // But simply: let's pick the 'quality base' from current height if 16:9, or width if 9:16?
-                                                            // Simpler: Just map current size to a "quality bucket" and re-apply.
-                                                            // Better: Define explicit Qualities.
-
-                                                            // Determine current quality class based on pixel count or short edge
                                                             const shortEdge = Math.min(engine.scene.width, engine.scene.height);
-                                                            let quality = 1080; // default
+                                                            let quality = 1080;
                                                             if (Math.abs(shortEdge - 480) < 50) quality = 480;
                                                             if (Math.abs(shortEdge - 720) < 50) quality = 720;
                                                             if (Math.abs(shortEdge - 1080) < 50) quality = 1080;
@@ -240,7 +233,7 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                                             engine.resize(w, h);
                                                             setForceUpdate(n => n + 1);
                                                         }}
-                                                        className={`inspector-resolution-btn ${isActive ? "active" : ""}`}
+                                                        className={`py-1.5 px-1 rounded-md text-[10px] font-bold border transition-all ${isActive ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"}`}
                                                     >
                                                         {ratio.label}
                                                     </button>
@@ -250,14 +243,13 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                     </ControlRow>
 
                                     <ControlRow label="Resolution (Quality)">
-                                        <div className="inspector-resolution-grid">
+                                        <div className="grid grid-cols-4 gap-2">
                                             {[
                                                 { label: "480p", base: 480 },
                                                 { label: "720p", base: 720 },
                                                 { label: "1080p", base: 1080 },
                                                 { label: "4K", base: 2160 }
                                             ].map((qual) => {
-                                                // Check if active: Short edge matches base
                                                 const shortEdge = Math.min(engine.scene.width, engine.scene.height);
                                                 const isActive = Math.abs(shortEdge - qual.base) < 10;
 
@@ -277,14 +269,14 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                                             engine.resize(w, h);
                                                             setForceUpdate(n => n + 1);
                                                         }}
-                                                        className={`inspector-resolution-btn ${isActive ? "active" : ""}`}
+                                                        className={`py-1.5 px-0 rounded-md text-[10px] font-bold border transition-all ${isActive ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"}`}
                                                     >
                                                         {qual.label}
                                                     </button>
                                                 )
                                             })}
                                         </div>
-                                        <div className="text-[10px] text-slate-400 mt-2 text-center">
+                                        <div className="text-[9px] text-slate-400 mt-2 text-right font-mono">
                                             {engine.scene.width} x {engine.scene.height} px
                                         </div>
                                     </ControlRow>
@@ -295,25 +287,25 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                         ) : (
                             <div className="p-1 space-y-1">
                                 {/* Selected Object Header */}
-                                <div className="inspector-object-header">
+                                <div className="px-3 py-2 mb-2 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-900/50 flex items-center justify-between">
                                     <div className="flex items-center gap-3 overflow-hidden">
-                                        <div className="inspector-object-icon">
+                                        <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                                             {obj instanceof ChartObject ? <BarChart size={16} /> :
                                                 obj instanceof TextObject ? <Type size={16} /> :
                                                     obj instanceof CodeBlockObject ? <Box size={16} /> :
                                                         obj instanceof CharacterObject ? <User size={16} /> :
                                                             <Square size={16} />}
                                         </div>
-                                        <div className="inspector-object-info">
-                                            <div className="inspector-object-name" title={obj.name}>
+                                        <div className="min-w-0">
+                                            <div className="text-xs font-bold text-slate-900 dark:text-indigo-100 truncate max-w-[120px]" title={obj.name}>
                                                 {obj.name || "Untitled"}
                                             </div>
-                                            <div className="inspector-object-type">
+                                            <div className="text-[10px] text-indigo-400 font-mono truncate">
                                                 {obj.constructor.name.replace('Object', '')}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="inspector-object-actions">
+                                    <div className="flex items-center gap-1">
                                         <button
                                             onClick={() => {
                                                 const newObj = obj.clone();
@@ -322,7 +314,7 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                                 engine.scene.add(newObj);
                                                 setForceUpdate(n => n + 1);
                                             }}
-                                            className="inspector-action-btn"
+                                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-white dark:hover:bg-indigo-900/50 rounded-lg transition-colors"
                                             title="Duplicate"
                                         >
                                             <Copy size={14} />
@@ -332,7 +324,7 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                                 engine.scene.remove(obj.id);
                                                 setForceUpdate(n => n + 1);
                                             }}
-                                            className="inspector-action-btn delete"
+                                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-white dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                             title="Delete"
                                         >
                                             <Trash2 size={14} />
@@ -340,81 +332,80 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                     </div>
                                 </div>
 
-                                <PropertySection title="Layout">
-                                    <ControlRow label="Position">
-                                        <div className="inspector-labeled-input-group">
-                                            <div className="inspector-labeled-input-container">
-                                                <span className="inspector-input-label">X</span>
-                                                <input
-                                                    type="number"
-                                                    className="inspector-input-number"
-                                                    value={Math.round(obj.x)}
-                                                    onChange={(e) => handleChange("x", Number(e.target.value))}
-                                                />
-                                            </div>
-                                            <div className="inspector-labeled-input-container">
-                                                <span className="inspector-input-label">Y</span>
-                                                <input
-                                                    type="number"
-                                                    className="inspector-input-number"
-                                                    value={Math.round(obj.y)}
-                                                    onChange={(e) => handleChange("y", Number(e.target.value))}
-                                                />
-                                            </div>
+                                <PropertySection title="Layout" defaultOpen={true}>
+                                    <div className="grid grid-cols-2 gap-2 mb-2">
+                                        <div className="inspector-labeled-input-container">
+                                            <span className="inspector-input-label">X</span>
+                                            <input
+                                                type="number"
+                                                className="inspector-input-number"
+                                                value={Math.round(obj.x)}
+                                                onChange={(e) => handleChange("x", Number(e.target.value))}
+                                            />
                                         </div>
-                                    </ControlRow>
+                                        <div className="inspector-labeled-input-container">
+                                            <span className="inspector-input-label">Y</span>
+                                            <input
+                                                type="number"
+                                                className="inspector-input-number"
+                                                value={Math.round(obj.y)}
+                                                onChange={(e) => handleChange("y", Number(e.target.value))}
+                                            />
+                                        </div>
+                                    </div>
 
-                                    <div className="space-y-3 relative">
+                                    <div className="grid grid-cols-2 gap-2 relative">
                                         {/* Link Line Visual */}
                                         {isRatioLocked && (
-                                            <div className="absolute left-[3px] top-[14px] bottom-[14px] w-1.5 border-l border-t border-b border-slate-300 dark:border-slate-600 rounded-l-md pointer-events-none" />
+                                            <div className="absolute left-[50%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-4 border-t border-b border-slate-300 dark:border-slate-600 rounded-full pointer-events-none z-0" />
                                         )}
-
-                                        {/* Lock Button */}
+                                        {/* Lock Button (Centered) */}
                                         <button
-                                            className={`absolute left-[-12px] top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full z-10 transition-colors ${isRatioLocked ? "text-blue-500 border-blue-200 dark:border-blue-900" : "text-slate-400"}`}
+                                            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full z-10 transition-colors ${isRatioLocked ? "text-indigo-500 border-indigo-200 dark:border-indigo-900" : "text-slate-400"}`}
                                             onClick={() => setIsRatioLocked(!isRatioLocked)}
                                             title={isRatioLocked ? "Unlock Ratio" : "Lock Ratio"}
                                         >
                                             {isRatioLocked ? <Link2 size={10} /> : <Unlink2 size={10} />}
                                         </button>
 
-                                        <ControlRow label="Width">
-                                            <SliderInput
+                                        <div className="inspector-labeled-input-container z-10 bg-inherit">
+                                            <span className="inspector-input-label">W</span>
+                                            <input
+                                                type="number"
+                                                className="inspector-input-number"
                                                 value={Math.round(obj.width)}
-                                                min={10}
-                                                max={1920}
-                                                onChange={(v) => {
+                                                onChange={(e) => {
+                                                    const val = Number(e.target.value);
                                                     const oldW = obj.width;
-                                                    handleChange("width", v);
+                                                    handleChange("width", val);
                                                     if (isRatioLocked && oldW > 0) {
                                                         const ratio = obj.height / oldW;
-                                                        handleChange("height", Math.round(v * ratio));
+                                                        handleChange("height", Math.round(val * ratio));
                                                     }
                                                 }}
-                                                formatValue={(v) => `${v}px`}
                                             />
-                                        </ControlRow>
-                                        <ControlRow label="Height">
-                                            <SliderInput
+                                        </div>
+                                        <div className="inspector-labeled-input-container z-10 bg-inherit">
+                                            <span className="inspector-input-label">H</span>
+                                            <input
+                                                type="number"
+                                                className="inspector-input-number"
                                                 value={Math.round(obj.height)}
-                                                min={10}
-                                                max={1080}
-                                                onChange={(v) => {
+                                                onChange={(e) => {
+                                                    const val = Number(e.target.value);
                                                     const oldH = obj.height;
-                                                    handleChange("height", v);
+                                                    handleChange("height", val);
                                                     if (isRatioLocked && oldH > 0) {
                                                         const ratio = obj.width / oldH;
-                                                        handleChange("width", Math.round(v * ratio));
+                                                        handleChange("width", Math.round(val * ratio));
                                                     }
                                                 }}
-                                                formatValue={(v) => `${v}px`}
                                             />
-                                        </ControlRow>
+                                        </div>
                                     </div>
 
-                                    <ControlRow label="Scale" layout="horizontal">
-                                        <div className="flex-1">
+                                    <div className="mt-3">
+                                        <ControlRow label="Scale" layout="horizontal">
                                             <SliderInput
                                                 value={Math.round((obj.scaleX || 1) * 100)}
                                                 min={10}
@@ -427,8 +418,8 @@ export const PropertiesPanel = ({ engine, selectedId }: PropertiesPanelProps) =>
                                                 }}
                                                 formatValue={(v) => `${v}%`}
                                             />
-                                        </div>
-                                    </ControlRow>
+                                        </ControlRow>
+                                    </div>
                                 </PropertySection>
 
                                 <PropertySection title="Appearance" defaultOpen={false}>
