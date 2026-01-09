@@ -259,9 +259,9 @@ export const EditorLayout = () => {
                 < div className="flex-1 flex flex-col min-w-0 lg:min-w-0 bg-slate-100 dark:bg-[#020617] relative overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0" >
 
                     {/* Sticky Canvas Container (Mobile) / Flex Item (Desktop) */}
-                    < div
+                    <div
                         ref={mainCanvasContainerRef}
-                        className="sticky top-0 z-40 lg:relative flex-1 flex flex-col min-w-0 min-h-0 bg-slate-100 dark:bg-[#020617] border-b border-slate-200 dark:border-slate-800 lg:border-none h-full lg:h-auto"
+                        className="sticky top-0 z-40 lg:relative flex flex-col w-full min-w-0 min-h-0 bg-slate-100 dark:bg-[#020617] border-b border-slate-200 dark:border-slate-800 lg:border-none"
                     >
                         <CanvasWorkspace
                             ref={canvasRef}
