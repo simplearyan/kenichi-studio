@@ -18,12 +18,13 @@ interface FrameData {
 interface BarChartRaceProps {
     data?: FrameData[];
     maxItems?: number;
+    style?: React.CSSProperties;
 }
 
 const BAR_HEIGHT = 60;
 const GAP = 20;
 
-export const BarChartRace: React.FC<BarChartRaceProps> = ({ data, maxItems = 5 }) => {
+export const BarChartRace: React.FC<BarChartRaceProps> = ({ data, maxItems = 5, style }) => {
     const frame = useCurrentFrame();
     const { fps, width } = useVideoConfig();
 
@@ -83,7 +84,7 @@ export const BarChartRace: React.FC<BarChartRaceProps> = ({ data, maxItems = 5 }
         .range([0, width - 400]); // Margin right for text
 
     return (
-        <div className="w-full h-full bg-[#1E293B] flex flex-col items-center justify-center p-20 font-sans text-white">
+        <div style={{ ...style, backgroundColor: style?.backgroundColor || '#1E293B' }} className="w-full h-full flex flex-col items-center justify-center p-20 font-sans text-white">
             <h1 className="text-9xl font-bold mb-10 text-slate-700 absolute bottom-20 right-20 tabular-nums opacity-50">
                 {Math.round(interpolate(currentYearData.year, nextYearData.year)(progressInYear))}
             </h1>

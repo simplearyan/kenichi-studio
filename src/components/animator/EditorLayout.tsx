@@ -24,7 +24,8 @@ const EditorLayout: React.FC = () => {
         setActiveCompositionId,
         barChartData,
         currentCode,
-        setIsInterstitialOpen
+        setIsInterstitialOpen,
+        backgroundColor // Get background color
     } = useAnimatorStore();
 
     const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -34,11 +35,12 @@ const EditorLayout: React.FC = () => {
 
     // Dynamic props based on composition
     const inputProps = (() => {
+        const baseProps = { style: { backgroundColor } }; // Pass background color
         switch (activeCompositionId) {
-            case 'BarChartRace': return { data: barChartData };
-            case 'CodeBlock': return { code: currentCode };
-            case 'MathFormula': return { latex: currentLatex };
-            default: return {};
+            case 'BarChartRace': return { ...baseProps, data: barChartData };
+            case 'CodeBlock': return { ...baseProps, code: currentCode };
+            case 'MathFormula': return { ...baseProps, latex: currentLatex };
+            default: return baseProps;
         }
     })();
 
@@ -99,7 +101,13 @@ const EditorLayout: React.FC = () => {
 
             {/* Main Workspace */}
             <div className="flex flex-1 overflow-hidden relative">
-                <ExportDialog playerRef={playerRef} wrapperRef={wrapperRef} durationInFrames={activeDuration} />
+                <ExportDialog
+                    playerRef={playerRef}
+                    wrapperRef={wrapperRef}
+                    durationInFrames={activeDuration}
+                    component={activeComponent}
+                    inputProps={inputProps}
+                />
 
                 {/* Mobile Library Drawer (Overlay) */}
                 {isLibraryOpen && (

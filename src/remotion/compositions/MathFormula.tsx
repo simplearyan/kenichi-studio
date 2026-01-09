@@ -6,9 +6,10 @@ import 'katex/dist/katex.min.css'; // Ensure this is importable, or handle via g
 interface MathFormulaProps {
     latex?: string;
     primaryColor?: string;
+    style?: React.CSSProperties;
 }
 
-export const MathFormula: React.FC<MathFormulaProps> = ({ latex = '', primaryColor = '#38BDF8' }) => {
+export const MathFormula: React.FC<MathFormulaProps> = ({ latex = '', primaryColor = '#38BDF8', style }) => {
     const frame = useCurrentFrame();
     const { fps } = useVideoConfig();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -32,7 +33,7 @@ export const MathFormula: React.FC<MathFormulaProps> = ({ latex = '', primaryCol
     }, [latex]);
 
     return (
-        <AbsoluteFill className="bg-[#0F172A] items-center justify-center">
+        <AbsoluteFill style={{ ...style, backgroundColor: style?.backgroundColor || '#0F172A' }} className="items-center justify-center">
             <div
                 ref={containerRef}
                 style={{

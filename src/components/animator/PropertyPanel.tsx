@@ -4,6 +4,7 @@ import { LayoutGrid, Calculator, Code2, Palette, Activity } from 'lucide-react';
 import DataEditor from './editors/DataEditor';
 import MathEditor from './editors/MathEditor';
 import CodeEditor from './editors/CodeEditor';
+import StyleEditor from './editors/StyleEditor';
 
 const PropertyPanel: React.FC = () => {
     const { activeTab, setActiveTab } = useAnimatorStore();
@@ -25,7 +26,7 @@ const PropertyPanel: React.FC = () => {
             case 'code':
                 return <CodeEditor />;
             case 'style':
-                return <div className="p-4 text-slate-400">Global Styles Placeholder</div>;
+                return <StyleEditor />;
             case 'motion':
                 return <div className="p-4 text-slate-400">Animation Presets Placeholder</div>;
             default:

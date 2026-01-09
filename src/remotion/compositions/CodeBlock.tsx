@@ -6,11 +6,12 @@ interface CodeBlockProps {
     code?: string; // Make optional for safety
     language?: string;
     theme?: string;
+    style?: React.CSSProperties;
 }
 
 const handle = delayRender("Loading Shiki");
 
-export const CodeBlock: React.FC<CodeBlockProps> = ({ code = '', language = 'javascript', theme = 'dracula' }) => {
+export const CodeBlock: React.FC<CodeBlockProps> = ({ code = '', language = 'javascript', theme = 'dracula', style }) => {
     const frame = useCurrentFrame();
     const { fps } = useVideoConfig();
 
@@ -108,7 +109,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code = '', language = 'jav
     const cursorVisible = (frame % 20 < 10); // blink every 20 frames
 
     return (
-        <div className="w-full h-full flex items-center justify-center bg-[#0F172A]">
+        <div style={{ ...style, backgroundColor: style?.backgroundColor || '#0F172A' }} className="w-full h-full flex items-center justify-center">
             <div className="relative p-8 rounded-xl bg-[#282A36] shadow-2xl min-w-[600px] min-h-[400px] border border-slate-700/50">
                 {/* Window Controls */}
                 <div className="flex gap-2 mb-4 absolute top-4 left-4">

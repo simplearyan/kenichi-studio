@@ -1,12 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAnimatorStore } from '../../store/animatorStore';
-import type { PlayerRef } from '@remotion/player';
+import { Player, type PlayerRef } from '@remotion/player';
 import { toBlob } from 'html-to-image';
 import download from 'downloadjs';
 
-// Worker import removed, using URL constructor below
+interface ExportDialogProps {
+    playerRef: React.RefObject<PlayerRef | null>;
+    wrapperRef: React.RefObject<HTMLDivElement | null>;
+    durationInFrames: number;
+    component: React.ComponentType<any>;
+    inputProps: any;
+}
 
-const ExportDialog: React.FC<{ playerRef: React.RefObject<PlayerRef | null>, wrapperRef: React.RefObject<HTMLDivElement | null>, durationInFrames: number }> = ({ playerRef, wrapperRef, durationInFrames }) => {
+const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component, inputProps }) => {
     const { isExportOpen, setIsExportOpen } = useAnimatorStore();
     const [progress, setProgress] = useState(0);
     const [status, setStatus] = useState<'idle' | 'rendering' | 'encoding' | 'complete' | 'error'>('idle');
@@ -15,10 +21,13 @@ const ExportDialog: React.FC<{ playerRef: React.RefObject<PlayerRef | null>, wra
     const [isMp4, setIsMp4] = useState(true);
     const workerRef = useRef<Worker | null>(null);
 
+    // Dedicated ref for the off-screen export player
+    const exportPlayerRef = useRef<PlayerRef>(null);
+    const exportContainerRef = useRef<HTMLDivElement>(null);
+
     // Initial worker setup
     useEffect(() => {
         if (!workerRef.current) {
-            // Use standard Vite/ESM worker instantiation
             workerRef.current = new Worker(
                 new URL('../../engine/workers/export.worker.ts', import.meta.url),
                 { type: 'module' }
@@ -42,7 +51,12 @@ const ExportDialog: React.FC<{ playerRef: React.RefObject<PlayerRef | null>, wra
     }, [isMp4]);
 
     const startExport = async () => {
-        if (!playerRef.current) return;
+        if (!exportPlayerRef.current || !exportContainerRef.current) {
+            console.error("Export player not ready");
+            setExportLogs(prev => [...prev, "[Error] Export player not ready"]);
+            return;
+        }
+
         setStatus('rendering');
         setProgress(0);
 
@@ -88,27 +102,23 @@ const ExportDialog: React.FC<{ playerRef: React.RefObject<PlayerRef | null>, wra
                 }
                 credits--;
 
-                playerRef.current.seekTo(i);
+                // Seek the EXPORT player
+                exportPlayerRef.current.seekTo(i);
 
                 // Wait for paint (Double RAF)
                 await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-                const containerToCapture = wrapperRef.current;
+                // Capture the off-screen container
+                const containerToCapture = exportContainerRef.current;
+
                 if (containerToCapture) {
                     const blob = await toBlob(containerToCapture, {
                         width: 1920,
                         height: 1080,
                         skipFonts: true,
-                        // Remove pixelRatio - let's rely on native layout scaling
                         style: {
-                            transform: 'none',
-                            borderRadius: '0px',
-                            border: 'none',
-                            boxShadow: 'none',
-                            width: '1920px',
-                            height: '1080px',
-                            maxWidth: 'none',
-                            maxHeight: 'none',
+                            visibility: 'visible',
+                            transform: 'none', // Ensure nans logic
                             margin: '0',
                             padding: '0'
                         }
@@ -150,6 +160,36 @@ const ExportDialog: React.FC<{ playerRef: React.RefObject<PlayerRef | null>, wra
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+            {/* Off-Screen Player for Rendering */}
+            <div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: '200vw', // Move WAY off-screen, right? Or just 100vw.
+                    width: '1920px',
+                    height: '1080px',
+                    zIndex: -9999,
+                    visibility: 'visible', // Must be visible for html-to-image
+                    background: 'black',
+                    pointerEvents: 'none'
+                }}
+            >
+                <div ref={exportContainerRef} style={{ width: '100%', height: '100%' }}>
+                    <Player
+                        ref={exportPlayerRef}
+                        component={component}
+                        durationInFrames={durationInFrames}
+                        fps={30}
+                        compositionWidth={1920}
+                        compositionHeight={1080}
+                        style={{ width: '100%', height: '100%' }}
+                        inputProps={inputProps}
+                        controls={false}
+                        autoPlay={false} // Manual seeking
+                    />
+                </div>
+            </div>
+
             <div className="w-full max-w-md bg-[#1E293B] border border-slate-700 rounded-xl p-6 shadow-2xl relative">
                 <button
                     onClick={() => setIsExportOpen(false)}

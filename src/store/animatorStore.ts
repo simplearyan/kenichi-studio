@@ -48,6 +48,10 @@ interface AnimatorState {
     setIsCloudRenderOpen: (isOpen: boolean) => void;
     isInterstitialOpen: boolean;
     setIsInterstitialOpen: (isOpen: boolean) => void;
+
+    // Style State
+    backgroundColor: string;
+    setBackgroundColor: (color: string) => void;
 }
 
 export const useAnimatorStore = create<AnimatorState>((set) => ({
@@ -88,4 +92,8 @@ export const useAnimatorStore = create<AnimatorState>((set) => ({
     setIsCloudRenderOpen: (isOpen) => set({ isCloudRenderOpen: isOpen }),
     isInterstitialOpen: false,
     setIsInterstitialOpen: (isOpen) => set({ isInterstitialOpen: isOpen }),
+
+    // Style State
+    backgroundColor: '#1E1E1E',
+    setBackgroundColor: (color: string) => set({ backgroundColor: color }),
 }));
