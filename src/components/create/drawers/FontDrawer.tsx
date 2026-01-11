@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Engine } from "../../engine/Core";
-import { TextObject } from "../../engine/objects/TextObject";
-import { Slider } from "./InspectorUI";
+import { Engine } from "../../../engine/Core";
+import { TextObject } from "../../../engine/objects/TextObject";
+import { Slider } from "../ui/InspectorUI";
 
 interface FontDrawerProps {
     engine: Engine | null;

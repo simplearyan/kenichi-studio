@@ -8,11 +8,11 @@ import {
     LayoutGrid,
     X
 } from "lucide-react";
-import { Engine } from "../../engine/Core";
-import { TEXT_OPTIONS, createText } from "../../data/textOptions";
-import { SHAPE_OPTIONS, createShape } from "../../data/shapeOptions";
-import { CODE_OPTIONS, createCode } from "../../data/codeOptions";
-import { CHART_TYPES, createChart } from "../../data/chartOptions";
+import { Engine } from "../../../engine/Core";
+import { TEXT_OPTIONS, createText } from "../../../data/textOptions";
+import { SHAPE_OPTIONS, createShape } from "../../../data/shapeOptions";
+import { CODE_OPTIONS, createCode } from "../../../data/codeOptions";
+import { CHART_TYPES, createChart } from "../../../data/chartOptions";
 
 interface SidebarProps {
     engine: Engine | null;
@@ -20,7 +20,7 @@ interface SidebarProps {
     mobileActiveTab?: Tab;
 }
 
-import { SquareAd } from "../ads/SquareAd";
+import { SquareAd } from "../../ads/SquareAd";
 
 export type Tab = "templates" | "text" | "media" | "shapes" | null;
 

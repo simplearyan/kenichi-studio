@@ -1,7 +1,7 @@
 import React from "react";
-import { Engine } from "../../engine/Core";
-import { CHART_TYPES, createChart } from "../../data/chartOptions";
-import { BottomSheet } from "./BottomSheet";
+import { Engine } from "../../../engine/Core";
+import { CHART_TYPES, createChart } from "../../../data/chartOptions";
+import { BottomSheet } from "../panels/BottomSheet";
 
 interface ChartsDrawerProps {
     engine: Engine | null;

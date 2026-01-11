@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Engine } from "../../engine/Core";
-import { CodeBlockObject } from "../../engine/objects/CodeBlockObject";
+import { Engine } from "../../../engine/Core";
+import { CodeBlockObject } from "../../../engine/objects/CodeBlockObject";
 import { Check, Palette } from "lucide-react";
-import { Slider } from "./InspectorUI";
+import { Slider } from "../ui/InspectorUI";
 
 interface ThemeDrawerProps {
     engine: Engine | null;

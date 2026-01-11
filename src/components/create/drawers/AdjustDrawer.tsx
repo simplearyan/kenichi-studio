@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Engine } from "../../engine/Core";
-import { Slider } from "./InspectorUI";
+import { Engine } from "../../../engine/Core";
+import { Slider } from "../ui/InspectorUI";
 
 interface AdjustDrawerProps {
     engine: Engine | null;

@@ -1,7 +1,7 @@
 import React from "react";
-import { Engine } from "../../engine/Core";
-import { SHAPE_OPTIONS, createShape } from "../../data/shapeOptions";
-import { BottomSheet } from "./BottomSheet";
+import { Engine } from "../../../engine/Core";
+import { SHAPE_OPTIONS, createShape } from "../../../data/shapeOptions";
+import { BottomSheet } from "../panels/BottomSheet";
 
 interface ShapesDrawerProps {
     engine: Engine | null;

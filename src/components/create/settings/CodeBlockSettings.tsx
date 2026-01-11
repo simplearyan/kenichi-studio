@@ -1,7 +1,7 @@
 import React from "react";
-import { Engine } from "../../engine/Core";
-import { CodeBlockObject } from "../../engine/objects/CodeBlockObject";
-import { ControlRow, PropertySection, SliderInput, Toggle, Slider } from "./InspectorUI";
+import { Engine } from "../../../engine/Core";
+import { CodeBlockObject } from "../../../engine/objects/CodeBlockObject";
+import { ControlRow, PropertySection, SliderInput, Toggle, Slider } from "../ui/InspectorUI";
 
 interface CodeBlockSettingsProps {
     object: CodeBlockObject;

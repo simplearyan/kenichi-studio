@@ -1,7 +1,7 @@
 import React from "react";
-import { Engine } from "../../engine/Core";
-import { ChartObject } from "../../engine/objects/ChartObject";
-import { ControlRow, PropertySection, SliderInput, Toggle, IconGrid, SegmentedControl, ColorPicker, Slider } from "./InspectorUI";
+import { Engine } from "../../../engine/Core";
+import { ChartObject } from "../../../engine/objects/ChartObject";
+import { ControlRow, PropertySection, SliderInput, Toggle, IconGrid, SegmentedControl, ColorPicker, Slider } from "../ui/InspectorUI";
 import { BarChart, Square, PieChart, Activity } from "lucide-react"; // Using Activity as placeholder for Area/Scatter if needed
 
 interface ChartSettingsProps {

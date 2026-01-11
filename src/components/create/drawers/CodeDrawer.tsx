@@ -1,7 +1,7 @@
 import React from "react";
-import { Engine } from "../../engine/Core";
-import { CODE_OPTIONS, createCode } from "../../data/codeOptions";
-import { BottomSheet } from "./BottomSheet";
+import { Engine } from "../../../engine/Core";
+import { CODE_OPTIONS, createCode } from "../../../data/codeOptions";
+import { BottomSheet } from "../panels/BottomSheet";
 
 interface CodeDrawerProps {
     engine: Engine | null;

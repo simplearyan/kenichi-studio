@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Engine } from "../../engine/Core";
-import { TextObject } from "../../engine/objects/TextObject";
-import { ColorPicker, Slider, SegmentedControl } from "./InspectorUI";
+import { Engine } from "../../../engine/Core";
+import { TextObject } from "../../../engine/objects/TextObject";
+import { ColorPicker, Slider, SegmentedControl } from "../ui/InspectorUI";
 import { AlignLeft, AlignCenter, AlignRight } from "lucide-react";
 
 interface StyleDrawerProps {

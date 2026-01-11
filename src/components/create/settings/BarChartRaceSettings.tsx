@@ -1,7 +1,7 @@
 import React from "react";
-import { Engine } from "../../engine/Core";
-import { BarChartRaceObject } from "../../engine/objects/BarChartRaceObject";
-import { ControlRow, PropertySection, SliderInput, Slider } from "./InspectorUI";
+import { Engine } from "../../../engine/Core";
+import { BarChartRaceObject } from "../../../engine/objects/BarChartRaceObject";
+import { ControlRow, PropertySection, SliderInput, Slider } from "../ui/InspectorUI";
 
 interface BarChartRaceSettingsProps {
     object: BarChartRaceObject;

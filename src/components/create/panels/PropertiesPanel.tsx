@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { CanvasSettings } from "./CanvasSettings";
-import { Engine } from "../../engine/Core";
-import { TextObject } from "../../engine/objects/TextObject";
-import { CodeBlockObject } from "../../engine/objects/CodeBlockObject";
-import { ChartObject } from "../../engine/objects/ChartObject";
-import { BarChartRaceObject } from "../../engine/objects/BarChartRaceObject";
-import { CharacterObject } from "../../engine/objects/CharacterObject";
-import { LogoCharacterObject } from "../../engine/objects/LogoCharacterObject";
-import { ParticleTextObject } from "../../engine/objects/ParticleTextObject";
+import { CanvasSettings } from "../settings/CanvasSettings";
+import { Engine } from "../../../engine/Core";
+import { TextObject } from "../../../engine/objects/TextObject";
+import { CodeBlockObject } from "../../../engine/objects/CodeBlockObject";
+import { ChartObject } from "../../../engine/objects/ChartObject";
+import { BarChartRaceObject } from "../../../engine/objects/BarChartRaceObject";
+import { CharacterObject } from "../../../engine/objects/CharacterObject";
+import { LogoCharacterObject } from "../../../engine/objects/LogoCharacterObject";
+import { ParticleTextObject } from "../../../engine/objects/ParticleTextObject";
 
 import {
     Slider,
@@ -21,11 +21,11 @@ import {
     SliderInput,
     SegmentedControl,
     IconGrid
-} from "./InspectorUI";
-import { TextSettings } from "./TextSettings";
-import { CodeBlockSettings } from "./CodeBlockSettings";
-import { ChartSettings } from "./ChartSettings";
-import { BarChartRaceSettings } from "./BarChartRaceSettings";
+} from "../ui/InspectorUI";
+import { TextSettings } from "../settings/TextSettings";
+import { CodeBlockSettings } from "../settings/CodeBlockSettings";
+import { ChartSettings } from "../settings/ChartSettings";
+import { BarChartRaceSettings } from "../settings/BarChartRaceSettings";
 
 import {
     Settings,
@@ -56,7 +56,7 @@ import {
     ArrowLeft
 } from "lucide-react";
 
-import { FontPicker } from "./FontPicker";
+import { FontPicker } from "../ui/FontPicker";
 
 interface PropertiesPanelProps {
     engine: Engine | null;

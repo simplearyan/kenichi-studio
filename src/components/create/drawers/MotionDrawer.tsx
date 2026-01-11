@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Engine } from "../../engine/Core";
+import { Engine } from "../../../engine/Core";
 import { Ban, Zap, ArrowUp, Maximize, Keyboard } from "lucide-react";
-import { TextObject } from "../../engine/objects/TextObject";
-import { Slider } from "./InspectorUI";
+import { TextObject } from "../../../engine/objects/TextObject";
+import { Slider } from "../ui/InspectorUI";
 
 interface MotionDrawerProps {
     engine: Engine | null;

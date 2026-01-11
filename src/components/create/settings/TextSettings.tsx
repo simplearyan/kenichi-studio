@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Engine } from "../../engine/Core";
-import { TextObject } from "../../engine/objects/TextObject";
-import { ControlRow, ColorPicker, Slider, Toggle, PropertySection } from "./InspectorUI";
+import { Engine } from "../../../engine/Core";
+import { TextObject } from "../../../engine/objects/TextObject";
+import { ControlRow, ColorPicker, Slider, Toggle, PropertySection } from "../ui/InspectorUI";
 
 interface TextSettingsProps {
     object: TextObject;

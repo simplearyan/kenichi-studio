@@ -1,7 +1,7 @@
 import React from "react";
-import { Engine } from "../../engine/Core";
-import { TEXT_OPTIONS, createText } from "../../data/textOptions";
-import { BottomSheet } from "./BottomSheet";
+import { Engine } from "../../../engine/Core";
+import { TEXT_OPTIONS, createText } from "../../../data/textOptions";
+import { BottomSheet } from "../panels/BottomSheet";
 
 interface TextDrawerProps {
     engine: Engine | null;
