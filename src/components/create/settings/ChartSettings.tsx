@@ -1,17 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Engine } from "../../../engine/Core";
 import { ChartObject } from "../../../engine/objects/ChartObject";
 import { ControlRow, PropertySection, SliderInput, Toggle, IconGrid, SegmentedControl, ColorPicker, Slider } from "../ui/InspectorUI";
-import { BarChart, Square, PieChart, Activity } from "lucide-react"; // Using Activity as placeholder for Area/Scatter if needed
+import { BarChart, Square, PieChart } from "lucide-react";
 
 interface ChartSettingsProps {
     object: ChartObject;
     engine: Engine | null;
-    variant: "desktop" | "mobile";
     onUpdate: () => void;
 }
 
-export const ChartSettings: React.FC<ChartSettingsProps> = ({ object: obj, engine, variant, onUpdate }) => {
+export const ChartSettings: React.FC<ChartSettingsProps> = ({ object: obj, engine, onUpdate }) => {
     if (!engine) return null;
 
     const handleChange = (key: string, value: any) => {
@@ -20,49 +19,6 @@ export const ChartSettings: React.FC<ChartSettingsProps> = ({ object: obj, engin
         onUpdate();
     };
 
-    // --- MOBILE LAYOUT ---
-    if (variant === "mobile") {
-        return (
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 space-y-4">
-                <span className="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-2">Chart Config</span>
-                <ControlRow label="Type">
-                    <select
-                        className="w-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-3 text-sm outline-none"
-                        value={obj.chartType}
-                        onChange={(e) => handleChange("chartType", e.target.value)}
-                    >
-                        <option value="bar">Bar</option>
-                        <option value="line">Line</option>
-                        <option value="pie">Pie</option>
-                        <option value="donut">Donut</option>
-                    </select>
-                </ControlRow>
-
-                {/* Simplified Mobile Controls */}
-                {obj.chartType === "donut" && (
-                    <div className="space-y-1">
-                        <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase"><span>Hole Radius</span><span>{Math.round(obj.innerRadius * 100)}%</span></div>
-                        <Slider
-                            value={Math.round(obj.innerRadius * 100)}
-                            min={10} max={90}
-                            onChange={(v) => handleChange("innerRadius", v / 100)}
-                            compact={false}
-                        />
-                    </div>
-                )}
-
-                <ControlRow label="Show Grid" layout="horizontal">
-                    <Toggle value={obj.showGrid} onChange={(v) => handleChange("showGrid", v)} />
-                </ControlRow>
-
-                <ControlRow label="Color">
-                    <ColorPicker value={obj.color} onChange={(v) => handleChange("color", v)} />
-                </ControlRow>
-            </div>
-        );
-    }
-
-    // --- DESKTOP LAYOUT ---
     return (
         <>
             <PropertySection title="Chart Type">
@@ -74,7 +30,7 @@ export const ChartSettings: React.FC<ChartSettingsProps> = ({ object: obj, engin
                     layout="horizontal"
                     options={[
                         { value: "bar", label: "Bar", icon: <BarChart size={16} /> },
-                        { value: "line", label: "Line", icon: <Square size={16} /> }, // Placeholder
+                        { value: "line", label: "Line", icon: <Square size={16} /> },
                         { value: "area", label: "Area", icon: <Square size={16} /> },
                         { value: "scatter", label: "Scatter", icon: <Square size={16} /> },
                         { value: "pie", label: "Pie", icon: <PieChart size={16} /> },

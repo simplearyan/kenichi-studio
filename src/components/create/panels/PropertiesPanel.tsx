@@ -8,6 +8,7 @@ import { BarChartRaceObject } from "../../../engine/objects/BarChartRaceObject";
 import { CharacterObject } from "../../../engine/objects/CharacterObject";
 import { LogoCharacterObject } from "../../../engine/objects/LogoCharacterObject";
 import { ParticleTextObject } from "../../../engine/objects/ParticleTextObject";
+import { LayersPanel } from "./LayersPanel";
 
 import {
     Slider,
@@ -319,25 +320,7 @@ export const PropertiesPanel = ({ engine, selectedId, isMobileSheet = false, ini
                         />
                     )}
 
-                    {/* Mobile: Chart Properties */}
-                    {obj instanceof ChartObject && (
-                        <ChartSettings
-                            object={obj}
-                            engine={engine}
-                            variant="mobile"
-                            onUpdate={() => setForceUpdate(n => n + 1)}
-                        />
-                    )}
 
-                    {/* Mobile: BarChartRace Properties */}
-                    {obj instanceof BarChartRaceObject && (
-                        <BarChartRaceSettings
-                            object={obj}
-                            engine={engine}
-                            variant="mobile"
-                            onUpdate={() => setForceUpdate(n => n + 1)}
-                        />
-                    )}
 
                     {/* Mobile: ParticleText Properties */}
                     {obj instanceof ParticleTextObject && (
@@ -712,7 +695,6 @@ export const PropertiesPanel = ({ engine, selectedId, isMobileSheet = false, ini
                                             <ChartSettings
                                                 object={obj}
                                                 engine={engine}
-                                                variant="desktop"
                                                 onUpdate={() => setForceUpdate(n => n + 1)}
                                             />
                                         )}
@@ -722,7 +704,6 @@ export const PropertiesPanel = ({ engine, selectedId, isMobileSheet = false, ini
                                             <BarChartRaceSettings
                                                 object={obj}
                                                 engine={engine}
-                                                variant="desktop"
                                                 onUpdate={() => setForceUpdate(n => n + 1)}
                                             />
                                         )}
@@ -745,39 +726,7 @@ export const PropertiesPanel = ({ engine, selectedId, isMobileSheet = false, ini
 
                 {
                     activeTab === "layers" && (
-                        <div className="space-y-1">
-                            {engine.scene.objects.slice().reverse().map((layer) => (
-                                <div
-                                    key={layer.id}
-                                    onClick={() => {
-                                        engine.selectObject(layer.id);
-                                        setActiveTab("properties");
-                                    }}
-                                    className={`
-                                    flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors group
-                                    ${layer.id === selectedId ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400"}
-                                `}
-                                >
-                                    <div className="p-1.5 rounded bg-white dark:bg-slate-900 shadow-sm text-xs">
-                                        {layer instanceof TextObject ? <Type size={12} /> :
-                                            layer instanceof ChartObject ? <PieChart size={12} /> :
-                                                <Square size={12} />}
-                                    </div>
-                                    <span className="text-xs font-medium truncate flex-1">{layer.name}</span>
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); layer.visible = !layer.visible; setForceUpdate(n => n + 1); engine.render(); }}
-                                        className={`opacity-0 group-hover:opacity-100 p-1 hover:text-indigo-500 ${!layer.visible ? "opacity-100 text-slate-400" : ""}`}
-                                    >
-                                        {layer.visible ? <Eye size={12} /> : <EyeOff size={12} />}
-                                    </button>
-                                </div>
-                            ))}
-                            {engine.scene.objects.length === 0 && (
-                                <div className="text-center py-8 text-xs text-slate-400">
-                                    No layers yet.
-                                </div>
-                            )}
-                        </div>
+                        <LayersPanel engine={engine} selectedId={selectedId} />
                     )
                 }
 

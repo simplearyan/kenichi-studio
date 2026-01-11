@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Engine } from "../../../engine/Core";
 import { Slider } from "../ui/InspectorUI";
+import { BottomSheet } from "../panels/BottomSheet";
+import { MoveHorizontal, MoveVertical, RotateCw } from "lucide-react";
 
 interface AdjustDrawerProps {
     engine: Engine | null;
@@ -9,71 +11,92 @@ interface AdjustDrawerProps {
     onClose: () => void;
 }
 
+type AdjustProperty = 'width' | 'height' | 'rotation';
+
 export const AdjustDrawer: React.FC<AdjustDrawerProps> = ({ engine, selectedId, isOpen, onClose }) => {
     const [forceUpdate, setForceUpdate] = useState(0);
+    const [activeProperty, setActiveProperty] = useState<AdjustProperty>('width');
 
     const obj = selectedId && engine ? engine.scene.get(selectedId) : null;
+
+    useEffect(() => {
+        if (isOpen) {
+            // Reset to width on open if needed, or keep last state
+            // setActiveProperty('width');
+        }
+    }, [isOpen]);
 
     if (!isOpen || !obj) return null;
 
     const handleChange = (key: string, value: any) => {
         (obj as any)[key] = value;
-
-        // Handle ratio lock for simple resize
-        if (key === 'width') {
-            // Assuming a simple resizing logic for now where we might want to keep aspect ratio
-            // But for the drawer we just expose raw width/rotation as requested
-        }
-
         engine?.render();
         setForceUpdate(n => n + 1);
     };
 
+    const properties = [
+        { id: 'width', label: 'Width', icon: MoveHorizontal, min: 10, max: 1920, unit: 'px' },
+        { id: 'height', label: 'Height', icon: MoveVertical, min: 10, max: 1080, unit: 'px' },
+        { id: 'rotation', label: 'Rotation', icon: RotateCw, min: -180, max: 180, unit: '°' },
+    ];
+
+    const activeConfig = properties.find(p => p.id === activeProperty) || properties[0];
+    const currentValue = activeProperty === 'rotation'
+        ? (obj.rotation || 0)
+        : (obj as any)[activeProperty];
+
     return (
-        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
-            <div className="p-6 space-y-6">
-                {/* Width Slider */}
-                <div className="space-y-2">
-                    <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
-                        <span>Width</span>
-                        <span>{Math.round(obj.width)}</span>
+        <BottomSheet
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Adjust"
+            variant="dock"
+        >
+            <div className="flex flex-col gap-4 p-4 min-h-[140px]">
+
+                {/* TOP: Dynamic Slider Area */}
+                <div className="flex flex-col gap-2 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <div className="flex items-center gap-2">
+                            <activeConfig.icon size={14} />
+                            <span>{activeConfig.label}</span>
+                        </div>
+                        <span className="text-slate-900 dark:text-white">
+                            {Math.round(currentValue)}{activeConfig.unit}
+                        </span>
                     </div>
-                    <Slider
-                        value={Math.round(obj.width)}
-                        min={10} max={1000}
-                        onChange={(v) => handleChange("width", v)}
-                        compact={false}
-                    />
+                    <div className="py-2">
+                        <Slider
+                            value={Math.round(currentValue)}
+                            min={activeConfig.min}
+                            max={activeConfig.max}
+                            onChange={(v) => handleChange(activeProperty, v)}
+                            compact={false}
+                        />
+                    </div>
                 </div>
 
-                {/* Height Slider */}
-                <div className="space-y-2">
-                    <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
-                        <span>Height</span>
-                        <span>{Math.round(obj.height)}</span>
-                    </div>
-                    <Slider
-                        value={Math.round(obj.height)}
-                        min={10} max={1000}
-                        onChange={(v) => handleChange("height", v)}
-                        compact={false}
-                    />
+                {/* BOTTOM: Property Selector (Horizontal Scroll) */}
+                <div className="flex overflow-x-auto gap-2 no-scrollbar items-center pb-2">
+                    {properties.map((prop) => (
+                        <button
+                            key={prop.id}
+                            onClick={() => setActiveProperty(prop.id as AdjustProperty)}
+                            className={`flex flex-col items-center justify-center gap-1 min-w-[72px] h-[72px] rounded-xl border transition-all shrink-0 ${activeProperty === prop.id
+                                    ? "bg-indigo-600 border-indigo-600 text-white shadow-md scale-105"
+                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                }`}
+                        >
+                            <prop.icon size={22} strokeWidth={2} />
+                            <span className="text-[10px] font-bold">{prop.label}</span>
+                        </button>
+                    ))}
+
+                    {/* Spacer */}
+                    <div className="w-2 shrink-0" />
                 </div>
 
-                {/* Rotation Slider */}
-                <div className="space-y-2">
-                    <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
-                        <span>Rotation</span>
-                        <span>{Math.round(obj.rotation || 0)}°</span>
-                    </div>
-                    <Slider
-                        value={Math.round(obj.rotation || 0)}
-                        min={-180} max={180}
-                        onChange={(v) => handleChange("rotation", v)}
-                        compact={false}
-                    />
-                </div>
             </div>
-        </div>
+        </BottomSheet>
     );
 };

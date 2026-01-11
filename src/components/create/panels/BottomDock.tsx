@@ -1,9 +1,9 @@
 import React from "react";
-import { Plus, SlidersHorizontal, Layers, Download, Type, Square, BarChart3, Terminal, Sparkles, Keyboard, Palette, User, Settings2, ChevronLeft } from "lucide-react";
+import { Plus, SlidersHorizontal, Layers, Download, Type, Square, BarChart3, Terminal, Sparkles, Keyboard, Palette, User, Settings2, ChevronLeft, Database } from "lucide-react";
 
-export type BottomDockTab = "assets" | "text" | "shapes" | "code" | "charts" | "edit" | "font" | "style" | "motion" | "adjust" | "layers" | "export" | "theme" | "settings" | null;
+export type BottomDockTab = "assets" | "text" | "shapes" | "code" | "charts" | "config" | "edit" | "font" | "style" | "motion" | "adjust" | "layers" | "export" | "theme" | "settings" | null;
 
-export type ObjectType = "text" | "shape" | "image" | "chart" | "character" | "code" | "particle" | null;
+export type ObjectType = "text" | "shape" | "image" | "chart" | "bar-race" | "character" | "code" | "particle" | null;
 
 interface BottomDockProps {
     activeTab: BottomDockTab;
@@ -75,10 +75,21 @@ export const BottomDock: React.FC<BottomDockProps> = ({ activeTab, onTabChange, 
                 )}
 
                 {/* CONTEXT: SHAPE/OTHER SELECTED */}
-                {selectedObjectType && selectedObjectType !== 'text' && selectedObjectType !== 'code' && (
+                {selectedObjectType && !['text', 'code', 'chart', 'bar-race'].includes(selectedObjectType) && (
                     <>
                         <Button id="adjust" icon={Settings2} label="Adjust" />
                         <Button id="style" icon={Palette} label="Style" />
+                        <Button id="motion" icon={Sparkles} label="Motion" />
+                        <Separator />
+                        <Button id="layers" icon={Layers} label="Layers" />
+                    </>
+                )}
+
+                {/* CONTEXT: CHART/RACE SELECTED */}
+                {(selectedObjectType === 'chart' || selectedObjectType === 'bar-race') && (
+                    <>
+                        <Button id="config" icon={SlidersHorizontal} label="Config" highlight />
+                        <Button id="adjust" icon={Settings2} label="Adjust" />
                         <Button id="motion" icon={Sparkles} label="Motion" />
                         <Separator />
                         <Button id="layers" icon={Layers} label="Layers" />

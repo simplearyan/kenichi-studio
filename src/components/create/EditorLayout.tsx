@@ -31,6 +31,8 @@ import { ChartsDrawer } from "./drawers/ChartsDrawer";
 import { TextDrawer } from "./drawers/TextDrawer";
 import { ShapesDrawer } from "./drawers/ShapesDrawer";
 import { CodeDrawer } from "./drawers/CodeDrawer";
+import { DataDrawer } from "./drawers/DataDrawer";
+import { LayersDrawer } from "./drawers/LayersDrawer";
 
 // Use a simple local context or prop drilling for this "one-page app"
 // to keep it self-contained for now.
@@ -65,12 +67,12 @@ export const EditorLayout = () => {
             else if (obj instanceof CharacterObject) setSelectedObjectType("character");
             else if (obj instanceof CodeBlockObject) setSelectedObjectType("code");
             else if (obj instanceof ParticleTextObject) setSelectedObjectType("particle");
-            else if (obj instanceof BarChartRaceObject) setSelectedObjectType("chart"); // Treat as chart for now
+            else if (obj instanceof BarChartRaceObject) setSelectedObjectType("bar-race");
             else setSelectedObjectType("shape"); // Default fallthrough for now
         } else {
             setSelectedObjectType(null);
             // Close any object-specific sheets when deselected
-            if (['edit', 'font', 'style', 'motion', 'adjust', 'settings', 'charts', 'text', 'shapes', 'code'].includes(activeBottomTab || '')) {
+            if (['edit', 'font', 'style', 'motion', 'adjust', 'settings', 'charts', 'text', 'shapes', 'code', 'config'].includes(activeBottomTab || '')) {
                 setActiveBottomTab(null);
             }
         }
@@ -394,21 +396,13 @@ export const EditorLayout = () => {
                             />
                         </BottomSheet>
 
-                        {/* 3. LAYERS SHEET */}
-                        <BottomSheet
+                        {/* 3. LAYERS DRAWER */}
+                        <LayersDrawer
+                            engine={engine}
+                            selectedId={selectedId}
                             isOpen={activeBottomTab === 'layers'}
                             onClose={() => setActiveBottomTab(null)}
-                            title="Layers"
-                            initialSnap={0.5}
-                            snaps={[0.5, 0.9]}
-                        >
-                            <PropertiesPanel
-                                engine={engine}
-                                selectedId={selectedId}
-                                isMobileSheet
-                                initialTab="layers"
-                            />
-                        </BottomSheet>
+                        />
 
                         {/* 4. MOTION DRAWER */}
                         <MotionDrawer
@@ -483,6 +477,14 @@ export const EditorLayout = () => {
                         <CodeDrawer
                             engine={engine}
                             isOpen={activeBottomTab === 'code'}
+                            onClose={() => setActiveBottomTab(null)}
+                        />
+
+                        {/* 14. DATA DRAWER (Now Config Drawer) */}
+                        <DataDrawer
+                            engine={engine}
+                            selectedId={selectedId}
+                            isOpen={activeBottomTab === 'config'}
                             onClose={() => setActiveBottomTab(null)}
                         />
 
