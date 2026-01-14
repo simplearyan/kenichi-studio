@@ -15,7 +15,7 @@ export const CanvasSettings: React.FC<CanvasSettingsProps> = ({ engine, onResize
     if (!engine) return null;
 
     const isMobile = variant === 'mobile';
-    const containerClasses = isMobile ? "flex flex-col gap-6" : "flex flex-col gap-4";
+    const containerClasses = isMobile ? "flex flex-col gap-6 p-6" : "flex flex-col gap-4";
     const buttonBaseClasses = isMobile
         ? "py-3 px-2 rounded-lg text-xs font-bold border transition-all"
         : "py-1.5 px-1 rounded-md text-[10px] font-bold border transition-all";
@@ -24,41 +24,12 @@ export const CanvasSettings: React.FC<CanvasSettingsProps> = ({ engine, onResize
 
     return (
         <div className={containerClasses}>
-            <ControlRow label="Canvas Color" layout="horizontal">
-                <div className="flex justify-end">
-                    <ColorPicker
-                        value={engine.scene.backgroundColor}
-                        onChange={(val) => {
-                            engine.scene.backgroundColor = val;
-                            engine.render();
-                            setForceUpdate(n => n + 1);
-                            onUpdate?.();
-                        }}
-                    />
+            {/* Aspect Ratio - Horizontal Scroll */}
+            <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span>Aspect Ratio</span>
                 </div>
-            </ControlRow>
-
-            <ControlRow label="Duration" layout="horizontal">
-                <div className="flex items-center gap-2 justify-end">
-                    <input
-                        type="number"
-                        min={1}
-                        max={300}
-                        className={`inspector-input-number text-right ${isMobile ? "w-20 p-2 text-sm" : "w-16 text-[10px]"}`}
-                        value={Math.round(engine.totalDuration / 1000)}
-                        onChange={(e) => {
-                            const val = Math.max(1, Number(e.target.value));
-                            engine.setTotalDuration(val * 1000);
-                            setForceUpdate(n => n + 1);
-                            onUpdate?.();
-                        }}
-                    />
-                    <span className="text-xs text-slate-500">sec</span>
-                </div>
-            </ControlRow>
-
-            <ControlRow label="Aspect Ratio">
-                <div className={gridClasses}>
+                <div className="flex overflow-x-auto pb-2 gap-2 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                     {[
                         { label: "16:9", val: 16 / 9 },
                         { label: "9:16", val: 9 / 16 },
@@ -74,13 +45,8 @@ export const CanvasSettings: React.FC<CanvasSettingsProps> = ({ engine, onResize
                             <button
                                 key={ratio.label}
                                 onClick={() => {
-                                    // Logic: Try to maintain "quality" (short edge)
-                                    // 1080p is standard "short edge" for HD
-                                    // But if we are already 4k, stay 4k?
-                                    // Heuristic: Use current short edge as base
                                     const shortEdge = Math.min(engine.scene.width, engine.scene.height);
                                     let base = shortEdge;
-                                    // Snap to common bases if close?
                                     if (Math.abs(base - 1080) < 50) base = 1080;
                                     if (Math.abs(base - 720) < 50) base = 720;
                                     if (Math.abs(base - 2160) < 100) base = 2160;
@@ -95,21 +61,29 @@ export const CanvasSettings: React.FC<CanvasSettingsProps> = ({ engine, onResize
                                     }
 
                                     engine.resize(w, h);
-                                    onResize?.(w, h); // Sync Parent State
+                                    onResize?.(w, h);
                                     setForceUpdate(n => n + 1);
                                     onUpdate?.();
                                 }}
-                                className={`${buttonBaseClasses} ${isActive ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"}`}
+                                className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all border
+                                    ${isActive
+                                        ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
+                                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
                             >
                                 {ratio.label}
                             </button>
                         )
                     })}
                 </div>
-            </ControlRow>
+            </div>
 
-            <ControlRow label="Resolution (Quality)">
-                <div className={gridClasses}>
+            {/* Resolution (Quality) - Segmented Control */}
+            <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span>Resolution</span>
+                    <span className="font-mono text-[10px] opacity-70">{engine.scene.width} x {engine.scene.height}</span>
+                </div>
+                <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
                     {[
                         { label: "480p", base: 480 },
                         { label: "720p", base: 720 },
@@ -134,21 +108,117 @@ export const CanvasSettings: React.FC<CanvasSettingsProps> = ({ engine, onResize
                                     }
 
                                     engine.resize(w, h);
-                                    onResize?.(w, h); // Sync Parent State
+                                    onResize?.(w, h);
                                     setForceUpdate(n => n + 1);
                                     onUpdate?.();
                                 }}
-                                className={`${buttonBaseClasses} ${isActive ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"}`}
+                                className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all
+                                    ${isActive
+                                        ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                        : "text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-300"}`}
                             >
                                 {qual.label}
                             </button>
                         )
                     })}
                 </div>
-                <div className="mt-2 text-[10px] text-slate-400 text-right font-mono">
-                    {engine.scene.width} x {engine.scene.height} px
+            </div>
+
+            <div className="w-full h-px bg-slate-100 dark:bg-slate-800 my-1" />
+
+            {/* Color & Duration Section */}
+            <div className="flex flex-col gap-6">
+                {/* Background Color */}
+                <div className="space-y-2">
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                        Background
+                    </div>
+                    <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                        {[
+                            { val: "#FACC15", label: "Yellow" },
+                            { val: "#EF4444", label: "Red" },
+                            { val: "#22C55E", label: "Green" },
+                            { val: "#3B82F6", label: "Blue" },
+                            { val: "#8B5CF6", label: "Purple" },
+                            { val: "#EC4899", label: "Pink" },
+                            { val: "#000000", label: "Black" },
+                            { val: "#FFFFFF", label: "White" },
+                        ].map((color) => (
+                            <button
+                                key={color.val}
+                                onClick={() => {
+                                    engine.scene.backgroundColor = color.val;
+                                    engine.render();
+                                    setForceUpdate(n => n + 1);
+                                    onUpdate?.();
+                                }}
+                                className={`shrink-0 w-8 h-8 rounded-full shadow-sm ring-2 transition-all ${engine.scene.backgroundColor.toLowerCase() === color.val.toLowerCase()
+                                        ? "ring-indigo-500 scale-110 z-10"
+                                        : "ring-slate-200 dark:ring-slate-700 hover:scale-105"
+                                    }`}
+                                style={{ backgroundColor: color.val }}
+                                title={color.label}
+                            />
+                        ))}
+                        <div className="shrink-0 w-px h-6 bg-slate-200 dark:bg-slate-700 mx-2" />
+                        <ColorPicker
+                            value={engine.scene.backgroundColor}
+                            onChange={(val) => {
+                                engine.scene.backgroundColor = val;
+                                engine.render();
+                                setForceUpdate(n => n + 1);
+                                onUpdate?.();
+                            }}
+                        />
+                    </div>
                 </div>
-            </ControlRow>
+
+                {/* Duration */}
+                <div className="space-y-2">
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                        Duration
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                        {/* Presets */}
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 flex-1">
+                            {[5, 10, 15, 30, 60].map((sec) => (
+                                <button
+                                    key={sec}
+                                    onClick={() => {
+                                        engine.setTotalDuration(sec * 1000);
+                                        setForceUpdate(n => n + 1);
+                                        onUpdate?.();
+                                    }}
+                                    className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${Math.round(engine.totalDuration / 1000) === sec
+                                            ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
+                                            : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"
+                                        }`}
+                                >
+                                    {sec}s
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Custom Input */}
+                        <div className="flex items-center gap-2 shrink-0">
+                            <input
+                                type="number"
+                                min={1}
+                                max={300}
+                                className="w-16 bg-slate-100 dark:bg-slate-800 rounded-lg px-2 py-1.5 text-right text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500 transition-all border border-transparent focus:border-indigo-500"
+                                value={Math.round(engine.totalDuration / 1000)}
+                                onChange={(e) => {
+                                    const val = Math.max(1, Number(e.target.value));
+                                    engine.setTotalDuration(val * 1000);
+                                    setForceUpdate(n => n + 1);
+                                    onUpdate?.();
+                                }}
+                            />
+                            <span className="text-xs font-bold text-slate-400">sec</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

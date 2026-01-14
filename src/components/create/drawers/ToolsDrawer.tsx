@@ -10,6 +10,8 @@ import { EditDrawer } from "./EditDrawer";
 import { DimensionsDrawerContent } from "./DimensionsDrawer";
 import { PositionDrawerContent } from "./PositionDrawer";
 
+import { CanvasSettings } from "../settings/CanvasSettings";
+
 interface ToolsDrawerProps {
     engine: Engine | null;
     selectedId: string | null;
@@ -21,7 +23,7 @@ export const ToolsDrawer: React.FC<ToolsDrawerProps> = ({ engine, selectedId, ac
 
     // Determine if we should be open
     const isOpen = useMemo(() => {
-        return ['adjust', 'motion', 'style', 'font', 'settings', 'edit', 'dimensions', 'position'].includes(activeTab || '');
+        return ['adjust', 'motion', 'style', 'font', 'settings', 'edit', 'dimensions', 'position', 'canvas'].includes(activeTab || '');
     }, [activeTab]);
 
     const title = useMemo(() => {
@@ -34,6 +36,7 @@ export const ToolsDrawer: React.FC<ToolsDrawerProps> = ({ engine, selectedId, ac
             case 'font': return 'Font';
             case 'settings': return 'Settings';
             case 'edit': return 'Edit';
+            case 'canvas': return 'Canvas';
             default: return 'Tools';
         }
     }, [activeTab]);
@@ -48,12 +51,14 @@ export const ToolsDrawer: React.FC<ToolsDrawerProps> = ({ engine, selectedId, ac
             case 'font': return <FontDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
             case 'settings': return <SettingsDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
             case 'edit': return <EditDrawer engine={engine} selectedId={selectedId} isOpen={activeTab === 'edit'} onClose={onClose} />;
+            case 'canvas': return <CanvasSettings engine={engine} variant="mobile" />;
             default: return null;
         }
     }, [activeTab, engine, selectedId, onClose]);
 
     // Use Close on empty content or if no object is selected (though editor handles deselect)
-    if (!selectedId) return null;
+    // Allow 'canvas' tab to open even if no object is selected
+    if (!selectedId && activeTab !== 'canvas') return null;
 
     return (
         <BottomSheet

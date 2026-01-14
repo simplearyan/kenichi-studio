@@ -1,7 +1,7 @@
 import React from "react";
-import { Plus, SlidersHorizontal, Layers, Download, Type, Square, BarChart3, Terminal, Sparkles, Keyboard, Palette, User, Settings2, ChevronLeft, Database, Scaling, Move } from "lucide-react";
+import { Plus, SlidersHorizontal, Layers, Download, Type, Square, BarChart3, Terminal, Sparkles, Keyboard, Palette, User, Settings2, ChevronLeft, Database, Scaling, Move, Crop } from "lucide-react";
 
-export type BottomDockTab = "assets" | "text" | "shapes" | "code" | "charts" | "config" | "edit" | "font" | "style" | "motion" | "adjust" | "dimensions" | "position" | "layers" | "export" | "theme" | "settings" | null;
+export type BottomDockTab = "assets" | "text" | "shapes" | "code" | "charts" | "config" | "edit" | "font" | "style" | "motion" | "adjust" | "dimensions" | "position" | "layers" | "export" | "theme" | "settings" | "canvas" | null;
 
 export type ObjectType = "text" | "shape" | "image" | "chart" | "bar-race" | "character" | "code" | "particle" | null;
 
@@ -133,11 +133,15 @@ export const BottomDock: React.FC<BottomDockProps> = ({ activeTab, onTabChange, 
 
                         <Separator />
 
-                        {/* Layers */}
+
+
                         {/* Layers */}
                         <Button id="layers" icon={Layers} label="Layers" />
 
                         <Separator />
+
+                        {/* Canavs Settings */}
+                        <Button id="canvas" icon={Crop} label="Canvas" />
 
                         {/* Export */}
                         <Button id="export" icon={Download} label="Export" />

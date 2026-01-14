@@ -310,7 +310,7 @@ export const EditorLayout = () => {
                             onOpenCanvasSettings={() => {
                                 // Open "Edit" tab but deselect object to show Canvas properties
                                 setSelectedId(null);
-                                setActiveBottomTab("edit");
+                                setActiveBottomTab("canvas");
                             }}
                             currentTime={currentTime}
                             totalDuration={engine?.totalDuration || 5000}

@@ -51,27 +51,23 @@ export const AdjustDrawerContent: React.FC<{ engine: Engine | null; selectedId: 
     return (
         <div className="flex flex-col gap-6 p-6 min-h-[140px]">
             {/* Alignment */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-                    <Layout size={16} />
-                    <span>Alignment</span>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                    <button
-                        onClick={() => handleAlign('horizontal')}
-                        className="flex flex-col items-center justify-center gap-2 p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all text-xs font-bold text-slate-600 dark:text-slate-300"
-                    >
-                        <AlignHorizontalSpaceAround size={20} />
-                        <span>Center Horizontally</span>
-                    </button>
-                    <button
-                        onClick={() => handleAlign('vertical')}
-                        className="flex flex-col items-center justify-center gap-2 p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all text-xs font-bold text-slate-600 dark:text-slate-300"
-                    >
-                        <AlignVerticalSpaceAround size={20} />
-                        <span>Center Vertically</span>
-                    </button>
-                </div>
+            {/* Alignment Row - Compact */}
+            <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
+                <button
+                    onClick={() => handleAlign('horizontal')}
+                    className="flex-1 flex items-center justify-center h-10 rounded-lg hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm active:scale-95 transition-all text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    title="Center Horizontally"
+                >
+                    <AlignHorizontalSpaceAround size={20} />
+                </button>
+                <div className="w-px my-2 bg-slate-200 dark:bg-slate-700" />
+                <button
+                    onClick={() => handleAlign('vertical')}
+                    className="flex-1 flex items-center justify-center h-10 rounded-lg hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm active:scale-95 transition-all text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    title="Center Vertically"
+                >
+                    <AlignVerticalSpaceAround size={20} />
+                </button>
             </div>
 
             <div className="w-full h-px bg-slate-100 dark:bg-slate-800" />
