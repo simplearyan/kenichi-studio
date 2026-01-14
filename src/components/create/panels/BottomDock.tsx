@@ -1,7 +1,7 @@
 import React from "react";
-import { Plus, SlidersHorizontal, Layers, Download, Type, Square, BarChart3, Terminal, Sparkles, Keyboard, Palette, User, Settings2, ChevronLeft, Database } from "lucide-react";
+import { Plus, SlidersHorizontal, Layers, Download, Type, Square, BarChart3, Terminal, Sparkles, Keyboard, Palette, User, Settings2, ChevronLeft, Database, Scaling, Move } from "lucide-react";
 
-export type BottomDockTab = "assets" | "text" | "shapes" | "code" | "charts" | "config" | "edit" | "font" | "style" | "motion" | "adjust" | "layers" | "export" | "theme" | "settings" | null;
+export type BottomDockTab = "assets" | "text" | "shapes" | "code" | "charts" | "config" | "edit" | "font" | "style" | "motion" | "adjust" | "dimensions" | "position" | "layers" | "export" | "theme" | "settings" | null;
 
 export type ObjectType = "text" | "shape" | "image" | "chart" | "bar-race" | "character" | "code" | "particle" | null;
 
@@ -67,8 +67,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({ activeTab, onTabChange, 
                         <Button id="edit" icon={Keyboard} label="Edit" highlight />
                         <Button id="font" icon={Type} label="Font" />
                         <Button id="style" icon={Palette} label="Style" />
-                        <Button id="motion" icon={Sparkles} label="Motion" />
+                        <Button id="dimensions" icon={Scaling} label="Size" />
                         <Button id="adjust" icon={Settings2} label="Adjust" />
+                        <Button id="motion" icon={Sparkles} label="Motion" />
+                        <Button id="position" icon={Move} label="Position" />
                         <Separator />
                         <Button id="layers" icon={Layers} label="Layers" />
                     </>
@@ -77,9 +79,11 @@ export const BottomDock: React.FC<BottomDockProps> = ({ activeTab, onTabChange, 
                 {/* CONTEXT: SHAPE/OTHER SELECTED */}
                 {selectedObjectType && !['text', 'code', 'chart', 'bar-race'].includes(selectedObjectType) && (
                     <>
+                        <Button id="dimensions" icon={Scaling} label="Size" />
                         <Button id="adjust" icon={Settings2} label="Adjust" />
                         <Button id="style" icon={Palette} label="Style" />
                         <Button id="motion" icon={Sparkles} label="Motion" />
+                        <Button id="position" icon={Move} label="Position" />
                         <Separator />
                         <Button id="layers" icon={Layers} label="Layers" />
                     </>
@@ -89,8 +93,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({ activeTab, onTabChange, 
                 {(selectedObjectType === 'chart' || selectedObjectType === 'bar-race') && (
                     <>
                         <Button id="config" icon={SlidersHorizontal} label="Config" highlight />
+                        <Button id="dimensions" icon={Scaling} label="Size" />
                         <Button id="adjust" icon={Settings2} label="Adjust" />
                         <Button id="motion" icon={Sparkles} label="Motion" />
+                        <Button id="position" icon={Move} label="Position" />
                         <Separator />
                         <Button id="layers" icon={Layers} label="Layers" />
                     </>
@@ -101,8 +107,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({ activeTab, onTabChange, 
                     <>
                         <Button id="edit" icon={Keyboard} label="Edit" highlight />
                         <Button id="theme" icon={Palette} label="Theme" />
-                        <Button id="settings" icon={SlidersHorizontal} label="Settings" />
+                        <Button id="dimensions" icon={Scaling} label="Size" />
                         <Button id="adjust" icon={Settings2} label="Adjust" />
+                        <Button id="settings" icon={SlidersHorizontal} label="Settings" />
+                        <Button id="position" icon={Move} label="Position" />
                         <Separator />
                         <Button id="layers" icon={Layers} label="Layers" />
                     </>

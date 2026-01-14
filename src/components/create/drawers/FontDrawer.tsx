@@ -50,13 +50,13 @@ export const FontDrawerContent: React.FC<{ engine: Engine | null; selectedId: st
                         <button
                             key={font}
                             onClick={() => handleChange("fontFamily", font)}
-                            className={`flex items-center justify-center px-6 py-4 rounded-xl border transition-all shrink-0 min-w-[100px] ${obj.fontFamily === font
+                            className={`flex items-center justify-center px-4 py-3 rounded-xl border transition-all shrink-0 min-w-[90px] ${obj.fontFamily === font
                                 ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                                : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
                                 }`}
                         >
-                            <span className="text-lg" style={{ fontFamily: font }}>Aa</span>
-                            <span className="text-xs ml-2 font-medium">{font}</span>
+                            <span className="text-base" style={{ fontFamily: font }}>Aa</span>
+                            <span className="text-xs ml-2 font-medium truncate">{font}</span>
                         </button>
                     ))}
                 </div>

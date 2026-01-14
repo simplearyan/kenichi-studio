@@ -44,57 +44,60 @@ export const MotionDrawerContent: React.FC<{ engine: Engine | null; selectedId: 
         : animations.filter(a => a.id !== 'typewriter');
 
     return (
-        <div className="flex flex-col gap-4 p-4 min-h-[140px]">
-            {/* Timing Controls (Only if animation active) */}
+        <div className="flex flex-col gap-6 p-6 min-h-[140px]">
+
+            {/* 1. Timing Controls (Compact Grid) */}
             {obj.animation?.type && obj.animation.type !== 'none' && (
-                <div className="px-2 pt-2 pb-2 border-b border-slate-100 dark:border-slate-800/50">
-                    <div className="flex gap-4">
-                        <div className="flex-1 space-y-2">
-                            <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
-                                <span>Duration</span>
-                                <span>{(obj.animation.duration || 1000) / 1000}s</span>
-                            </div>
-                            <Slider
-                                value={obj.animation.duration || 1000}
-                                min={100} max={3000}
-                                onChange={(v) => updateAnim({ duration: v })}
-                                compact
-                            />
+                <div className="grid grid-cols-2 gap-6 pb-2 border-b border-slate-100 dark:border-slate-800/50">
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
+                            <span>Duration</span>
+                            <span>{(obj.animation.duration || 1000) / 1000}s</span>
                         </div>
-                        <div className="flex-1 space-y-2">
-                            <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
-                                <span>Delay</span>
-                                <span>{(obj.animation.delay || 0) / 1000}s</span>
-                            </div>
-                            <Slider
-                                value={obj.animation.delay || 0}
-                                min={0} max={2000}
-                                onChange={(v) => updateAnim({ delay: v })}
-                                compact
-                            />
+                        <Slider
+                            value={obj.animation.duration || 1000}
+                            min={100} max={3000}
+                            onChange={(v) => updateAnim({ duration: v })}
+                            compact
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
+                            <span>Delay</span>
+                            <span>{(obj.animation.delay || 0) / 1000}s</span>
                         </div>
+                        <Slider
+                            value={obj.animation.delay || 0}
+                            min={0} max={2000}
+                            onChange={(v) => updateAnim({ delay: v })}
+                            compact
+                        />
                     </div>
                 </div>
             )}
 
-            {/* Horizontal Presets */}
-            <div className="flex overflow-x-auto gap-4 p-1 no-scrollbar items-center">
-                {availableAnimations.map((anim) => {
-                    const isActive = obj.animation?.type === anim.id || (!obj.animation?.type && anim.id === 'none');
-                    return (
-                        <button
-                            key={anim.id}
-                            onClick={() => updateAnim({ type: anim.id })}
-                            className={`flex flex-col items-center justify-center gap-2 min-w-[72px] h-[72px] rounded-2xl border transition-all shrink-0 ${isActive
-                                ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-600 dark:text-indigo-300 scale-105 shadow-sm"
-                                : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-                                }`}
-                        >
-                            <anim.icon size={24} strokeWidth={1.5} />
-                            <span className="text-[10px] font-medium">{anim.label}</span>
-                        </button>
-                    );
-                })}
+            {/* 2. Motion Presets */}
+            <div className="space-y-2">
+                {!obj.animation?.type || obj.animation.type === 'none' && <span className="text-[10px] text-slate-400 font-bold uppercase block">Choose Animation</span>}
+
+                <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar items-center">
+                    {availableAnimations.map((anim) => {
+                        const isActive = obj.animation?.type === anim.id || (!obj.animation?.type && anim.id === 'none');
+                        return (
+                            <button
+                                key={anim.id}
+                                onClick={() => updateAnim({ type: anim.id })}
+                                className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all shrink-0 min-w-[80px] ${isActive
+                                    ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-600 dark:text-indigo-300 shadow-sm"
+                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                    }`}
+                            >
+                                <anim.icon size={20} strokeWidth={2} />
+                                <span className="text-[10px] font-bold">{anim.label}</span>
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

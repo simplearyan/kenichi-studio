@@ -86,6 +86,7 @@ export const PropertiesPanel = ({ engine, selectedId, isMobileSheet = false, ini
 
     // Text Specific State
     const [isEditingText, setIsEditingText] = useState(false);
+    const [initialEditText, setInitialEditText] = useState("");
     const textInputRef = useRef<HTMLTextAreaElement>(null);
 
     // Subscribe to engine changes
@@ -118,6 +119,8 @@ export const PropertiesPanel = ({ engine, selectedId, isMobileSheet = false, ini
     useEffect(() => {
         if (isEditingText && textInputRef.current) {
             textInputRef.current.focus();
+            // Select all text on open for quick replacement is common, but cursor at end is safer for "edit"
+            // YT Create usually puts cursor at end.
             textInputRef.current.setSelectionRange(textInputRef.current.value.length, textInputRef.current.value.length);
         }
     }, [isEditingText]);
@@ -184,28 +187,48 @@ export const PropertiesPanel = ({ engine, selectedId, isMobileSheet = false, ini
             );
         }
 
-        // Special Layout for TEXT EDITING
+        // Special Layout for TEXT EDITING (YT Create Style)
         if (isEditingText && obj instanceof TextObject) {
             return (
-                <MobilePropertyContainer>
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm z-10">
+                <div className="fixed inset-0 z-[100] flex flex-col bg-slate-100 dark:bg-slate-950">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
+                        <button
+                            onClick={() => {
+                                // Cancel: Revert text and close
+                                handleChange("text", initialEditText);
+                                setIsEditingText(false);
+                            }}
+                            className="px-3 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                        >
+                            Cancel
+                        </button>
+
                         <span className="text-sm font-bold text-slate-900 dark:text-white">Edit Text</span>
+
                         <button
                             onClick={() => setIsEditingText(false)}
-                            className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-full active:scale-95 transition-transform"
+                            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-full transition-colors shadow-sm"
                         >
                             Done
                         </button>
                     </div>
-                    <div className="flex-1 p-4 bg-slate-50 dark:bg-slate-950">
+
+                    {/* Editor Area */}
+                    <div className="flex-1 p-6 flex flex-col items-center justify-center relative">
+                        {/* Background Overlay Hint (Optional) */}
+                        <div className="absolute inset-0 pointer-events-none opacity-5 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-500 via-transparent to-transparent" />
+
                         <textarea
                             ref={textInputRef}
-                            className="w-full h-40 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-slate-900 dark:text-white text-lg focus:border-indigo-500 outline-none resize-none"
+                            className="w-full h-full max-w-2xl bg-transparent border-none text-center text-3xl font-bold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700 outline-none resize-none mx-auto leading-relaxed selection:bg-indigo-500/30"
                             value={obj.text}
                             onChange={(e) => handleChange("text", e.target.value)}
+                            placeholder="Type something..."
+                            style={{ fontFamily: obj.fontFamily }}
                         />
                     </div>
-                </MobilePropertyContainer>
+                </div>
             )
         }
 
@@ -246,7 +269,10 @@ export const PropertiesPanel = ({ engine, selectedId, isMobileSheet = false, ini
                         {/* Inject Edit Button for Text Objects */}
                         {obj instanceof TextObject && (
                             <button
-                                onClick={() => setIsEditingText(true)}
+                                onClick={() => {
+                                    setInitialEditText(obj.text);
+                                    setIsEditingText(true);
+                                }}
                                 className="flex flex-col items-center gap-1 min-w-[60px] "
                             >
                                 <div className={`p-2 rounded-full bg-transparent text-slate-400 hover:text-white transition-colors`}>

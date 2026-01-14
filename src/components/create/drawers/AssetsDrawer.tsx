@@ -13,6 +13,12 @@ interface AssetsDrawerProps {
 }
 
 export const AssetsDrawer: React.FC<AssetsDrawerProps> = ({ engine, activeTab, onClose }) => {
+    const [isExpanded, setIsExpanded] = React.useState(false);
+
+    // Reset expansion when tab changes
+    React.useEffect(() => {
+        setIsExpanded(false);
+    }, [activeTab]);
 
     const isOpen = useMemo(() => {
         return ['text', 'shapes', 'code', 'charts'].includes(activeTab || '');
@@ -30,21 +36,22 @@ export const AssetsDrawer: React.FC<AssetsDrawerProps> = ({ engine, activeTab, o
 
     const content = useMemo(() => {
         switch (activeTab) {
-            case 'text': return <TextDrawerContent engine={engine} onClose={onClose} />;
+            case 'text': return <TextDrawerContent engine={engine} onClose={onClose} isExpanded={isExpanded} />;
             case 'shapes': return <ShapesDrawerContent engine={engine} onClose={onClose} />;
             case 'code': return <CodeDrawerContent engine={engine} onClose={onClose} />;
             case 'charts': return <ChartsDrawerContent engine={engine} onClose={onClose} />;
             default: return null;
         }
-    }, [activeTab, engine, onClose]);
+    }, [activeTab, engine, onClose, isExpanded]);
 
     return (
         <BottomSheet
             isOpen={isOpen}
             onClose={onClose}
-            title={title}
+            title={undefined}
             initialSnap={0.5}
             snaps={[0.5, 0.95]}
+            onSnapChange={(curr) => setIsExpanded(curr === 1)}
         >
             {content}
         </BottomSheet>

@@ -65,7 +65,8 @@ export const EditorLayout = () => {
         } else {
             setSelectedObjectType(null);
             // Close any object-specific sheets when deselected
-            if (['edit', 'font', 'style', 'motion', 'adjust', 'settings', 'charts', 'text', 'shapes', 'code', 'config'].includes(activeBottomTab || '')) {
+            // NOTE: 'edit' is EXCLUDED because it is also used for Canvas Settings (no selection)
+            if (['font', 'style', 'motion', 'adjust', 'dimensions', 'position', 'settings', 'charts', 'text', 'shapes', 'code', 'config'].includes(activeBottomTab || '')) {
                 setActiveBottomTab(null);
             }
         }
@@ -372,22 +373,6 @@ export const EditorLayout = () => {
                             </div>
                         </BottomSheet>
 
-                        <BottomSheet
-                            isOpen={['edit'].includes(activeBottomTab || '')}
-                            onClose={() => setActiveBottomTab(null)}
-                            title="Edit Properties"
-                            initialSnap={0.5}
-                            snaps={[0.5, 0.9]}
-
-                        >
-                            <PropertiesPanel
-                                engine={engine}
-                                selectedId={selectedId}
-                                isMobileSheet
-                                // Pass the active tab as the category to show
-                                externalMobileCategory={['font', 'style'].includes(activeBottomTab || '') ? activeBottomTab as string : undefined}
-                            />
-                        </BottomSheet>
 
                         {/* 3. LAYERS DRAWER */}
                         <LayersDrawer

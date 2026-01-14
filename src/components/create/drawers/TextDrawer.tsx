@@ -1,7 +1,8 @@
 import React from "react";
 import { Engine } from "../../../engine/Core";
-import { TEXT_OPTIONS, createText } from "../../../data/textOptions";
+import { TEXT_OPTIONS, TEXT_EFFECTS, createText } from "../../../data/textOptions";
 import { BottomSheet } from "../panels/BottomSheet";
+import { Wand2 } from "lucide-react";
 
 interface TextDrawerProps {
     engine: Engine | null;
@@ -9,46 +10,79 @@ interface TextDrawerProps {
     onClose: () => void;
 }
 
-export const TextDrawerContent: React.FC<{ engine: Engine | null; onClose: () => void }> = ({ engine, onClose }) => {
-    const handleAdd = (type: any) => {
+export const TextDrawerContent: React.FC<{ engine: Engine | null; onClose: () => void; isExpanded?: boolean }> = ({ engine, onClose, isExpanded = false }) => {
+    const handleAdd = (type: string, effect?: any) => {
         if (!engine) return;
-        createText(engine, type);
+        createText(engine, type, effect);
         onClose();
     };
 
+    // Always use Grid Layout (2 columns)
+    const containerClass = "grid grid-cols-2 gap-2 pb-8";
+
+    // Default Card Styles
+    const cardClass = "relative overflow-hidden rounded-xl border transition-all active:scale-95 h-24 flex flex-col items-center justify-center";
+
     return (
-        <div className="space-y-4 px-2">
-            <div className="text-xs font-bold text-slate-400 text-center mb-4">Click to add to canvas</div>
+        <div className="space-y-6 px-2 pb-8 pt-2">
+            <div className="space-y-3">
+                <div className={containerClass}>
+                    {TEXT_OPTIONS.filter(o => ['heading', 'subheading'].includes(o.type)).map((opt) => (
+                        <button
+                            key={opt.type}
+                            onClick={() => handleAdd(opt.type)}
+                            className={`${cardClass} bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.02] group shadow-sm`}
+                        >
+                            <span className={`block font-black text-center ${opt.type === 'heading' ? 'text-2xl' : 'text-lg font-bold'} ${opt.colorClass}`}>
+                                {opt.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </div>
 
-            {TEXT_OPTIONS.map((opt) => {
-                const Icon = opt.icon;
-                return (
-                    <button
-                        key={opt.type}
-                        onClick={() => handleAdd(opt.type)}
-                        className={`w-full text-left p-6 rounded-xl shadow-sm border transition-all group relative overflow-hidden
-                                ${opt.bgClass} 
-                                ${opt.type === 'particle'
-                                ? 'hover:scale-105 hover:shadow-md border-violet-200 dark:border-violet-900/30'
-                                : 'bg-white dark:bg-neutral-800 border-slate-200 dark:border-neutral-700 hover:scale-105 hover:shadow-md'
-                            }
-                            `}
-                    >
-                        {opt.type === 'particle' && (
-                            <div className="absolute right-4 top-4 text-violet-500 opacity-20 group-hover:opacity-100 transition-opacity">
-                                <Icon size={24} />
+            {/* Section 2: Text Effects */}
+            <div className="space-y-3">
+                <div className={containerClass}>
+                    {TEXT_EFFECTS.map((effect) => (
+                        <button
+                            key={effect.id}
+                            onClick={() => handleAdd('effect', effect)}
+                            className={`${cardClass} bg-slate-100 dark:bg-slate-800 border-transparent dark:border-slate-700/30 hover:bg-slate-200 dark:hover:bg-slate-700`}
+                        >
+                            <span style={{
+                                ...effect.previewStyle,
+                                fontSize: '20px',
+                                textAlign: 'center',
+                                lineHeight: 1.1,
+                                width: '100%',
+                            }}>
+                                {effect.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Section 3: Special FX */}
+            <div className="space-y-3">
+                <div className={containerClass}>
+                    {TEXT_OPTIONS.filter(o => o.type === 'particle').map((opt) => (
+                        <button
+                            key={opt.type}
+                            onClick={() => handleAdd(opt.type)}
+                            className={`${cardClass} border-violet-200 dark:border-violet-900/50 bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 hover:scale-[1.02]`}
+                        >
+                            <div className="absolute right-2 top-2 text-violet-500 opacity-20">
+                                <Wand2 size={16} />
                             </div>
-                        )}
-
-                        <span className={`block mb-2 font-black ${opt.type === 'heading' ? 'text-4xl' : opt.type === 'subheading' ? 'text-xl font-medium' : 'text-2xl'} ${opt.colorClass}`}>
-                            {opt.label}
-                        </span>
-                        <span className={`text-xs block ${opt.type === 'particle' ? 'text-violet-600/70 dark:text-violet-400/70' : 'text-slate-400'}`}>
-                            {opt.description}
-                        </span>
-                    </button>
-                );
-            })}
+                            <span className={`block font-black text-lg text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 leading-none`}>
+                                {opt.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };

@@ -6,6 +6,9 @@ import { MotionDrawerContent } from "./MotionDrawer";
 import { StyleDrawerContent } from "./StyleDrawer";
 import { FontDrawerContent } from "./FontDrawer";
 import { SettingsDrawerContent } from "./SettingsDrawer";
+import { EditDrawer } from "./EditDrawer";
+import { DimensionsDrawerContent } from "./DimensionsDrawer";
+import { PositionDrawerContent } from "./PositionDrawer";
 
 interface ToolsDrawerProps {
     engine: Engine | null;
@@ -18,16 +21,19 @@ export const ToolsDrawer: React.FC<ToolsDrawerProps> = ({ engine, selectedId, ac
 
     // Determine if we should be open
     const isOpen = useMemo(() => {
-        return ['adjust', 'motion', 'style', 'font', 'settings'].includes(activeTab || '');
+        return ['adjust', 'motion', 'style', 'font', 'settings', 'edit', 'dimensions', 'position'].includes(activeTab || '');
     }, [activeTab]);
 
     const title = useMemo(() => {
         switch (activeTab) {
             case 'adjust': return 'Adjust';
+            case 'dimensions': return 'Dimensions';
+            case 'position': return 'Position';
             case 'motion': return 'Motion';
             case 'style': return 'Style';
             case 'font': return 'Font';
             case 'settings': return 'Settings';
+            case 'edit': return 'Edit';
             default: return 'Tools';
         }
     }, [activeTab]);
@@ -35,10 +41,13 @@ export const ToolsDrawer: React.FC<ToolsDrawerProps> = ({ engine, selectedId, ac
     const content = useMemo(() => {
         switch (activeTab) {
             case 'adjust': return <AdjustDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
+            case 'dimensions': return <DimensionsDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
+            case 'position': return <PositionDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
             case 'motion': return <MotionDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
             case 'style': return <StyleDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
             case 'font': return <FontDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
             case 'settings': return <SettingsDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />;
+            case 'edit': return <EditDrawer engine={engine} selectedId={selectedId} isOpen={activeTab === 'edit'} onClose={onClose} />;
             default: return null;
         }
     }, [activeTab, engine, selectedId, onClose]);

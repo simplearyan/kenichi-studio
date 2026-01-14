@@ -10,6 +10,7 @@ interface BottomSheetProps {
     initialSnap?: number; // 0 to 1 (percentage of screen height)
     snaps?: number[]; // [0.5, 0.9]
     variant?: 'sheet' | 'dock';
+    onSnapChange?: (snapIndex: number) => void;
 }
 
 export const BottomSheet: React.FC<BottomSheetProps> = ({
@@ -19,10 +20,22 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     title,
     initialSnap = 0.5,
     snaps = [0.5, 0.9],
-    variant = 'sheet'
+    variant = 'sheet',
+    onSnapChange
 }) => {
-    const [scope, animate] = [null, useAnimation()];
-    const [isDragging, setIsDragging] = useState(false);
+    const [activeSnap, setActiveSnap] = useState(initialSnap);
+
+    // Reset snap when opening
+    useEffect(() => {
+        if (isOpen) {
+            setActiveSnap(initialSnap);
+            // Notify initial snap index if provided, usually 0 (first snap) or matched index
+            const initialIndex = snaps.indexOf(initialSnap);
+            if (initialIndex !== -1) {
+                // We defer this slightly to ensure parent is ready or just rely on parent setting default
+            }
+        }
+    }, [isOpen, initialSnap, snaps]);
 
     // Close on escape key
     useEffect(() => {
@@ -34,6 +47,42 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     }, [onClose]);
 
     const isDock = variant === 'dock';
+
+    const handleDragEnd = (e: any, info: PanInfo) => {
+        const threshold = 100; // px
+        const velocityThreshold = 500; // px/s
+
+        // If dragged down significantly or flicked down from the bottom-most snap
+        // We need to check if we are closing or snapping.
+
+        // Current sheet Y position (approximate from drag) is needed to calculate snap
+        // A simple heuristic: check offset.y
+
+        // If dragged down far enough to close
+        if (info.offset.y > 200) {
+            onClose();
+            return;
+        }
+
+        // Calculate predicted end Y position (0 is top of screen, window.innerHeight is bottom)
+        // Note: motion.div y is percentage based in our animate prop. 
+        // But drag works in pixels. We need to convert.
+
+        const sheetHeight = window.innerHeight;
+        // Current "y" value relative to full open (0% y) when we started dragging was (1-activeSnap)*height
+        // info.point.y gives us the absolute page coordinates
+
+        const predictedY = info.point.y + info.velocity.y * 0.2;
+        const predictedSnap = 1 - (predictedY / sheetHeight);
+
+        // Find closest snap
+        const closest = snaps.reduce((prev, curr) => {
+            return (Math.abs(curr - predictedSnap) < Math.abs(prev - predictedSnap) ? curr : prev);
+        });
+
+        setActiveSnap(closest);
+        onSnapChange?.(snaps.indexOf(closest));
+    };
 
     return (
         <AnimatePresence>
@@ -53,20 +102,14 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
                     {/* Sheet / Dock */}
                     <motion.div
                         initial={{ y: "100%" }}
-                        animate={{ y: isDock ? "0%" : `${(1 - initialSnap) * 100}%` }}
+                        animate={{ y: isDock ? "0%" : `${(1 - activeSnap) * 100}%` }}
                         exit={{ y: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
                         drag={isDock ? false : "y"}
                         dragConstraints={{ top: 0 }}
                         dragElastic={0.05}
                         dragMomentum={false}
-                        onDragEnd={isDock ? undefined : (e, info) => {
-                            if (info.offset.y > 100) {
-                                onClose();
-                            } else {
-                                // Snap logic could go here, for now just snapping to initial
-                            }
-                        }}
+                        onDragEnd={isDock ? undefined : handleDragEnd}
                         className={`fixed left-0 right-0 z-50 bg-white dark:bg-slate-900 shadow-2xl flex flex-col lg:hidden
                             ${isDock ? "border-t border-slate-200 dark:border-slate-800 pb-safe bottom-16" : "rounded-t-3xl max-h-[95vh] bottom-0"}
                         `}

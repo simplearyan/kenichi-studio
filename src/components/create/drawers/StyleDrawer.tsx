@@ -25,34 +25,33 @@ export const StyleDrawerContent: React.FC<{ engine: Engine | null; selectedId: s
     };
 
     const renderTextStyles = (textObj: TextObject) => (
-        <div className="space-y-6">
-            {/* Alignment */}
-            <div className="space-y-2">
-                <span className="text-[10px] text-slate-500 font-bold uppercase block">Alignment</span>
-                <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-                    {[
-                        { value: 'left', icon: AlignLeft },
-                        { value: 'center', icon: AlignCenter },
-                        { value: 'right', icon: AlignRight }
-                    ].map(opt => (
-                        <button
-                            key={opt.value}
-                            onClick={() => handleChange('align', opt.value)}
-                            className={`flex-1 py-2 rounded-md flex justify-center transition-all ${textObj.align === opt.value
-                                ? "bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400"
-                                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                                }`}
-                        >
-                            <opt.icon size={20} />
-                        </button>
-                    ))}
+        <div className="space-y-5">
+            {/* Alignment & Colors Row */}
+            <div className="flex gap-4">
+                <div className="flex-1 space-y-2">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase block">Alignment</span>
+                    <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                        {[
+                            { value: 'left', icon: AlignLeft },
+                            { value: 'center', icon: AlignCenter },
+                            { value: 'right', icon: AlignRight }
+                        ].map(opt => (
+                            <button
+                                key={opt.value}
+                                onClick={() => handleChange('align', opt.value)}
+                                className={`flex-1 py-1.5 rounded-md flex justify-center transition-all ${textObj.align === opt.value
+                                    ? "bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400"
+                                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                                    }`}
+                            >
+                                <opt.icon size={18} />
+                            </button>
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            {/* Colors */}
-            <div className="space-y-4">
                 <div className="space-y-2">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase block">Text Color</span>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase block">Color</span>
                     <ColorPicker
                         value={textObj.color}
                         onChange={(v) => handleChange("color", v)}
@@ -78,7 +77,7 @@ export const StyleDrawerContent: React.FC<{ engine: Engine | null; selectedId: s
     );
 
     const renderGenericStyles = () => (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Opacity */}
             <div className="space-y-2">
                 <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
