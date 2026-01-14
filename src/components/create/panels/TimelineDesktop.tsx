@@ -1,5 +1,6 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Play, Pause, SkipBack, Layers, Music, Type, Video, ZoomIn, ZoomOut, Scissors } from "lucide-react";
+import React, { useState } from "react";
+import { Play, Pause, SkipBack, Layers, Music, Type, ZoomIn, ZoomOut, Scissors } from "lucide-react";
+import { useTimelineInteraction } from "../hooks/useTimelineInteraction";
 
 interface TimelineProps {
     currentTime: number;
@@ -9,46 +10,23 @@ interface TimelineProps {
     onSeek: (time: number) => void;
 }
 
-export const Timeline = ({
+export const TimelineDesktop = ({
     currentTime,
     totalDuration,
     isPlaying,
     onPlayPause,
     onSeek
 }: TimelineProps) => {
-    const trackRef = useRef<HTMLDivElement>(null);
-    const [isDragging, setIsDragging] = useState(false);
+    const {
+        trackRef,
+        isDragging,
+        setIsDragging,
+        handleSeek,
+        formatTime,
+        progress
+    } = useTimelineInteraction({ currentTime, totalDuration, onSeek });
+
     const [zoom, setZoom] = useState(1); // 1 = 100%
-
-    const handleSeek = (e: React.MouseEvent | MouseEvent) => {
-        if (!trackRef.current) return;
-        const rect = trackRef.current.getBoundingClientRect();
-        const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-        const pct = x / rect.width;
-        onSeek(pct * totalDuration);
-    };
-
-    useEffect(() => {
-        if (!isDragging) return;
-        const onMove = (e: MouseEvent) => handleSeek(e);
-        const onUp = () => setIsDragging(false);
-
-        window.addEventListener("mousemove", onMove);
-        window.addEventListener("mouseup", onUp);
-        return () => {
-            window.removeEventListener("mousemove", onMove);
-            window.removeEventListener("mouseup", onUp);
-        };
-    }, [isDragging]);
-
-    const progress = (currentTime / totalDuration) * 100;
-
-    // Time Ruler Generation
-    const formatTime = (ms: number) => {
-        const s = Math.floor(ms / 1000);
-        const m = Math.floor(s / 60);
-        return `${m}:${(s % 60).toString().padStart(2, '0')}`;
-    };
 
     return (
         <div className="w-full h-full bg-white dark:bg-app-bg border-t border-slate-200 dark:border-app-border flex flex-col select-none">

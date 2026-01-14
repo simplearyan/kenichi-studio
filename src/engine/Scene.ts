@@ -4,7 +4,7 @@ export type GuideType = 'none' | 'center' | 'thirds' | 'golden';
 
 export class Scene {
     objects: KinetixObject[] = [];
-    backgroundColor: string = "#1e293b"; // Default slate-800
+    backgroundColor: string = "#292929"; // Default dark gray
     width: number = 1920;
     height: number = 1080;
     guideType: GuideType = 'none';

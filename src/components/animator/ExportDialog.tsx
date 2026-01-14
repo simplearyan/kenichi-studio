@@ -122,7 +122,6 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
 
                 if (containerToCapture) {
                     const blob = await toBlob(containerToCapture, {
-                        width: outWidth, // Capture at output resolution? Or capture high and downscale? 
                         // html-to-image is better at capturing exact size.
                         // But if we resize the container, layout might break.
                         // Approach: Capture at FULL logical resolution, but draw to bitmap at OUTPUT resolution.
@@ -184,8 +183,8 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
         <button
             onClick={onClick}
             className={`flex-1 flex flex-col items-center p-3 sm:p-4 rounded-xl border-2 transition-all ${selected
-                    ? "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 text-indigo-700 dark:text-indigo-400"
-                    : "bg-slate-50 dark:bg-slate-800/50 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                ? "bg-app-light-surface-hover dark:bg-app-surface-hover border-black dark:border-white text-black dark:text-white"
+                : "bg-app-light-surface dark:bg-app-surface-hover border-transparent hover:bg-app-light-surface-hover dark:hover:bg-app-border text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                 }`}
         >
             <Icon size={24} className="mb-2" strokeWidth={2} />
@@ -234,8 +233,8 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
 
             {/* Panel */}
             <div className={`
-                relative w-full sm:max-w-md bg-white dark:bg-[#1E293B] 
-                border-t sm:border border-slate-200 dark:border-slate-700 
+                relative w-full sm:max-w-md bg-white dark:bg-app-surface 
+                border-t sm:border border-app-light-border dark:border-app-border 
                 rounded-t-2xl sm:rounded-2xl 
                 p-6 shadow-2xl z-10 pointer-events-auto 
                 max-h-[90vh] overflow-y-auto
@@ -250,7 +249,7 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
                     </div>
                     <button
                         onClick={() => setIsExportOpen(false)}
-                        className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition-colors"
+                        className="p-2 rounded-full hover:bg-app-light-surface-hover dark:hover:bg-app-surface-hover text-slate-500 transition-colors"
                     >
                         <X size={20} />
                     </button>
@@ -261,7 +260,7 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
 
                         {/* Format Section */}
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Format</label>
+                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Format</label>
                             <div className="flex gap-3">
                                 <OptionCard
                                     selected={isMp4}
@@ -282,7 +281,7 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
 
                         {/* Quality Section */}
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Resolution</label>
+                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Resolution</label>
                             <div className="flex gap-3">
                                 <OptionCard
                                     selected={qualityScale === 1}
@@ -301,11 +300,10 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
                             </div>
                         </div>
 
-                        {/* Action */}
                         <div className="pt-2">
                             <button
                                 onClick={startExport}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group"
+                                className="w-full bg-black dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-black font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group"
                             >
                                 <span>Start Export</span>
                                 <Download size={18} className="group-hover:translate-y-0.5 transition-transform" />
@@ -319,22 +317,22 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
                         <div className="relative pt-1">
                             <div className="flex mb-2 items-center justify-between">
                                 <div>
-                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
+                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-accent bg-accent-subtle/20">
                                         {status === 'rendering' ? 'Rendering' : 'Encoding'}
                                     </span>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-xs font-semibold inline-block text-indigo-600">
+                                    <span className="text-xs font-semibold inline-block text-accent">
                                         {progress}%
                                     </span>
                                 </div>
                             </div>
-                            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-indigo-200">
-                                <div style={{ width: `${progress}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500 transition-all duration-300"></div>
+                            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-accent-subtle/20">
+                                <div style={{ width: `${progress}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-accent transition-all duration-300"></div>
                             </div>
                         </div>
 
-                        <p className="text-center text-sm text-slate-500 animate-pulse font-mono">
+                        <p className="text-center text-sm text-slate-500 dark:text-slate-400 animate-pulse font-mono">
                             This relies on your browser performance.<br />Please keep this tab open.
                         </p>
 
@@ -355,7 +353,7 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Export Complete!</h3>
-                            <p className="text-sm text-slate-500">Your video is ready to download.</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Your video is ready to download.</p>
                         </div>
 
                         <button
@@ -375,7 +373,7 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ durationInFrames, component
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Export Failed</h3>
-                            <p className="text-sm text-slate-500">Something went wrong during rendering.</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Something went wrong during rendering.</p>
                         </div>
 
                         <button

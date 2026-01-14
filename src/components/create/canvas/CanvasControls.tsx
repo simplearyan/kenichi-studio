@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, Pause, Maximize, Settings, Smartphone, RectangleHorizontal, Square, Check, Grid3x3, Ban, Crosshair, ScanLine, Baseline } from "lucide-react";
+import { Play, Pause, Maximize, Settings, Smartphone, RectangleHorizontal, Square, Check, Grid3x3, Ban, Crosshair, ScanLine, Baseline, SkipBack } from "lucide-react";
 
 interface CanvasControlsProps {
     isPlaying: boolean;
@@ -12,6 +12,7 @@ interface CanvasControlsProps {
     totalDuration: number;
     activeGuide: string;
     onGuideChange: (guide: string) => void;
+    onSeek: (time: number) => void;
 }
 
 export const CanvasControls: React.FC<CanvasControlsProps> = ({
@@ -24,7 +25,8 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
     currentTime,
     totalDuration,
     activeGuide,
-    onGuideChange
+    onGuideChange,
+    onSeek
 }) => {
     const [showRatioMenu, setShowRatioMenu] = useState(false);
     const [showGuideMenu, setShowGuideMenu] = useState(false);
@@ -53,15 +55,23 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
     const currentGuide = guides.find(g => g.id === activeGuide) || guides[0];
 
     return (
-        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-app-surface border-b border-slate-200 dark:border-slate-800 lg:hidden user-select-none relative z-30">
+        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-app-surface lg:hidden user-select-none relative z-30">
 
             <div className="flex items-center gap-3">
-                {/* Play/Pause */}
+                {/* Restart / Skip Back */}
+                <button
+                    onClick={() => onSeek(0)}
+                    className="p-2 -ml-2 text-slate-500 active:text-slate-900 dark:active:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                >
+                    <SkipBack size={20} />
+                </button>
+
+                {/* Play/Pause - Redesigned */}
                 <button
                     onClick={onPlayPause}
-                    className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200"
+                    className="w-10 h-10 flex items-center justify-center bg-indigo-600 active:bg-indigo-700 text-white rounded-full shadow-lg transition-transform active:scale-95"
                 >
-                    {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
+                    {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-0.5" />}
                 </button>
 
                 {/* Time Display */}
@@ -70,7 +80,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                 </span>
             </div>
 
-            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-1" />
+            <div className="h-6 w-px bg-app-light-border dark:bg-app-border mx-1" />
 
             {/* Middle Controls Group */}
             <div className="flex items-center gap-1">
@@ -78,7 +88,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                 <div className="relative">
                     <button
                         onClick={() => setShowRatioMenu(!showRatioMenu)}
-                        className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs font-medium text-slate-700 dark:text-slate-300"
+                        className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-app-light-surface-hover dark:hover:bg-app-surface-hover transition-colors text-xs font-medium text-slate-700 dark:text-slate-300"
                         title="Aspect Ratio"
                     >
                         <Smartphone size={16} />
@@ -88,7 +98,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                     {showRatioMenu && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setShowRatioMenu(false)} />
-                            <div className="absolute bottom-full left-0 mb-2 w-32 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-50 py-1 flex flex-col">
+                            <div className="absolute bottom-full left-0 mb-2 w-32 bg-white dark:bg-app-surface rounded-lg shadow-xl border border-app-light-border dark:border-app-border z-50 py-1 flex flex-col">
                                 {ratios.map((ratio) => (
                                     <button
                                         key={ratio.label}
@@ -96,7 +106,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                                             onChangeAspectRatio(ratio.value);
                                             setShowRatioMenu(false);
                                         }}
-                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-left"
+                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-app-light-surface-hover dark:hover:bg-app-surface-hover text-slate-700 dark:text-slate-200 text-left"
                                     >
                                         <ratio.icon size={14} />
                                         <span>{ratio.label}</span>
@@ -112,7 +122,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                 <div className="relative">
                     <button
                         onClick={() => setShowGuideMenu(!showGuideMenu)}
-                        className={`p-2 rounded-lg transition-colors ${activeGuide !== "none" ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
+                        className={`p-2 rounded-lg transition-colors ${activeGuide !== "none" ? "bg-accent-subtle/20 text-accent dark:text-accent-light" : "hover:bg-app-light-surface-hover dark:hover:bg-app-surface-hover text-slate-700 dark:text-slate-300"}`}
                         title="Guides"
                     >
                         <currentGuide.icon size={18} />
@@ -121,7 +131,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                     {showGuideMenu && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setShowGuideMenu(false)} />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-36 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-50 py-1 flex flex-col">
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-36 bg-white dark:bg-app-surface rounded-lg shadow-xl border border-app-light-border dark:border-app-border z-50 py-1 flex flex-col">
                                 {guides.map((guide) => (
                                     <button
                                         key={guide.id}
@@ -129,7 +139,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                                             onGuideChange(guide.id);
                                             setShowGuideMenu(false);
                                         }}
-                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-left"
+                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-app-light-surface-hover dark:hover:bg-app-surface-hover text-slate-700 dark:text-slate-200 text-left"
                                     >
                                         <guide.icon size={14} />
                                         <span>{guide.label}</span>
@@ -140,15 +150,6 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                         </>
                     )}
                 </div>
-
-                {/* Settings (Res/Background) */}
-                <button
-                    onClick={onOpenCanvasSettings}
-                    className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300"
-                    title="Canvas Settings"
-                >
-                    <Settings size={18} />
-                </button>
             </div>
 
             <div className="flex-1" />
@@ -156,7 +157,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
             {/* Fullscreen */}
             <button
                 onClick={onToggleFullscreen}
-                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200"
+                className="p-2 rounded-full hover:bg-app-light-surface-hover dark:hover:bg-app-surface-hover transition-colors text-slate-700 dark:text-slate-200"
             >
                 <Maximize size={18} />
             </button>

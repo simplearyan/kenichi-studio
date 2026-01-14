@@ -5,7 +5,8 @@ import { VerticalAd } from "../ads/VerticalAd";
 import { SquareAd } from "../ads/SquareAd";
 import { CanvasWorkspace } from "./canvas/CanvasWorkspace";
 import { PropertiesPanel } from "./panels/PropertiesPanel";
-import { Timeline } from "./panels/Timeline";
+import { TimelineDesktop } from "./panels/TimelineDesktop";
+import { TimelineMobile } from "./panels/TimelineMobile";
 import { Engine } from "../../engine/Core";
 import { Exporter } from "../../engine/Export";
 import { HardwareDetector, type HardwareInfo } from "../../utils/HardwareDetector";
@@ -316,21 +317,31 @@ export const EditorLayout = () => {
                             totalDuration={engine?.totalDuration || 5000}
                             activeGuide={activeGuide}
                             onGuideChange={setActiveGuide}
+                            onSeek={(t) => engine?.seek(t)}
                         />
 
-                        {/* Timeline */}
+                        {/* Timeline (Desktop) */}
                         <div className="hidden lg:block shrink-0 p-2 lg:p-4 z-10 bg-slate-100 dark:bg-app-bg border-slate-200 dark:border-app-border">
                             <div className="h-auto lg:h-32">
-                                <Timeline
+                                <TimelineDesktop
                                     currentTime={currentTime}
                                     totalDuration={engine?.totalDuration || 5000}
                                     isPlaying={isPlaying}
                                     onPlayPause={handlePlayPause}
                                     onSeek={(t) => engine?.seek(t)}
-                                // onToggleFullscreen={toggleFullscreen} // Removed
-                                // isFullscreen={isFullscreen} // Removed
                                 />
                             </div>
+                        </div>
+
+                        {/* Timeline (Mobile) - Integrated below canvas */}
+                        <div className="lg:hidden z-10 bg-white dark:bg-app-bg border-t border-slate-200 dark:border-app-border">
+                            <TimelineMobile
+                                currentTime={currentTime}
+                                totalDuration={engine?.totalDuration || 5000}
+                                isPlaying={isPlaying}
+                                onPlayPause={handlePlayPause}
+                                onSeek={(t) => engine?.seek(t)}
+                            />
                         </div>
 
 
@@ -451,7 +462,7 @@ export const EditorLayout = () => {
                             {/* Dialog Container */}
                             <div className={`
                             pointer-events-auto relative 
-                            w-full lg:max-w-md bg-white dark:bg-[#0F172A] 
+                            w-full lg:max-w-md bg-white dark:bg-app-surface 
                             rounded-t-2xl lg:rounded-2xl 
                             shadow-2xl shadow-black/50 
                             flex flex-col overflow-hidden
@@ -459,7 +470,7 @@ export const EditorLayout = () => {
                             animate-in slide-in-from-bottom-10 lg:zoom-in-95 duration-300
                         `}>
                                 {/* Header */}
-                                <div className="flex items-center justify-between p-4 lg:p-6 border-b border-slate-100 dark:border-slate-800">
+                                <div className="flex items-center justify-between p-4 lg:p-6 border-b border-app-light-border dark:border-app-border">
                                     <div>
                                         <h3 className="text-lg lg:text-xl font-bold text-slate-900 dark:text-white">
                                             {isExporting ? 'Exporting...' : 'Export Video'}
@@ -555,23 +566,22 @@ export const EditorLayout = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Format Selection */}
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold uppercase text-slate-500">Format</label>
+                                                <label className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Format</label>
                                                 <div className="grid grid-cols-3 gap-2">
                                                     <button
                                                         onClick={() => setExportConfig({ ...exportConfig, format: 'mp4' })}
                                                         className={`
                                                         relative p-3 rounded-xl border-2 text-center transition-all group
                                                         ${exportConfig.format === 'mp4'
-                                                                ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-500 text-blue-700 dark:text-blue-400'
+                                                                ? 'bg-app-light-surface-hover dark:bg-app-surface-hover border-black dark:border-white text-black dark:text-white'
                                                                 : 'bg-white dark:bg-slate-800 border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-slate-600 dark:text-slate-300'
                                                             }
                                                     `}
                                                     >
                                                         <Film size={20} className="mx-auto mb-1.5" />
                                                         <div className="font-bold text-xs">MP4</div>
-                                                        {exportConfig.format === 'mp4' && <div className="absolute top-1 right-1 text-blue-500"><Check size={12} /></div>}
+                                                        {exportConfig.format === 'mp4' && <div className="absolute top-1 right-1 text-black dark:text-white"><Check size={12} /></div>}
                                                     </button>
 
                                                     <button
@@ -579,14 +589,14 @@ export const EditorLayout = () => {
                                                         className={`
                                                         relative p-3 rounded-xl border-2 text-center transition-all group
                                                         ${exportConfig.format === 'webm'
-                                                                ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-500 text-blue-700 dark:text-blue-400'
+                                                                ? 'bg-app-light-surface-hover dark:bg-app-surface-hover border-black dark:border-white text-black dark:text-white'
                                                                 : 'bg-white dark:bg-slate-800 border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-slate-600 dark:text-slate-300'
                                                             }
                                                     `}
                                                     >
                                                         <FileVideo size={20} className="mx-auto mb-1.5" />
                                                         <div className="font-bold text-xs">WebM</div>
-                                                        {exportConfig.format === 'webm' && <div className="absolute top-1 right-1 text-blue-500"><Check size={12} /></div>}
+                                                        {exportConfig.format === 'webm' && <div className="absolute top-1 right-1 text-black dark:text-white"><Check size={12} /></div>}
                                                     </button>
 
                                                     <button
@@ -594,14 +604,14 @@ export const EditorLayout = () => {
                                                         className={`
                                                         relative p-3 rounded-xl border-2 text-center transition-all group
                                                         ${exportConfig.format === 'mov'
-                                                                ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-500 text-blue-700 dark:text-blue-400'
+                                                                ? 'bg-app-light-surface-hover dark:bg-app-surface-hover border-black dark:border-white text-black dark:text-white'
                                                                 : 'bg-white dark:bg-slate-800 border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-slate-600 dark:text-slate-300'
                                                             }
                                                     `}
                                                     >
                                                         <Clapperboard size={20} className="mx-auto mb-1.5" />
                                                         <div className="font-bold text-xs">MOV</div>
-                                                        {exportConfig.format === 'mov' && <div className="absolute top-1 right-1 text-blue-500"><Check size={12} /></div>}
+                                                        {exportConfig.format === 'mov' && <div className="absolute top-1 right-1 text-black dark:text-white"><Check size={12} /></div>}
                                                     </button>
                                                 </div>
                                             </div>
@@ -688,10 +698,9 @@ export const EditorLayout = () => {
                                                 )}
                                             </div>
 
-                                            {/* Action Button */}
                                             <button
                                                 onClick={handleExport}
-                                                className="w-full py-4 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-500/30 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                className="w-full py-4 mt-2 bg-black dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-black rounded-xl font-bold text-base shadow-lg shadow-black/10 dark:shadow-white/10 active:scale-95 transition-all flex items-center justify-center gap-2"
                                             >
                                                 <span>Export Video</span>
                                                 <Download size={18} />
@@ -709,7 +718,7 @@ export const EditorLayout = () => {
                         </div>
                     )
                 }
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
