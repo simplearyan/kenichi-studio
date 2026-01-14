@@ -52,25 +52,25 @@ export const AdjustDrawerContent: React.FC<{ engine: Engine | null; selectedId: 
         <div className="flex flex-col gap-6 p-6 min-h-[140px]">
             {/* Alignment */}
             {/* Alignment Row - Compact */}
-            <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
+            <div className="flex bg-slate-100 dark:bg-app-surface rounded-xl p-1">
                 <button
                     onClick={() => handleAlign('horizontal')}
-                    className="flex-1 flex items-center justify-center h-10 rounded-lg hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm active:scale-95 transition-all text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="flex-1 flex items-center justify-center h-10 rounded-lg hover:bg-white dark:hover:bg-neutral-700 hover:shadow-sm active:scale-95 transition-all text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                     title="Center Horizontally"
                 >
                     <AlignHorizontalSpaceAround size={20} />
                 </button>
-                <div className="w-px my-2 bg-slate-200 dark:bg-slate-700" />
+                <div className="w-px my-2 bg-slate-200 dark:bg-app-border" />
                 <button
                     onClick={() => handleAlign('vertical')}
-                    className="flex-1 flex items-center justify-center h-10 rounded-lg hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm active:scale-95 transition-all text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="flex-1 flex items-center justify-center h-10 rounded-lg hover:bg-white dark:hover:bg-neutral-700 hover:shadow-sm active:scale-95 transition-all text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                     title="Center Vertically"
                 >
                     <AlignVerticalSpaceAround size={20} />
                 </button>
             </div>
 
-            <div className="w-full h-px bg-slate-100 dark:bg-slate-800" />
+            <div className="w-full h-px bg-slate-100 dark:bg-app-border" />
 
             {/* Slider Control (Rotation) */}
             <div className="space-y-4">

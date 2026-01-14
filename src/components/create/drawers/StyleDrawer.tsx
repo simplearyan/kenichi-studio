@@ -30,7 +30,7 @@ export const StyleDrawerContent: React.FC<{ engine: Engine | null; selectedId: s
             <div className="flex gap-4">
                 <div className="flex-1 space-y-2">
                     <span className="text-[10px] text-slate-500 font-bold uppercase block">Alignment</span>
-                    <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                    <div className="flex bg-slate-100 dark:bg-app-bg rounded-lg p-1">
                         {[
                             { value: 'left', icon: AlignLeft },
                             { value: 'center', icon: AlignCenter },
@@ -40,7 +40,7 @@ export const StyleDrawerContent: React.FC<{ engine: Engine | null; selectedId: s
                                 key={opt.value}
                                 onClick={() => handleChange('align', opt.value)}
                                 className={`flex-1 py-1.5 rounded-md flex justify-center transition-all ${textObj.align === opt.value
-                                    ? "bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400"
+                                    ? "bg-white dark:bg-neutral-700 shadow-sm text-indigo-600 dark:text-indigo-400"
                                     : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                                     }`}
                             >
@@ -120,7 +120,7 @@ export const StyleDrawer: React.FC<StyleDrawerProps> = ({ engine, selectedId, is
     if (!isOpen || !obj) return null;
 
     return (
-        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
+        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-app-surface/95 backdrop-blur-xl border-t border-slate-200 dark:border-app-border animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
             <StyleDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />
         </div>
     );

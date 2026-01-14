@@ -79,7 +79,7 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                 className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all border
                                     ${isActive
                                         ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
-                                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
+                                        : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-600 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
                             >
                                 {ratio.label}
                             </button>
@@ -94,7 +94,7 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                     <span>Resolution</span>
                     <span className="font-mono text-[10px] opacity-70">{engine.scene.width} x {engine.scene.height}</span>
                 </div>
-                <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                <div className="flex bg-slate-100 dark:bg-app-surface p-1 rounded-xl">
                     {PRESET_RESOLUTIONS.map((qual) => {
                         const shortEdge = Math.min(engine.scene.width, engine.scene.height);
                         const isActive = Math.abs(shortEdge - qual.base) < 10;
@@ -120,7 +120,7 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                 }}
                                 className={`flex-1 py-2 text-[10px] sm:text-xs font-bold rounded-lg transition-all
                                     ${isActive
-                                        ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                        ? "bg-white dark:bg-neutral-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
                                         : "text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-300"}`}
                             >
                                 {qual.label}
@@ -130,7 +130,7 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                 </div>
             </div>
 
-            <div className="w-full h-px bg-slate-100 dark:bg-slate-800 my-1" />
+            <div className="w-full h-px bg-slate-100 dark:bg-app-border my-1" />
 
             {/* Color & Duration Section */}
             <div className="flex flex-col gap-6">
@@ -151,13 +151,13 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                 }}
                                 className={`shrink-0 w-8 h-8 rounded-full shadow-sm ring-2 transition-all ${engine.scene.backgroundColor.toLowerCase() === color.val.toLowerCase()
                                     ? "ring-indigo-500 scale-110 z-10"
-                                    : "ring-slate-200 dark:ring-slate-700 hover:scale-105"
+                                    : "ring-slate-200 dark:ring-neutral-700 hover:scale-105"
                                     }`}
                                 style={{ backgroundColor: color.val }}
                                 title={color.label}
                             />
                         ))}
-                        <div className="shrink-0 w-px h-6 bg-slate-200 dark:bg-slate-700 mx-2" />
+                        <div className="shrink-0 w-px h-6 bg-slate-200 dark:bg-app-border mx-2" />
                         <ColorPicker
                             value={engine.scene.backgroundColor}
                             onChange={(val) => {
@@ -188,7 +188,7 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                     }}
                                     className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${Math.round(engine.totalDuration / 1000) === sec
                                         ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
-                                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"
+                                        : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-neutral-600"
                                         }`}
                                 >
                                     {sec}s
@@ -202,7 +202,7 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                 type="number"
                                 min={1}
                                 max={300}
-                                className="w-16 bg-slate-100 dark:bg-slate-800 rounded-lg px-2 py-1.5 text-right text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500 transition-all border border-transparent focus:border-indigo-500"
+                                className="w-16 bg-slate-100 dark:bg-app-surface rounded-lg px-2 py-1.5 text-right text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500 transition-all border border-transparent focus:border-indigo-500"
                                 value={Math.round(engine.totalDuration / 1000)}
                                 onChange={(e) => {
                                     const val = Math.max(1, Number(e.target.value));
@@ -260,7 +260,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                                 className={`px-2 py-2 rounded-lg text-xs font-bold transition-all border
                                     ${isActive
                                         ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
-                                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
+                                        : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-600 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
                             >
                                 {ratio.label}
                             </button>
@@ -275,7 +275,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                     <span>Resolution</span>
                     <span className="font-mono text-[10px] opacity-70">{engine.scene.width} x {engine.scene.height}</span>
                 </div>
-                <div className="flex bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg">
+                <div className="flex bg-slate-100 dark:bg-app-surface p-1 rounded-lg">
                     {PRESET_RESOLUTIONS.map((qual) => {
                         const shortEdge = Math.min(engine.scene.width, engine.scene.height);
                         const isActive = Math.abs(shortEdge - qual.base) < 10;
@@ -300,7 +300,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                                 }}
                                 className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all
                                     ${isActive
-                                        ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                        ? "bg-white dark:bg-neutral-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
                                         : "text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-300"}`}
                             >
                                 {qual.label}
@@ -326,14 +326,14 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                                 onUpdate?.();
                             }}
                             className={`w-8 h-8 rounded-full shadow-sm ring-2 transition-all ${engine.scene.backgroundColor.toLowerCase() === color.val.toLowerCase()
-                                    ? "ring-indigo-500 scale-110 z-10"
-                                    : "ring-slate-200 dark:ring-slate-700 hover:scale-105"
+                                ? "ring-indigo-500 scale-110 z-10"
+                                : "ring-slate-200 dark:ring-slate-700 hover:scale-105"
                                 }`}
                             style={{ backgroundColor: color.val }}
                             title={color.label}
                         />
                     ))}
-                    <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-1" />
+                    <div className="w-px h-8 bg-slate-200 dark:bg-app-border mx-1" />
                     <ColorPicker
                         value={engine.scene.backgroundColor}
                         onChange={(val) => {
@@ -353,7 +353,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                         type="number"
                         min={1}
                         max={300}
-                        className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2 text-right text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500 transition-all border border-transparent focus:border-indigo-500"
+                        className="w-full bg-slate-100 dark:bg-app-surface rounded-lg px-3 py-2 text-right text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500 transition-all border border-transparent focus:border-indigo-500"
                         value={Math.round(engine.totalDuration / 1000)}
                         onChange={(e) => {
                             const val = Math.max(1, Number(e.target.value));

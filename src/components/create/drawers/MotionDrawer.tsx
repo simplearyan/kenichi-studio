@@ -48,7 +48,7 @@ export const MotionDrawerContent: React.FC<{ engine: Engine | null; selectedId: 
 
             {/* 1. Timing Controls (Compact Grid) */}
             {obj.animation?.type && obj.animation.type !== 'none' && (
-                <div className="grid grid-cols-2 gap-6 pb-2 border-b border-slate-100 dark:border-slate-800/50">
+                <div className="grid grid-cols-2 gap-6 pb-2 border-b border-slate-100 dark:border-app-border/50">
                     <div className="space-y-2">
                         <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
                             <span>Duration</span>
@@ -89,7 +89,7 @@ export const MotionDrawerContent: React.FC<{ engine: Engine | null; selectedId: 
                                 onClick={() => updateAnim({ type: anim.id })}
                                 className={`flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all shrink-0 min-w-[80px] ${isActive
                                     ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-600 dark:text-indigo-300 shadow-sm"
-                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                    : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-400 hover:bg-slate-50 dark:hover:bg-app-surface-hover"
                                     }`}
                             >
                                 <anim.icon size={20} strokeWidth={2} />
@@ -109,7 +109,7 @@ export const MotionDrawer: React.FC<MotionDrawerProps> = ({ engine, selectedId, 
     if (!isOpen || !obj) return null;
 
     return (
-        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
+        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-app-surface/95 backdrop-blur-xl border-t border-slate-200 dark:border-app-border animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
             <MotionDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />
         </div>
     );

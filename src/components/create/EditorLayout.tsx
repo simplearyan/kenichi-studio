@@ -253,7 +253,7 @@ export const EditorLayout = () => {
     };
 
     return (
-        <div ref={rootRef} className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 relative font-sans text-slate-900 dark:text-slate-200 selection:bg-indigo-500/30">
+        <div ref={rootRef} className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-app-bg relative font-sans text-slate-900 dark:text-slate-200 selection:bg-indigo-500/30">
 
             {/* Landscape Lock Overlay Removed */}
 
@@ -277,12 +277,12 @@ export const EditorLayout = () => {
                 </div >
 
                 {/* Center Content Area - Scrollable on Mobile */}
-                <div className="flex-1 flex flex-col min-w-0 lg:min-w-0 bg-slate-100 dark:bg-[#020617] relative overflow-y-auto lg:overflow-hidden pb-32 lg:pb-0">
+                <div className="flex-1 flex flex-col min-w-0 lg:min-w-0 bg-slate-100 dark:bg-app-bg relative overflow-y-auto lg:overflow-hidden pb-32 lg:pb-0">
 
                     {/* Sticky Canvas Container (Mobile) / Flex Item (Desktop) */}
                     <div
                         ref={mainCanvasContainerRef}
-                        className="relative z-40 lg:relative flex flex-col w-full min-w-0 min-h-0 bg-slate-100 dark:bg-[#020617] border-b border-slate-200 dark:border-slate-800 lg:border-none lg:flex-1"
+                        className="relative z-40 lg:relative flex flex-col w-full min-w-0 min-h-0 bg-slate-100 dark:bg-app-bg border-b border-slate-200 dark:border-app-border lg:border-none lg:flex-1"
                     >
                         <div className="w-full h-auto max-h-[55vh] lg:max-h-none lg:flex-1 lg:min-h-0 flex items-center justify-center bg-slate-900/5 dark:bg-black/20 p-0 mt-8 mb-4">
                             <CanvasWorkspace
@@ -319,7 +319,7 @@ export const EditorLayout = () => {
                         />
 
                         {/* Timeline */}
-                        <div className="hidden lg:block shrink-0 p-2 lg:p-4 z-10 bg-slate-100 dark:bg-[#020617] border-slate-200 dark:border-slate-800">
+                        <div className="hidden lg:block shrink-0 p-2 lg:p-4 z-10 bg-slate-100 dark:bg-app-bg border-slate-200 dark:border-app-border">
                             <div className="h-auto lg:h-32">
                                 <Timeline
                                     currentTime={currentTime}
@@ -426,7 +426,7 @@ export const EditorLayout = () => {
                 {/* Right Sidebar - Desktop Only */}
                 <div className={`
                     hidden lg:flex
-                    w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 flex-col overflow-hidden min-h-0
+                    w-80 border-l border-slate-200 dark:border-app-border bg-white dark:bg-app-bg shrink-0 flex-col overflow-hidden min-h-0
                     relative z-auto h-auto
                     transition-transform duration-300 ease-in-out
                     ${rightSidebarOpen ? 'translate-x-0' : 'translate-x-full !w-0 border-none'}

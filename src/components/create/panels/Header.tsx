@@ -33,7 +33,7 @@ export const Header = ({
     };
 
     return (
-        <header className="h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 lg:px-6 bg-white dark:bg-slate-900 shrink-0 z-[60] relative transition-colors">
+        <header className="h-14 bg-white dark:bg-app-surface border-b border-slate-200 dark:border-app-border flex items-center justify-between px-3 lg:px-6 shrink-0 z-[60] relative transition-colors">
 
             {/* LEFT: Logo / Back */}
             <div className="flex items-center gap-3">

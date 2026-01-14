@@ -39,13 +39,13 @@ export const DimensionsDrawerContent: React.FC<{ engine: Engine | null; selected
         <div className="flex flex-col gap-6 p-6 min-h-[140px]">
 
             {/* 1. Compact Property Selector */}
-            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            <div className="flex bg-slate-100 dark:bg-app-surface p-1 rounded-xl">
                 {properties.map((prop) => (
                     <button
                         key={prop.id}
                         onClick={() => setActiveProperty(prop.id as DimensionsProperty)}
                         className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${activeProperty === prop.id
-                            ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm"
+                            ? "bg-white dark:bg-neutral-700 text-slate-900 dark:text-white shadow-sm"
                             : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                             }`}
                     >

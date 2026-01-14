@@ -110,17 +110,17 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
                         dragElastic={0.05}
                         dragMomentum={false}
                         onDragEnd={isDock ? undefined : handleDragEnd}
-                        className={`fixed left-0 right-0 z-50 bg-white dark:bg-slate-900 shadow-2xl flex flex-col lg:hidden
-                            ${isDock ? "border-t border-slate-200 dark:border-slate-800 pb-safe bottom-16" : "rounded-t-3xl max-h-[95vh] bottom-0"}
+                        className={`fixed left-0 right-0 z-50 bg-white dark:bg-app-surface shadow-2xl flex flex-col lg:hidden
+                            ${isDock ? "border-t border-slate-200 dark:border-app-border pb-safe bottom-16" : "rounded-t-3xl max-h-[95vh] bottom-0"}
                         `}
                         style={{ height: isDock ? "auto" : "95vh" }}
                     >
                         {/* Handle / Header */}
                         {!isDock && (
                             <div className="flex flex-col items-center pt-2 pb-0 shrink-0 cursor-grab active:cursor-grabbing touch-none">
-                                <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mb-3" />
+                                <div className="w-12 h-1.5 bg-slate-300 dark:bg-neutral-600 rounded-full mb-3" />
                                 {title && (
-                                    <div className="w-full px-4 pb-3 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+                                    <div className="w-full px-4 pb-3 flex items-center justify-between border-b border-slate-100 dark:border-app-border">
                                         <h3 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h3>
                                         <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                                             <X size={16} />

@@ -47,7 +47,7 @@ export const DataDrawer: React.FC<DataDrawerProps> = ({ engine, selectedId, isOp
                 {selectedObject instanceof ChartObject && (
                     <>
                         {/* Chart Type Selector */}
-                        <div className="flex gap-2 shrink-0 border-r border-slate-200 dark:border-slate-800 pr-4 mr-2">
+                        <div className="flex gap-2 shrink-0 border-r border-slate-200 dark:border-app-border pr-4 mr-2">
                             {[
                                 { id: 'bar', icon: BarChart3, label: 'Bar' },
                                 { id: 'line', icon: LineChart, label: 'Line' },
@@ -58,8 +58,8 @@ export const DataDrawer: React.FC<DataDrawerProps> = ({ engine, selectedId, isOp
                                     key={type.id}
                                     onClick={() => handleChange("chartType", type.id)}
                                     className={`flex flex-col items-center justify-center gap-1 min-w-[64px] h-[64px] rounded-xl border transition-all ${selectedObject.chartType === type.id
-                                            ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-600 dark:text-indigo-300 scale-105 shadow-sm"
-                                            : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                        ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-600 dark:text-indigo-300 scale-105 shadow-sm"
+                                        : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-400 hover:bg-slate-50 dark:hover:bg-app-surface-hover"
                                         }`}
                                 >
                                     <type.icon size={20} strokeWidth={2} />
@@ -88,8 +88,8 @@ export const DataDrawer: React.FC<DataDrawerProps> = ({ engine, selectedId, isOp
                         <button
                             onClick={() => handleChange("showGrid", !selectedObject.showGrid)}
                             className={`flex flex-col items-center justify-center gap-1 min-w-[64px] h-[64px] rounded-xl border transition-all shrink-0 ${selectedObject.showGrid
-                                    ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-600 dark:text-indigo-300"
-                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400"
+                                ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-600 dark:text-indigo-300"
+                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-400"
                                 }`}
                         >
                             <span className="font-bold text-xs">GUIDES</span>

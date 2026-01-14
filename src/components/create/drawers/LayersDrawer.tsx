@@ -25,7 +25,7 @@ export const LayersDrawer: React.FC<LayersDrawerProps> = ({ engine, selectedId, 
             initialSnap={0.5}
             snaps={[0.5, 0.9]}
         >
-            <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 p-4 space-y-3 pb-24 override-touch-action relative">
+            <div className="flex flex-col h-full bg-slate-50 dark:bg-app-bg p-4 space-y-3 pb-24 override-touch-action relative">
 
                 {/* Header (Custom, minimal) */}
                 <div className="flex items-center justify-center pb-2 text-slate-300 dark:text-slate-600">
@@ -34,11 +34,11 @@ export const LayersDrawer: React.FC<LayersDrawerProps> = ({ engine, selectedId, 
 
                 {/* Selection Actions (Sticky Top) */}
                 {selectedId && (
-                    <div className="sticky top-0 z-20 -mx-4 px-4 pb-4 pt-1 bg-gradient-to-b from-slate-50 via-slate-50 to-transparent dark:from-slate-950 dark:via-slate-950 flex justify-center gap-3 animate-in slide-in-from-top-2">
-                        <button onClick={(e) => moveUp(selectedId, e)} className="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold shadow-sm active:scale-95 transition-all text-slate-600 dark:text-slate-300">
+                    <div className="sticky top-0 z-20 -mx-4 px-4 pb-4 pt-1 bg-gradient-to-b from-slate-50 via-slate-50 to-transparent dark:from-app-bg dark:via-app-bg flex justify-center gap-3 animate-in slide-in-from-top-2">
+                        <button onClick={(e) => moveUp(selectedId, e)} className="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl bg-white dark:bg-app-surface border border-slate-200 dark:border-app-border text-xs font-bold shadow-sm active:scale-95 transition-all text-slate-600 dark:text-slate-300">
                             <ArrowUp size={14} /> Bring Forward
                         </button>
-                        <button onClick={(e) => moveDown(selectedId, e)} className="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold shadow-sm active:scale-95 transition-all text-slate-600 dark:text-slate-300">
+                        <button onClick={(e) => moveDown(selectedId, e)} className="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl bg-white dark:bg-app-surface border border-slate-200 dark:border-app-border text-xs font-bold shadow-sm active:scale-95 transition-all text-slate-600 dark:text-slate-300">
                             <ArrowDown size={14} /> Send Backward
                         </button>
                     </div>
@@ -60,8 +60,8 @@ export const LayersDrawer: React.FC<LayersDrawerProps> = ({ engine, selectedId, 
                             className={`
                                 flex items-center gap-3 p-3 pl-4 rounded-2xl border transition-all touch-manipulation relative overflow-hidden group
                                 ${isSelected
-                                    ? "bg-white dark:bg-slate-900 border-indigo-500/50 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/20"
-                                    : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800"
+                                    ? "bg-white dark:bg-app-surface border-indigo-500/50 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/20"
+                                    : "bg-white dark:bg-app-surface border-slate-100 dark:border-app-border"
                                 }
                             `}
                         >

@@ -52,7 +52,7 @@ export const FontDrawerContent: React.FC<{ engine: Engine | null; selectedId: st
                             onClick={() => handleChange("fontFamily", font)}
                             className={`flex items-center justify-center px-4 py-3 rounded-xl border transition-all shrink-0 min-w-[90px] ${obj.fontFamily === font
                                 ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                                : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-app-surface-hover"
                                 }`}
                         >
                             <span className="text-base" style={{ fontFamily: font }}>Aa</span>
@@ -72,7 +72,7 @@ export const FontDrawer: React.FC<FontDrawerProps> = ({ engine, selectedId, isOp
     if (!isOpen || !obj || !(obj instanceof TextObject)) return null;
 
     return (
-        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
+        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-app-surface/95 backdrop-blur-xl border-t border-slate-200 dark:border-app-border animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
             <FontDrawerContent engine={engine} selectedId={selectedId} onClose={onClose} />
         </div>
     );

@@ -94,7 +94,7 @@ export const CanvasWorkspace = forwardRef<HTMLCanvasElement, CanvasWorkspaceProp
         >
             <canvas
                 ref={ref}
-                className="w-full h-full bg-white dark:bg-slate-900 block cursor-crosshair"
+                className="w-full h-full bg-white dark:bg-app-bg block cursor-crosshair"
             />
 
             {/* Guide Overlay */}

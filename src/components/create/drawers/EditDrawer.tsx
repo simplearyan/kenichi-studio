@@ -53,8 +53,8 @@ export const EditDrawer: React.FC<EditDrawerProps> = ({ engine, selectedId, isOp
     // 0. Canvas Settings (No Object Selected)
     if (!selectedId) {
         return (
-            <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-950">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm z-10">
+            <div className="flex flex-col h-full bg-slate-100 dark:bg-app-bg">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-app-border bg-white dark:bg-app-surface shadow-sm z-10">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">Canvas Settings</span>
                     <button
                         onClick={onClose}
@@ -87,9 +87,9 @@ export const EditDrawer: React.FC<EditDrawerProps> = ({ engine, selectedId, isOp
     // 1. Text Object: YT Create Style Full Screen Editor
     if (obj instanceof TextObject) {
         return (
-            <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-950">
+            <div className="flex flex-col h-full bg-slate-100 dark:bg-app-bg">
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
+                <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-app-surface border-b border-slate-200 dark:border-app-border shrink-0">
                     <button
                         onClick={() => {
                             // Cancel: Revert text and close
@@ -132,8 +132,8 @@ export const EditDrawer: React.FC<EditDrawerProps> = ({ engine, selectedId, isOp
     // 2. Code Block: Code Editor
     if (obj instanceof CodeBlockObject) {
         return (
-            <div className="flex flex-col h-full bg-slate-100 dark:bg-slate-950">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm z-10">
+            <div className="flex flex-col h-full bg-slate-100 dark:bg-app-bg">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-app-border bg-white dark:bg-app-surface shadow-sm z-10">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">Edit Code</span>
                     <button
                         onClick={onClose}
@@ -142,9 +142,9 @@ export const EditDrawer: React.FC<EditDrawerProps> = ({ engine, selectedId, isOp
                         Done
                     </button>
                 </div>
-                <div className="flex-1 p-4 bg-slate-50 dark:bg-slate-950 relative">
+                <div className="flex-1 p-4 bg-slate-50 dark:bg-app-bg relative">
                     <textarea
-                        className="w-full h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-slate-900 dark:text-white text-xs font-mono focus:border-indigo-500 outline-none resize-none"
+                        className="w-full h-full bg-white dark:bg-app-surface border border-slate-200 dark:border-app-border rounded-xl p-4 text-slate-900 dark:text-white text-xs font-mono focus:border-indigo-500 outline-none resize-none"
                         value={obj.code}
                         onChange={(e) => handleChange("code", e.target.value)}
                         spellCheck={false}
@@ -160,13 +160,13 @@ export const EditDrawer: React.FC<EditDrawerProps> = ({ engine, selectedId, isOp
         return (
             <div className="p-6 space-y-6">
                 {/* Header for context */}
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-app-border">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">Character Settings</span>
                 </div>
 
                 <ControlRow label="Animation">
                     <select
-                        className="w-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-3 text-sm outline-none"
+                        className="w-full bg-slate-100 dark:bg-app-surface text-slate-900 dark:text-white rounded-lg p-3 text-sm outline-none"
                         value={obj.currentAnimation}
                         onChange={(e) => handleChange("currentAnimation", e.target.value)}
                     >
@@ -179,7 +179,7 @@ export const EditDrawer: React.FC<EditDrawerProps> = ({ engine, selectedId, isOp
                 </ControlRow>
                 <ControlRow label="Costume">
                     <select
-                        className="w-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg p-3 text-sm outline-none"
+                        className="w-full bg-slate-100 dark:bg-app-surface text-slate-900 dark:text-white rounded-lg p-3 text-sm outline-none"
                         value={obj.costume}
                         onChange={(e) => handleChange("costume", e.target.value)}
                     >

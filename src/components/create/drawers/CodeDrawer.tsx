@@ -22,7 +22,7 @@ export const CodeDrawerContent: React.FC<{ engine: Engine | null; onClose: () =>
                 <button
                     key={opt.type}
                     onClick={() => handleAdd(opt.type)}
-                    className="w-full text-left p-1 bg-slate-900 rounded-xl shadow-lg hover:ring-2 ring-blue-500 transition-all group overflow-hidden"
+                    className="w-full text-left p-1 bg-slate-900 dark:bg-app-surface rounded-xl shadow-lg hover:ring-2 ring-blue-500 transition-all group overflow-hidden"
                 >
                     <div className="bg-slate-800/50 p-2 flex gap-1.5 border-b border-white/5">
                         <div className="w-2 h-2 rounded-full bg-red-500"></div>

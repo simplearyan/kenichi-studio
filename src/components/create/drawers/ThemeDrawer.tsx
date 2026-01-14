@@ -44,10 +44,10 @@ export const ThemeDrawer: React.FC<ThemeDrawerProps> = ({ engine, selectedId, is
     }
 
     return (
-        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
+        <div className="fixed bottom-16 left-0 right-0 z-[90] bg-white/95 dark:bg-app-surface/95 backdrop-blur-xl border-t border-slate-200 dark:border-app-border animate-in slide-in-from-bottom-full duration-300 shadow-xl pb-safe">
 
             {/* Font Size Slider */}
-            <div className="px-6 pt-4 pb-2 border-b border-slate-100 dark:border-slate-800/50">
+            <div className="px-6 pt-4 pb-2 border-b border-slate-100 dark:border-app-border/50">
                 <div className="space-y-2">
                     <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase">
                         <span>Font Size</span>
@@ -72,7 +72,7 @@ export const ThemeDrawer: React.FC<ThemeDrawerProps> = ({ engine, selectedId, is
                             onClick={() => handleThemeChange(theme.id)}
                             className={`flex flex-col gap-2 min-w-[100px] rounded-xl border transition-all shrink-0 overflow-hidden text-left group ${isActive
                                 ? "ring-2 ring-indigo-500 border-transparent shadow-md scale-105"
-                                : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm"
+                                : "border-slate-200 dark:border-app-border hover:border-slate-300 dark:hover:border-neutral-600 hover:shadow-sm"
                                 }`}
                         >
                             {/* Visual Preview */}

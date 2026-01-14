@@ -45,7 +45,7 @@ export const PositionDrawerContent: React.FC<PositionDrawerProps> = ({ engine, s
                             type="number"
                             value={Math.round(obj.x)}
                             onChange={(e) => handleChange('x', Number(e.target.value))}
-                            className="w-16 bg-slate-100 dark:bg-slate-800 rounded px-2 py-1 text-right text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500"
+                            className="w-16 bg-slate-100 dark:bg-app-surface rounded px-2 py-1 text-right text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500"
                         />
                     </div>
                 </div>
@@ -58,7 +58,7 @@ export const PositionDrawerContent: React.FC<PositionDrawerProps> = ({ engine, s
                             type="number"
                             value={Math.round(obj.y)}
                             onChange={(e) => handleChange('y', Number(e.target.value))}
-                            className="w-16 bg-slate-100 dark:bg-slate-800 rounded px-2 py-1 text-right text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500"
+                            className="w-16 bg-slate-100 dark:bg-app-surface rounded px-2 py-1 text-right text-slate-900 dark:text-white outline-none focus:ring-1 ring-indigo-500"
                         />
                     </div>
                 </div>
@@ -73,7 +73,7 @@ export const PositionDrawerContent: React.FC<PositionDrawerProps> = ({ engine, s
                     <div className="col-start-2">
                         <button
                             onClick={() => handleNudge('y', -10)}
-                            className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all text-slate-700 dark:text-slate-200"
+                            className="p-3 bg-slate-100 dark:bg-app-surface rounded-xl hover:bg-slate-200 dark:hover:bg-app-surface-hover active:scale-95 transition-all text-slate-700 dark:text-slate-200"
                         >
                             <ArrowUp size={20} />
                         </button>
@@ -83,7 +83,7 @@ export const PositionDrawerContent: React.FC<PositionDrawerProps> = ({ engine, s
                     <div className="col-start-1 row-start-2">
                         <button
                             onClick={() => handleNudge('x', -10)}
-                            className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all text-slate-700 dark:text-slate-200"
+                            className="p-3 bg-slate-100 dark:bg-app-surface rounded-xl hover:bg-slate-200 dark:hover:bg-app-surface-hover active:scale-95 transition-all text-slate-700 dark:text-slate-200"
                         >
                             <ArrowLeft size={20} />
                         </button>
@@ -96,7 +96,7 @@ export const PositionDrawerContent: React.FC<PositionDrawerProps> = ({ engine, s
                     <div className="col-start-3 row-start-2">
                         <button
                             onClick={() => handleNudge('x', 10)}
-                            className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all text-slate-700 dark:text-slate-200"
+                            className="p-3 bg-slate-100 dark:bg-app-surface rounded-xl hover:bg-slate-200 dark:hover:bg-app-surface-hover active:scale-95 transition-all text-slate-700 dark:text-slate-200"
                         >
                             <ArrowRight size={20} />
                         </button>
@@ -106,7 +106,7 @@ export const PositionDrawerContent: React.FC<PositionDrawerProps> = ({ engine, s
                     <div className="col-start-2 row-start-3">
                         <button
                             onClick={() => handleNudge('y', 10)}
-                            className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all text-slate-700 dark:text-slate-200"
+                            className="p-3 bg-slate-100 dark:bg-app-surface rounded-xl hover:bg-slate-200 dark:hover:bg-app-surface-hover active:scale-95 transition-all text-slate-700 dark:text-slate-200"
                         >
                             <ArrowDown size={20} />
                         </button>

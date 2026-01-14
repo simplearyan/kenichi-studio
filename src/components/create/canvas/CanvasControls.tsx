@@ -53,7 +53,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
     const currentGuide = guides.find(g => g.id === activeGuide) || guides[0];
 
     return (
-        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 lg:hidden user-select-none relative z-30">
+        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-app-surface border-b border-slate-200 dark:border-slate-800 lg:hidden user-select-none relative z-30">
 
             <div className="flex items-center gap-3">
                 {/* Play/Pause */}

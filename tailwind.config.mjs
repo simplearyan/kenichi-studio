@@ -10,6 +10,12 @@ export default {
             },
             colors: {
                 primary: '#3b82f6',
+                app: {
+                    bg: '#141414',
+                    surface: '#1C1C1C',
+                    border: '#2C2C2C',
+                    'surface-hover': '#252525'
+                },
             },
             animation: {
                 blob: "blob 7s infinite",
