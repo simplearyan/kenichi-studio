@@ -25,10 +25,10 @@ export default {
                 },
                 // Unified Accent System (Indigo)
                 accent: {
-                    DEFAULT: '#4F46E5', // Indigo-600
-                    hover: '#4338CA',   // Indigo-700
-                    light: '#6366F1',   // Indigo-500
-                    subtle: '#818CF8',  // Indigo-400
+                    DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+                    hover: 'rgb(var(--accent-hover) / <alpha-value>)',
+                    light: 'rgb(var(--accent-light) / <alpha-value>)',
+                    subtle: 'rgb(var(--accent-subtle) / <alpha-value>)',
                 },
             },
             animation: {

@@ -75,7 +75,7 @@ export const TimelineDesktop = ({
                         <Type size={14} /> <span>Text Layer 1</span>
                     </div>
                     {/* Track 2 */}
-                    <div className="h-10 px-3 flex items-center gap-2 text-xs font-semibold text-purple-600 bg-purple-50/50 dark:bg-purple-900/10 border-l-2 border-purple-500 mb-1">
+                    <div className="h-10 px-3 flex items-center gap-2 text-xs font-semibold text-accent-hover bg-accent/10 dark:bg-accent/10 border-l-2 border-accent mb-1">
                         <Layers size={14} /> <span>Chart Animation</span>
                     </div>
                     {/* Track 3 */}
@@ -129,8 +129,8 @@ export const TimelineDesktop = ({
 
                         {/* Track 2 Clip */}
                         <div className="h-10 mb-1 relative w-full">
-                            <div className="absolute top-1 bottom-1 left-[20%] w-[30%] bg-purple-500/20 border border-purple-500/50 rounded-md overflow-hidden">
-                                <div className="absolute inset-0 flex items-center px-2 text-[10px] font-bold text-purple-700 dark:text-purple-300">
+                            <div className="absolute top-1 bottom-1 left-[20%] w-[30%] bg-accent/20 border border-accent/50 rounded-md overflow-hidden">
+                                <div className="absolute inset-0 flex items-center px-2 text-[10px] font-bold text-accent-hover dark:text-accent-light">
                                     Pie Chart Build
                                 </div>
                             </div>

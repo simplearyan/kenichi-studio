@@ -44,7 +44,7 @@ export const TimelineMobile = ({
             >
                 {/* Progress Bar */}
                 <div
-                    className="absolute top-0 bottom-0 left-0 bg-indigo-500/10 dark:bg-indigo-500/20 pointer-events-none"
+                    className="absolute top-0 bottom-0 left-0 bg-accent/10 dark:bg-accent/20 pointer-events-none"
                     style={{ width: `${progress}%` }}
                 />
 
@@ -67,7 +67,7 @@ export const TimelineMobile = ({
 
                 {/* Time Display centered */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-white/80 dark:bg-black/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                    <div className="text-xs font-mono font-bold text-accent-hover dark:text-accent-light bg-white/80 dark:bg-black/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
                         {formatTime(currentTime)}
                     </div>
                 </div>

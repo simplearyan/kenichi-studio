@@ -69,7 +69,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = ({
                 {/* Play/Pause - Redesigned */}
                 <button
                     onClick={onPlayPause}
-                    className="w-10 h-10 flex items-center justify-center bg-indigo-600 active:bg-indigo-700 text-white rounded-full shadow-lg transition-transform active:scale-95"
+                    className="w-10 h-10 flex items-center justify-center bg-accent active:bg-accent-hover text-white dark:text-slate-900 rounded-full shadow-lg transition-transform active:scale-95"
                 >
                     {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-0.5" />}
                 </button>

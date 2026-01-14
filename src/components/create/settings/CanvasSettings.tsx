@@ -46,7 +46,7 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
     return (
         <div className="flex flex-col h-full bg-white dark:bg-neutral-900">
             {/* Content Area */}
-            <div className="flex-1 p-6 pb-4 overflow-y-auto">
+            <div className="flex-1 p-4 pb-2 overflow-y-auto">
                 {/* Aspect Ratio Content */}
                 {activeTab === 'ratio' && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-200">
@@ -81,10 +81,10 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                             setForceUpdate((n: number) => n + 1);
                                             onUpdate?.();
                                         }}
-                                        className={`px-4 py-3 rounded-xl text-sm font-bold transition-all border
+                                        className={`px-3 py-2 rounded-lg text-xs font-bold transition-all border
                                             ${isActive
-                                                ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
-                                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-600 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
+                                                ? "bg-accent/10 border-accent text-accent-hover dark:bg-accent/20 dark:border-accent dark:text-accent-light ring-1 ring-accent"
+                                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-600 dark:text-slate-400 hover:border-accent-light dark:hover:border-accent"}`}
                                     >
                                         {ratio.label}
                                     </button>
@@ -124,10 +124,10 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                             setForceUpdate((n: number) => n + 1);
                                             onUpdate?.();
                                         }}
-                                        className={`py-4 text-sm font-bold rounded-xl transition-all border
+                                        className={`py-3 text-xs font-bold rounded-lg transition-all border
                                             ${isActive
-                                                ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
-                                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-500 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
+                                                ? "bg-accent/10 border-accent text-accent-hover dark:bg-accent/20 dark:border-accent dark:text-accent-light ring-1 ring-accent"
+                                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-500 dark:text-slate-400 hover:border-accent-light dark:hover:border-accent"}`}
                                     >
                                         {qual.label}
                                     </button>
@@ -153,8 +153,8 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                         setForceUpdate((n: number) => n + 1);
                                         onUpdate?.();
                                     }}
-                                    className={`w-12 h-12 rounded-full shadow-sm ring-2 transition-all ${engine.scene.backgroundColor.toLowerCase() === color.val.toLowerCase()
-                                        ? "ring-indigo-500 scale-110 z-10"
+                                    className={`w-10 h-10 rounded-full shadow-sm ring-2 transition-all ${engine.scene.backgroundColor.toLowerCase() === color.val.toLowerCase()
+                                        ? "ring-accent scale-110 z-10"
                                         : "ring-slate-200 dark:ring-slate-700 hover:scale-105"
                                         }`}
                                     style={{ backgroundColor: color.val }}
@@ -195,7 +195,7 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                 type="number"
                                 min={1}
                                 max={300}
-                                className="w-full text-center bg-slate-100 dark:bg-app-surface rounded-xl px-4 py-4 text-2xl font-bold text-slate-900 dark:text-white outline-none focus:ring-2 ring-indigo-500 transition-all border border-transparent focus:border-indigo-500"
+                                className="w-full text-center bg-slate-100 dark:bg-app-surface rounded-xl px-4 py-3 text-xl font-bold text-slate-900 dark:text-white outline-none focus:ring-2 ring-accent transition-all border border-transparent focus:border-accent"
                                 value={Math.round(engine.totalDuration / 1000)}
                                 onChange={(e) => {
                                     const val = Math.max(1, Number(e.target.value));
@@ -218,8 +218,8 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
                                             setForceUpdate((n: number) => n + 1);
                                             onUpdate?.();
                                         }}
-                                        className={`flex-1 min-w-[60px] px-4 py-3 rounded-lg text-sm font-bold border transition-all ${Math.round(engine.totalDuration / 1000) === sec
-                                            ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
+                                        className={`flex-1 min-w-[50px] px-3 py-2 rounded-lg text-xs font-bold border transition-all ${Math.round(engine.totalDuration / 1000) === sec
+                                            ? "bg-accent/10 border-accent text-accent-hover dark:bg-accent/20 dark:border-accent dark:text-accent-light ring-1 ring-accent"
                                             : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-neutral-600"
                                             }`}
                                     >
@@ -233,41 +233,41 @@ const MobileCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, s
             </div>
 
             {/* Tab Bar at Bottom */}
-            <div className="flex p-2 bg-white dark:bg-neutral-900 border-t border-slate-100 dark:border-neutral-800">
+            <div className="flex p-1 bg-white dark:bg-neutral-900 border-t border-slate-100 dark:border-neutral-800">
                 <button
                     onClick={() => setActiveTab('ratio')}
-                    className={`flex-1 py-4 flex flex-col gap-1 items-center justify-center rounded-xl transition-all ${activeTab === 'ratio'
-                        ? "text-indigo-600 dark:text-indigo-400"
+                    className={`flex-1 py-3 flex flex-col gap-0.5 items-center justify-center rounded-xl transition-all ${activeTab === 'ratio'
+                        ? "text-accent dark:text-accent-light"
                         : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"}`}
                 >
-                    <Smartphone size={24} strokeWidth={activeTab === 'ratio' ? 2.5 : 2} />
+                    <Smartphone size={20} strokeWidth={activeTab === 'ratio' ? 2.5 : 2} />
                     {activeTab === 'ratio' && <div className="w-1 h-1 bg-current rounded-full mt-1" />}
                 </button>
                 <button
                     onClick={() => setActiveTab('res')}
-                    className={`flex-1 py-4 flex flex-col gap-1 items-center justify-center rounded-xl transition-all ${activeTab === 'res'
-                        ? "text-indigo-600 dark:text-indigo-400"
+                    className={`flex-1 py-3 flex flex-col gap-0.5 items-center justify-center rounded-xl transition-all ${activeTab === 'res'
+                        ? "text-accent dark:text-accent-light"
                         : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"}`}
                 >
-                    <Monitor size={24} strokeWidth={activeTab === 'res' ? 2.5 : 2} />
+                    <Monitor size={20} strokeWidth={activeTab === 'res' ? 2.5 : 2} />
                     {activeTab === 'res' && <div className="w-1 h-1 bg-current rounded-full mt-1" />}
                 </button>
                 <button
                     onClick={() => setActiveTab('bg')}
-                    className={`flex-1 py-4 flex flex-col gap-1 items-center justify-center rounded-xl transition-all ${activeTab === 'bg'
-                        ? "text-indigo-600 dark:text-indigo-400"
+                    className={`flex-1 py-3 flex flex-col gap-0.5 items-center justify-center rounded-xl transition-all ${activeTab === 'bg'
+                        ? "text-accent dark:text-accent-light"
                         : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"}`}
                 >
-                    <Palette size={24} strokeWidth={activeTab === 'bg' ? 2.5 : 2} />
+                    <Palette size={20} strokeWidth={activeTab === 'bg' ? 2.5 : 2} />
                     {activeTab === 'bg' && <div className="w-1 h-1 bg-current rounded-full mt-1" />}
                 </button>
                 <button
                     onClick={() => setActiveTab('duration')}
-                    className={`flex-1 py-4 flex flex-col gap-1 items-center justify-center rounded-xl transition-all ${activeTab === 'duration'
-                        ? "text-indigo-600 dark:text-indigo-400"
+                    className={`flex-1 py-3 flex flex-col gap-0.5 items-center justify-center rounded-xl transition-all ${activeTab === 'duration'
+                        ? "text-accent dark:text-accent-light"
                         : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"}`}
                 >
-                    <Clock size={24} strokeWidth={activeTab === 'duration' ? 2.5 : 2} />
+                    <Clock size={20} strokeWidth={activeTab === 'duration' ? 2.5 : 2} />
                     {activeTab === 'duration' && <div className="w-1 h-1 bg-current rounded-full mt-1" />}
                 </button>
             </div>
@@ -289,7 +289,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                 <button
                     onClick={() => setActiveTab('ratio')}
                     className={`flex-1 py-1.5 flex items-center justify-center rounded-lg transition-all ${activeTab === 'ratio'
-                        ? "bg-white dark:bg-neutral-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                        ? "bg-white dark:bg-neutral-700 text-accent dark:text-accent-light shadow-sm"
                         : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
                     title="Aspect Ratio"
                 >
@@ -298,7 +298,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                 <button
                     onClick={() => setActiveTab('res')}
                     className={`flex-1 py-1.5 flex items-center justify-center rounded-lg transition-all ${activeTab === 'res'
-                        ? "bg-white dark:bg-neutral-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                        ? "bg-white dark:bg-neutral-700 text-accent dark:text-accent-light shadow-sm"
                         : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
                     title="Resolution"
                 >
@@ -307,7 +307,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                 <button
                     onClick={() => setActiveTab('bg')}
                     className={`flex-1 py-1.5 flex items-center justify-center rounded-lg transition-all ${activeTab === 'bg'
-                        ? "bg-white dark:bg-neutral-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                        ? "bg-white dark:bg-neutral-700 text-accent dark:text-accent-light shadow-sm"
                         : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
                     title="Background"
                 >
@@ -316,7 +316,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                 <button
                     onClick={() => setActiveTab('duration')}
                     className={`flex-1 py-1.5 flex items-center justify-center rounded-lg transition-all ${activeTab === 'duration'
-                        ? "bg-white dark:bg-neutral-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                        ? "bg-white dark:bg-neutral-700 text-accent dark:text-accent-light shadow-sm"
                         : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
                     title="Duration"
                 >
@@ -362,8 +362,8 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                                         }}
                                         className={`px-2 py-3 rounded-xl text-xs font-bold transition-all border
                                             ${isActive
-                                                ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
-                                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-600 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
+                                                ? "bg-accent/10 border-accent text-accent-hover dark:bg-accent/20 dark:border-accent dark:text-accent-light ring-1 ring-accent"
+                                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-600 dark:text-slate-400 hover:border-accent-light dark:hover:border-accent"}`}
                                     >
                                         {ratio.label}
                                     </button>
@@ -405,8 +405,8 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                                         }}
                                         className={`py-4 text-sm font-bold rounded-xl transition-all border
                                             ${isActive
-                                                ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
-                                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-500 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700"}`}
+                                                ? "bg-accent/10 border-accent text-accent-hover dark:bg-accent/20 dark:border-accent dark:text-accent-light ring-1 ring-accent"
+                                                : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-500 dark:text-slate-400 hover:border-accent-light dark:hover:border-accent"}`}
                                     >
                                         {qual.label}
                                     </button>
@@ -433,7 +433,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                                         onUpdate?.();
                                     }}
                                     className={`w-10 h-10 rounded-full shadow-sm ring-2 transition-all ${engine.scene.backgroundColor.toLowerCase() === color.val.toLowerCase()
-                                        ? "ring-indigo-500 scale-110 z-10"
+                                        ? "ring-accent scale-110 z-10"
                                         : "ring-slate-200 dark:ring-slate-700 hover:scale-105"
                                         }`}
                                     style={{ backgroundColor: color.val }}
@@ -474,7 +474,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                                 type="number"
                                 min={1}
                                 max={300}
-                                className="w-24 text-center bg-slate-100 dark:bg-app-surface rounded-xl px-4 py-3 text-xl font-bold text-slate-900 dark:text-white outline-none focus:ring-2 ring-indigo-500 transition-all border border-transparent focus:border-indigo-500"
+                                className="w-24 text-center bg-slate-100 dark:bg-app-surface rounded-xl px-4 py-3 text-xl font-bold text-slate-900 dark:text-white outline-none focus:ring-2 ring-accent transition-all border border-transparent focus:border-accent"
                                 value={Math.round(engine.totalDuration / 1000)}
                                 onChange={(e) => {
                                     const val = Math.max(1, Number(e.target.value));
@@ -498,7 +498,7 @@ const DesktopCanvasSettings: React.FC<CanvasSettingsProps & { forceUpdate: any, 
                                             onUpdate?.();
                                         }}
                                         className={`px-4 py-2 rounded-lg text-sm font-bold border transition-all ${Math.round(engine.totalDuration / 1000) === sec
-                                            ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500"
+                                            ? "bg-accent/10 border-accent text-accent-hover dark:bg-accent/20 dark:border-accent dark:text-accent-light ring-1 ring-accent"
                                             : "bg-white dark:bg-app-surface border-slate-200 dark:border-app-border text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-neutral-600"
                                             }`}
                                     >
