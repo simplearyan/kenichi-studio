@@ -9,7 +9,12 @@ export default {
                 hand: ['Kalam', 'cursive'], // For that hand-drawn feel
             },
             colors: {
-                primary: '#3b82f6',
+                primary: {
+                    DEFAULT: '#3B82F6', // Blue-500
+                    hover: '#2563EB',   // Blue-600
+                    light: '#60A5FA',   // Blue-400
+                    subtle: '#93C5FD',  // Blue-300
+                },
                 app: {
                     bg: '#141414',
                     surface: '#1C1C1C',
@@ -23,12 +28,12 @@ export default {
                         'surface-hover': '#F3F4F6', // Gray-100
                     }
                 },
-                // Unified Accent System (Indigo)
+                // Unified Accent System
                 accent: {
-                    DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
-                    hover: 'rgb(var(--accent-hover) / <alpha-value>)',
-                    light: 'rgb(var(--accent-light) / <alpha-value>)',
-                    subtle: 'rgb(var(--accent-subtle) / <alpha-value>)',
+                    DEFAULT: '#EAB308', // Yellow-500
+                    hover: '#CA8A04',   // Yellow-600
+                    light: '#FACC15',   // Yellow-400
+                    subtle: '#FDE047',  // Yellow-300
                 },
             },
             animation: {

@@ -22,9 +22,9 @@ export const BottomDock: React.FC<BottomDockProps> = ({ activeTab, onTabChange, 
             disabled={disabled}
             className={`flex flex-col items-center justify-center min-w-[4rem] h-full gap-1 transition-all
                 ${disabled ? "opacity-30 grayscale" : ""} 
-                ${activeTab === id ? "text-accent" : highlight ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-slate-400"}`}
+                ${activeTab === id ? "text-primary dark:text-accent" : highlight ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-slate-400"}`}
         >
-            <div className={`p-2 rounded-full transition-all ${activeTab === id ? "bg-accent/20 scale-110" : highlight ? "bg-slate-100 dark:bg-slate-800" : ""}`}>
+            <div className={`p-2 rounded-full transition-all ${activeTab === id ? "bg-primary/10 dark:bg-accent/20 scale-110" : highlight ? "bg-slate-100 dark:bg-slate-800" : ""}`}>
                 <Icon size={20} strokeWidth={activeTab === id ? 2.5 : 2} />
             </div>
             <span className={`text-[9px] whitespace-nowrap ${activeTab === id ? "font-bold" : "font-medium"}`}>{label}</span>
