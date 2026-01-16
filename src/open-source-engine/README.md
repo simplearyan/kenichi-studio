@@ -58,6 +58,13 @@ If you are building a commercial product with Kinetix, please consider sponsorin
 - Early access to new plugins (e.g. Chart.js adapter)
 - Direct implementation support
 
+## Core Dependencies
+
+Kinetix is possible thanks to these amazing open-source projects:
+
+- **[webm-muxer](https://github.com/Vanilagy/webm-muxer)**: Pure C++/Wasm implementation of WebM muxing.
+- **[mediabunny](https://github.com/simplearyan/mediabunny)**: Frame-perfect video encoding and resource management.
+
 ## License
 
 This project is licensed under the **Mozilla Public License 2.0**.

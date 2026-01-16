@@ -7,7 +7,8 @@
 **Key Value Propositions:**
 1.  **True Independence**: Unlike Remotion (React-only) or PIXI (Renderer-only), Kinetix is a complete *Time-Based* engine that works with any UI framework.
 2.  **Offline-First Quality**: We don't just capture the canvas stream. We step through time frame-by-frame (using Web Workers) to guarantee 4K export quality even on a potato laptop.
-3.  **Developer Experience**: Typed, modular, and lightweight.
+3.  **Built on Giants**: Powered by the battle-tested **`mediabunny`** for frame-perfect encoding and **`webm-muxer`** for fast intra-browser C++/WASM rendering. We handle the hard low-level math so you don't have to.
+4.  **Developer Experience**: Typed, modular, and lightweight.
 
 **Donation Ask (Sponsorware):**
 "Kinetix is MIT/MPL licensed and free forever. Creating a video engine is hard work. Sponsors get access to:
