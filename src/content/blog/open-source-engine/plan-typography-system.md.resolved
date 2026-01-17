@@ -1,0 +1,129 @@
+# Project Typography: Robust Rich Text Engine for Kinetix
+
+## Problem
+The native Canvas API `ctx.fillText()` is extremely primitive:
+1.  **No Rich Styling**: Cannot mix **bold**, *italic*, or <span style="color:red">colors</span> in a single string.
+2.  **No Wrapping**: Text goes off-screen; manual line breaking is required.
+3.  **No Character Geometry**: You can't animate individual letters (Typewriter, Wave) easily because you don't know where they are.
+
+## Goal
+Build a **`RichTextObject`** that supports:
+-   **Markdown/Markup Parsing**: `**Bold**`, `*Italic*`, `[Color]` support.
+-   **Auto-Wrapping**: Adapts to container width.
+-   **Per-Character Animation**: The ability to modify opacity/transform of each letter independently.
+
+## 1. Technical Architecture
+
+We will build a "Micro-Layout Engine" specifically for text.
+
+### Phase 1: The Data Model
+Instead of a simple string, our object works with a structured **Text Document Model**.
+
+```typescript
+// 1. The Input (What the user types)
+const input = "Hello **World**, this is [color=#ff0000]Red[/color]!";
+
+// 2. The Parsed Token (Intermediate Representation)
+interface StyledSpan {
+    text: string;
+    fontFamily: string;
+    fontSize: number;
+    fontWeight: 'bold' | 'normal';
+    fill: string; // Color
+}
+
+// 3. The Layout (Calculated Positions)
+interface Glyph {
+    char: string;
+    x: number;
+    y: number; // Baseline
+    width: number;
+    spanIndex: number; // Reference to style
+}
+```
+
+### Phase 2: The Pipeline
+
+1.  **Parser**: Regex-based tokenizer that converts the input string into a list of `StyledSpans`.
+    -   *Strategy*: A simple stack-based parser or Regex Replacer that splits string by delimiters (`**`, `__`, `[]`).
+    -   *MVP*: Support `**` (Bold), `__` (Italic), and maybe a simple color tag `<c "#f00">`.
+
+2.  **Measurer & Wrapper**:
+    -   Set `ctx.font` based on span style.
+    -   Call `ctx.measureText(char).width`.
+    -   **Word Wrapping Algorithm**: Accumulate width; if `currentX + wordWidth > containerWidth`, move to next line.
+    -   Output: A collection of [Line](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/objects/CodeBlockObject.ts#176-200) objects, each containing a list of `Glyph`s with [(x, y)](file:///d:/Code/Antigravity/design_concepts/kinetix/src/open-source-engine/src/scene/Scene.ts#18-23) coordinates.
+
+3.  **Renderer**:
+    -   Loop through all `Glyph`s.
+    -   Apply `ctx.fillStyle` and `ctx.font`.
+    -   **Animation Hook**: Before drawing `glyph`, apply an optional transform based on `animation.type`.
+        -   e.g., `Typewriter`: If `glyphIndex > visibleCount`, `opacity = 0`.
+
+## 2. API Design
+
+```typescript
+export class RichTextObject extends KinetixObject {
+    text: string = "Hello **World**";
+    
+    // Default Styles
+    fontFamily: string = "Inter";
+    fontSize: number = 40;
+    color: string = "#fff";
+    
+    // Layout
+    textAlign: 'left' | 'center' | 'right' = 'left';
+    lineHeight: number = 1.2;
+    
+    // The magical layout cache
+    private _layout: TextLayout | null = null;
+    
+    draw(ctx: CanvasRenderingContext2D, time: number) {
+        // 1. Re-calculate layout if text/width/style changed
+        if (this._dirty) this._computeLayout(ctx);
+        
+        // 2. Render
+        this._layout.lines.forEach(line => {
+             // Handle alignment offset (x)
+             line.glyphs.forEach((glyph, i) => {
+                 
+                 // 3. Animation Logic
+                 const animProps = this._getAnimationProps(i, time);
+                 if (animProps.opacity === 0) return;
+                 
+                 ctx.save();
+                 ctx.translate(glyph.x, glyph.y);
+                 ctx.fillStyle = glyph.style.fill;
+                 ctx.font = this._makeFontString(glyph.style);
+                 ctx.fillText(glyph.char, 0, 0);
+                 ctx.restore();
+             });
+        });
+    }
+}
+```
+
+## 3. Implementation Steps
+
+### Step 1: `TextParser`
+Create a utility `parser.ts` that takes markdown string and returns `StyledToken[]`.
+- Keep it simple: Only support nested styles if easy, otherwise flat styles are fine for MVP.
+
+### Step 2: `TextLayouter`
+Create `layout.ts` that takes `StyledToken[]` + `MaxWidth`.
+- Implement standard "Greedy" line wrapping.
+- Handle "Word" versus "Character" breaking (if word is too long).
+
+### Step 3: `RichTextObject` Implementation
+Integration into the engine.
+
+## 4. Why Not Existing Libraries?
+- **`canvas-txt`**: Too simple (no rich text).
+- **`satori`**: Generates SVG paths, confusing for simple text edits, harder to animate per-char.
+- **`pixi-text`**: Coupled to PixiJS.
+- **Custom**: We need **Per-Character Animation** (Typewriter, Wavy text) as a first-class citizen for video. A custom layout engine gives us exact [(x,y)](file:///d:/Code/Antigravity/design_concepts/kinetix/src/open-source-engine/src/scene/Scene.ts#18-23) for every character, enabling complex motion graphics effects later.
+
+## 5. Future Features (Out of Scope for MVP)
+- **Emojis**: Need a sprite sheet or fallback system (Canvas emoji rendering varies by OS).
+- **Inline Images**: Inserting an icon in text flow.
+- **RTL Support**: Right-to-Left languages (Arabic/Hebrew) require more complex shaping (HarfBuzz-style, maybe via WASM later if needed).

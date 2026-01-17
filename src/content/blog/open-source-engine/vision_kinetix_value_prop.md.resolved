@@ -1,0 +1,51 @@
+# The Value of Kinetix: Engine vs. Renderer
+
+The user asked: *"If speed/lightweight comes from `mediaBunny`, why use Kinetix?"*
+
+This is the classic "Game Engine vs. Graphics API" question. `mediaBunny` is like **DirectX/OpenGL**. Kinetix is like **Unity**.
+
+## 1. The Abstraction Layer (The "Unity" Argument)
+
+If you use `mediaBunny` directly, you likely have to:
+-   Manually manage the render loop.
+-   Calculate every pixel or draw command yourself.
+-   Handle your own state management for "current time".
+
+**Kinetix provides:**
+-   **Scene Graph**: A hierarchy of objects ([Scene](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/Scene.ts#5-129) -> [KinetixObject](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/Object.ts#2-53) -> `Children`).
+-   **Lifecycle**: [onAdd](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/objects/ParticleTextObject.ts#46-49), [onRemove](file:///d:/Code/Antigravity/design_concepts/kinetix/src/open-source-engine/src/objects/VideoObject.ts#105-109), [update(dt)](file:///d:/Code/Antigravity/design_concepts/kinetix/src/open-source-engine/src/objects/RichTextObject.ts#37-58), [draw()](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/Object.ts#38-39).
+-   **Serialization**: `project.save()` / [load()](file:///d:/Code/Antigravity/design_concepts/kinetix/src/open-source-engine/src/core/ProjectManager.ts#36-66). You can't "save" a `mediaBunny` buffer state to JSON.
+
+## 2. The Tooling Layer (The "Embeddable Editor")
+
+Remotion is great, but its "Studio" is a heavy dev-tool server. Kinetix aims to provide an **Embeddable WYSIWYG Editor**.
+
+-   **InspectorPanel**: An auto-generated UI based on object schemas.
+-   **InteractionManager**: Handling MouseDown, Drag, Resize handles on the canvas. `mediaBunny` paints pixels; Kinetix figures out if you clicked on the "Text".
+-   **Visual Feedback**: Selection boxes, hover states, gizmos.
+
+## 3. Responsive Logic ("Smart Scaling")
+
+A raw renderer doesn't know about "Aspect Ratios".
+-   **Kinetix Smart Scaling**: We implemented logic to say "Keep this text in the top-right, regardless of if we are 16:9 or 9:16".
+-   This logic sits *above* the renderer. It manipulates the *coordinates* that are sent to the renderer.
+
+## 4. The "Agentic" Workflow
+
+Kinetix is designed to be driven by AI/Agents.
+-   **Structured Inputs**: The [PropertySchema](file:///d:/Code/Antigravity/design_concepts/kinetix/src/open-source-engine/src/types/Interfaces.ts#45-54) isn't just for UI; it's for LLMs to know what they can tweak.
+-   **JSON-First**: The entire engine state is serializable, making it easy for an AI to generate a video by just writing a JSON file.
+
+## comparison
+
+| Feature | `mediaBunny` (The Renderer) | [Kinetix](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/Object.ts#2-53) (The Engine) |
+| :--- | :--- | :--- |
+| **Role** | Draws pixels, Encodes video | Manages State, inputs, Logic |
+| **Input** | Draw Commands / Buffers | JSON / Objects / Mouse Events |
+| **Scaling** | Manual scaling calculations | "Auto-Center", "Fit", "Cover" |
+| **UI** | None | Inspector, Timeline, Gizmos |
+| **Target** | Graphics Engineers | Product Builders / End Users |
+
+## Conclusion
+
+You use Kinetix because you don't want to build a Video Editor from scratch; you want to *add* video editing capabilities to your app. Kinetix wraps the raw speed of `mediaBunny` in a usable, developer-friendly framework.

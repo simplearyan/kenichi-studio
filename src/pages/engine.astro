@@ -45,6 +45,37 @@ import Layout from "../layouts/Layout.astro";
                         <!-- Resolution Picker Mount -->
                     </div>
 
+                    <!-- Project Management -->
+                    <div
+                        class="bg-[#2a2a2a] p-6 rounded-xl border border-white/5 space-y-4"
+                    >
+                        <h2
+                            class="text-sm font-semibold text-gray-400 uppercase tracking-wider"
+                        >
+                            Project
+                        </h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button
+                                id="btn-save"
+                                class="bg-gray-700 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm transition"
+                            >
+                                Save JSON
+                            </button>
+                            <button
+                                id="btn-load"
+                                class="bg-gray-700 hover:bg-green-600 text-white px-3 py-2 rounded text-sm transition"
+                            >
+                                Load JSON
+                            </button>
+                            <input
+                                type="file"
+                                id="file-upload"
+                                class="hidden"
+                                accept=".json"
+                            />
+                        </div>
+                    </div>
+
                     <!-- Object controls -->
                     <div
                         class="bg-[#2a2a2a] p-6 rounded-xl border border-white/5"
@@ -68,6 +99,14 @@ import Layout from "../layouts/Layout.astro";
                             >
                                 <span class="w-2 h-2 rounded-full bg-purple-400"
                                 ></span> Add Text
+                            </button>
+                            <button
+                                id="btn-add-chart"
+                                class="col-span-2 bg-gray-700 hover:bg-emerald-600 text-white px-3 py-2 rounded text-sm transition text-left flex items-center gap-2"
+                            >
+                                <span
+                                    class="w-2 h-2 rounded-full bg-emerald-400"
+                                ></span> Add Chart
                             </button>
                         </div>
                         <div
@@ -126,7 +165,7 @@ import Layout from "../layouts/Layout.astro";
                     </div>
                 </div>
 
-                <!-- Right Sidebar (Export) -->
+                <!-- Right Sidebar (Export & Inspector) -->
                 <div class="space-y-6">
                     <!-- Export controls -->
                     <div
@@ -134,6 +173,18 @@ import Layout from "../layouts/Layout.astro";
                         class="bg-[#2a2a2a] p-6 rounded-xl border border-white/5"
                     >
                         <!-- Export Controls Mount -->
+                    </div>
+
+                    <!-- Inspector -->
+                    <div
+                        class="bg-[#2a2a2a] rounded-xl border border-white/5 h-[400px] flex flex-col overflow-hidden shadow-lg"
+                    >
+                        <div
+                            id="inspector-container"
+                            class="flex-1 overflow-hidden relative"
+                        >
+                            <!-- Inspector Mount -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,6 +198,9 @@ import Layout from "../layouts/Layout.astro";
             VideoObject,
             CanvasControl,
             ExportControl,
+            InspectorPanel,
+            RichTextObject,
+            ChartObject,
         } from "../open-source-engine/src/index.ts";
         import { KinetixObject } from "../open-source-engine/src/objects/Object.ts";
 
@@ -168,28 +222,17 @@ import Layout from "../layouts/Layout.astro";
                 ctx.rotate((this.rotation * Math.PI) / 180);
                 ctx.translate(-cx, -cy);
 
+                ctx.globalAlpha = this.opacity;
                 ctx.fillRect(this.x, this.y, this.width, this.height);
             }
             clone() {
                 return new RectObject("clone_" + this.id, this.color);
             }
-        }
-
-        class DemoTextObject extends KinetixObject {
-            text: string;
-            constructor(id: string, text: string) {
-                super(id, "Text");
-                this.text = text;
-                this.width = 300;
-                this.height = 60;
-            }
-            draw(ctx: CanvasRenderingContext2D, time: number) {
-                ctx.font = "bold 40px 'Inter', sans-serif";
-                ctx.fillStyle = "white";
-                ctx.fillText(this.text, this.x, this.y + 40);
-            }
-            clone() {
-                return new DemoTextObject("clone_" + this.id, this.text);
+            getSchema(): import("../open-source-engine/src/types/Interfaces").PropertySchema[] {
+                return [
+                    { key: "color", label: "Color", type: "color" },
+                    ...super.getSchema(),
+                ];
             }
         }
 
@@ -203,29 +246,28 @@ import Layout from "../layouts/Layout.astro";
         // Initialize Engine
         const engine = new Engine(canvas);
 
+        // Expose to window for debug
+        (window as any).engine = engine;
+
         const codePreview = document.getElementById("code-preview");
 
-        // Helper: Format MM:SS
-        const formatTime = (ms: number) => {
-            const totalSeconds = Math.floor(ms / 1000);
-            const m = Math.floor(totalSeconds / 60)
-                .toString()
-                .padStart(2, "0");
-            const s = (totalSeconds % 60).toString().padStart(2, "0");
-            // Optional: show millis? .toString().padStart(3, '0')
-            // For general video player, mm:ss is standard.
-            // If we want precision:
-            // const millis = Math.floor((ms % 1000) / 10).toString().padStart(2, '0');
-            return `${m}:${s}`;
-        };
-
         // UI Components
-        new PlayerOverlay(engine, document.getElementById("canvas-container")); // Mount directly to relative container
+        new PlayerOverlay(
+            engine,
+            document.getElementById("canvas-container") as HTMLElement,
+        );
         new CanvasControl(
             engine,
-            document.getElementById("settings-container"),
+            document.getElementById("settings-container") as HTMLElement,
         );
-        new ExportControl(engine, document.getElementById("export-container"));
+        new ExportControl(
+            engine,
+            document.getElementById("export-container") as HTMLElement,
+        );
+        new InspectorPanel(
+            engine,
+            document.getElementById("inspector-container") as HTMLElement,
+        );
 
         // REMOVED: Auto-resize listener
         // window.addEventListener("resize", resize);
@@ -240,11 +282,11 @@ import Layout from "../layouts/Layout.astro";
                     // Center it roughly
                     rect.x = engine.scene.width / 2 - 100;
                     rect.y = engine.scene.height / 2 - 100;
-                    rect.rotation = 0;
 
                     engine.scene.add(rect);
                     updateCodePreview();
                     addToList(id, "Rectangle");
+                    engine.interaction.selectObject(id);
                 } catch (e) {
                     console.error(e);
                     alert("Error adding rect: " + e);
@@ -257,16 +299,94 @@ import Layout from "../layouts/Layout.astro";
                 console.log("Adding Text...");
                 try {
                     const id = "text_" + Date.now();
-                    const text = new DemoTextObject(id, "Hello World");
+                    // Use Real RichTextObject
+                    const text = new RichTextObject(id, "Hello World");
                     text.x = engine.scene.width / 2 - 150;
                     text.y = engine.scene.height / 2;
+                    text.fontSize = 60;
+
                     engine.scene.add(text);
                     updateCodePreview();
-                    addToList(id, "Text");
+                    addToList(id, "Rich Text");
+                    engine.interaction.selectObject(id);
                 } catch (e) {
                     console.error(e);
                     alert("Error adding text: " + e);
                 }
+            });
+
+        document
+            .getElementById("btn-add-chart")
+            ?.addEventListener("click", () => {
+                console.log("Adding Chart...");
+                try {
+                    const id = "chart_" + Date.now();
+                    const chart = new ChartObject(id, "bar");
+
+                    // Center
+                    chart.x = engine.scene.width / 2 - 200;
+                    chart.y = engine.scene.height / 2 - 150;
+
+                    engine.scene.add(chart);
+                    updateCodePreview();
+                    addToList(id, "Chart");
+                    engine.interaction.selectObject(id);
+                } catch (e) {
+                    console.error(e);
+                    alert("Error adding chart: " + e);
+                }
+            });
+
+        // --- Save / Load ---
+        document.getElementById("btn-save")?.addEventListener("click", () => {
+            console.log("Saving Project...");
+            try {
+                const json = engine.project.save();
+                const blob = new Blob([json], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "project.json";
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.error("Save failed:", e);
+                alert("Save failed: " + e);
+            }
+        });
+
+        document.getElementById("btn-load")?.addEventListener("click", () => {
+            console.log("Load clicked");
+            document.getElementById("file-upload")?.click();
+        });
+
+        document
+            .getElementById("file-upload")
+            ?.addEventListener("change", (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (!file) return;
+                console.log("File selected", file.name);
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const json = ev.target?.result as string;
+                    if (json) {
+                        try {
+                            engine.project.load(json);
+                            updateCodePreview();
+                            // Re-populate list
+                            const list = document.getElementById("object-list");
+                            if (list) list.innerHTML = "";
+                            engine.scene.objects.forEach((obj) => {
+                                addToList(obj.id, obj.constructor.name);
+                            });
+                            console.log("Project loaded");
+                        } catch (e) {
+                            console.error("Load failed:", e);
+                            alert("Load failed or invalid JSON");
+                        }
+                    }
+                };
+                reader.readAsText(file);
             });
 
         function updateCodePreview() {

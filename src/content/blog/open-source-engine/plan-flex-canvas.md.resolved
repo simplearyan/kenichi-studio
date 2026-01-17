@@ -1,0 +1,124 @@
+# Project Flex-Canvas: Layout Engine for Kinetix
+
+## Problem
+In the current Kinetix engine, every object ([TextObject](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/objects/TextObject.ts#25-225), `ImageObject`) requires absolute positioning (`x`, `y`). This makes creating dynamic templates (e.g., a list of items that grows, or centering a dynamic title) extremely difficult. Remotion solves this for free by using the DOM (CSS Flexbox).
+
+## Goal
+Implement a lightweight, native Flexbox-like layout system within the Canvas engine. It should allow developers to group objects and have their positions calculated automatically based on rules like `row`, `column`, `gap`, and `center`.
+
+## 1. Technical Strategy: Pure JS vs. WASM
+
+### Option A: Yoga Layout (WASM)
+Facebooks's Yoga engine is the industry standard (used in React Native).
+- **Pros**: 100% CSS Flexbox compliance.
+- **Cons**: Heavy WASM binary (~100KB+), async loading complexity, overkill for simple video layouts.
+
+### Option B: Custom Lightweight Flex (Recommended)
+We don't need the full CSS spec (e.g., `flex-shrink: 0.3`, `order`, complex wrapping). We primarily need:
+1. Direction (`row` | `column`)
+2. Alignment ([start](file:///d:/Code/Antigravity/design_concepts/kinetix/src/components/animator/ExportDialog.tsx#60-172) | `center` | [end](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/Scene.ts#53-78) | `spaceBetween`)
+3. Spacing (`gap`, `padding`)
+4. Sizing (`auto` | `fixed` | `percent` | `flex: 1`)
+
+**Decision**: Build a custom **`FlexContainer`** class in pure TypeScript (~500 lines). This keeps the engine dependency-free and blazing fast.
+
+## 2. Architecture & API
+
+### New Class: `FlexContainer`
+Extends [KinetixObject](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/Object.ts#2-53). Instead of drawing pixels, it coordinates the transform of its children.
+
+```typescript
+type FlexDirection = 'row' | 'column';
+type FlexAlign = 'flex-start' | 'center' | 'flex-end' | 'space-between';
+
+class FlexContainer extends KinetixObject {
+    children: KinetixObject[] = [];
+    
+    // Layout Props
+    direction: FlexDirection = 'row';
+    justifyContent: FlexAlign = 'flex-start';
+    alignItems: FlexAlign = 'flex-start';
+    gap: number = 0;
+    padding: number = 0;
+    
+    // Explicitly add children to this container, not the Scene directly
+    add(child: KinetixObject) {
+       this.children.push(child);
+       // Child coordinates become relative to this Container
+    }
+}
+```
+
+### The Layout Pass
+Unlike the DOM which reflows constantly, our canvas engine updates every frame. However, we only need to re-calculate layout when:
+1. Properties change (e.g., text content changes width).
+2. Canvas resizes.
+3. Animation frame (if animating layout props).
+
+**Algorithm (`updateLayout`)**:
+1. **Measure Pass**: Ask every child for its `measuredSize` (Width/Height at current state).
+2. **Expansion Pass**: If `width: 'auto'`, container expands to fit children. If fixed width, children are constrained.
+3. **Position Pass**: 
+    - Loop children. 
+    - Set `child.x` and `child.y` based on `direction`, `gap`, and `alignment`.
+    - Apply `globalX = container.x + child.x`.
+
+## 3. Implementation Plan
+
+### Step 1: `Frame` Support
+Kinetix Objects currently are mostly "Atomic". We need a concept of nested coordinates.
+- Modify [KinetixObject](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/Object.ts#2-53) to have `parent: KinetixObject | null`.
+- Add `getGlobalPosition()`: `this.x + (this.parent?.getGlobalPosition().x || 0)`.
+- Update `Scene.render()` to recursively render hierarchies (or flatten them).
+
+### Step 2: Implement `FlexContainer` logic
+Create `src/engine/objects/FlexContainer.ts`.
+
+#### Core Logic (Simplified Column Example):
+```typescript
+let currentY = this.padding;
+this.children.forEach(child => {
+    // Horizontal Alignment
+    let childX = this.padding;
+    if (this.alignItems === 'center') {
+        childX = (this.width - child.width) / 2;
+    }
+    
+    // Vertical Stacking
+    child.x = childX;
+    child.y = currentY;
+    
+    currentY += child.height + this.gap;
+});
+```
+
+### Step 3: Auto-Sizing Text
+[TextObject](file:///d:/Code/Antigravity/design_concepts/kinetix/src/engine/objects/TextObject.ts#25-225) needs to report its size accurately.
+- Ensure `ctx.measureText` is used.
+- If text wraps, height changes. This dynamic height is the key "input" for the Flex container to adjust siblings below it.
+
+## 4. Example Usage
+
+```typescript
+const card = new FlexContainer("card-1");
+card.direction = "column";
+card.gap = 20;
+card.padding = 30;
+card.alignItems = "center"; // Centers everything horizontally
+
+const title = new TextObject("title", "Breaking News");
+const sub = new TextObject("sub", "Live from the scene");
+const image = new ImageObject("img", "photo.jpg");
+
+card.add(image);
+card.add(title);
+card.add(sub);
+
+engine.scene.add(card);
+```
+
+## 5. Roadmap
+1. [ ] **Phase 1**: `FlexContainer` class with static layout (`row`/`column`, `gap`).
+2. [ ] **Phase 2**: Relative Positioning (`parent` reference in logic).
+3. [ ] **Phase 3**: Dynamic Sizing (Container grows with Text content).
+4. [ ] **Phase 4**: `flex: 1` support (Child fills remaining space).

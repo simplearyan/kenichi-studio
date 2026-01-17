@@ -100,7 +100,8 @@ export class RichTextObject extends KinetixObject {
             // For Center, we'd need to know the width of the specific ROW this glyph is on.
             // layoutText returns `row` index. We could pre-calc row widths.
 
-            ctx.font = `${glyph.style.fontStyle} ${glyph.style.fontWeight === 'bold' ? 'bold' : ''} ${this.fontSize}px ${this.fontFamily}`;
+            const emojiFallback = ', "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
+            ctx.font = `${glyph.style.fontStyle} ${glyph.style.fontWeight === 'bold' ? 'bold' : ''} ${this.fontSize}px ${this.fontFamily}${emojiFallback}`;
             ctx.fillStyle = glyph.style.fill;
             ctx.fillText(glyph.char, glyph.x, glyph.y + this.fontSize); // FillText is baseline
         });
@@ -116,6 +117,35 @@ export class RichTextObject extends KinetixObject {
         clone.fontFamily = this.fontFamily;
         clone.color = this.color;
         clone.maxWidth = this.maxWidth;
+        clone.textAlign = this.textAlign;
+        clone.animation = JSON.parse(JSON.stringify(this.animation));
         return clone;
+    }
+
+    toJSON() {
+        const base = super.toJSON();
+        base.type = "RichTextObject";
+        base.props = {
+            ...base.props,
+            text: this.text,
+            textAlign: this.textAlign,
+            maxWidth: this.maxWidth,
+            lineHeight: this.lineHeight,
+            fontFamily: this.fontFamily,
+            fontWeight: this.fontWeight
+        };
+        return base;
+    }
+
+    getSchema(): import("../types/Interfaces").PropertySchema[] {
+        return [
+            { key: 'text', label: 'Content', type: 'textarea' },
+            { key: 'fontSize', label: 'Font Size', type: 'number' },
+            { key: 'color', label: 'Color', type: 'color' },
+            { key: 'fontFamily', label: 'Font', type: 'text' },
+            { key: 'textAlign', label: 'Align', type: 'select', options: ['left', 'center', 'right'] },
+            { key: 'maxWidth', label: 'Max Width', type: 'number' },
+            ...super.getSchema()
+        ];
     }
 }
