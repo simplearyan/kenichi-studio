@@ -255,17 +255,67 @@ import { InspectorPanel } from "../open-source-engine/src/ui/InspectorPanel";
                             id="google-font-select"
                             class="w-full bg-app-bg border border-app-border text-gray-200 text-sm rounded-lg p-2.5 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                         >
-                            <option value="Inter">Inter (Default)</option>
-                            <option value="Roboto">Roboto</option>
-                            <option value="Oswald">Oswald (Bold)</option>
-                            <option value="Playfair Display"
-                                >Playfair Display (Serif)</option
-                            >
-                            <option value="Montserrat">Montserrat</option>
-                            <option value="Lato">Lato</option>
-                            <option value="Merriweather">Merriweather</option>
-                            <option value="Bebas Neue">Bebas Neue (Caps)</option
-                            >
+                            <optgroup label="Cinematic & Bold">
+                                <option value="Anton">Anton</option>
+                                <option value="Rubik Mono One"
+                                    >Rubik Mono One</option
+                                >
+                                <option value="Bebas Neue">Bebas Neue</option>
+                                <option value="Oswald">Oswald</option>
+                                <option value="Abril Fatface"
+                                    >Abril Fatface</option
+                                >
+                            </optgroup>
+                            <optgroup label="Cute & Fun">
+                                <option value="Fredoka">Fredoka</option>
+                                <option value="Pacifico">Pacifico</option>
+                                <option value="Quicksand">Quicksand</option>
+                                <option value="Bubblegum Sans"
+                                    >Bubblegum Sans</option
+                                >
+                                <option value="Chewy">Chewy</option>
+                            </optgroup>
+                            <optgroup label="Horror & Scary">
+                                <option value="Creepster">Creepster</option>
+                                <option value="Nosifer">Nosifer</option>
+                                <option value="Metal Mania">Metal Mania</option>
+                                <option value="Butcherman">Butcherman</option>
+                            </optgroup>
+                            <optgroup label="Handwritten">
+                                <option value="Permanent Marker"
+                                    >Permanent Marker</option
+                                >
+                                <option value="Caveat">Caveat</option>
+                                <option value="Indie Flower"
+                                    >Indie Flower</option
+                                >
+                                <option value="Shadows Into Light"
+                                    >Shadows Into Light</option
+                                >
+                            </optgroup>
+                            <optgroup label="Elegant & Serif">
+                                <option value="Playfair Display"
+                                    >Playfair Display</option
+                                >
+                                <option value="Cinzel">Cinzel</option>
+                                <option value="Merriweather"
+                                    >Merriweather</option
+                                >
+                                <option value="Lora">Lora</option>
+                            </optgroup>
+                            <optgroup label="Retro & Gaming">
+                                <option value="Press Start 2P"
+                                    >Press Start 2P</option
+                                >
+                                <option value="VT323">VT323</option>
+                                <option value="Orbitron">Orbitron</option>
+                            </optgroup>
+                            <optgroup label="Standards">
+                                <option value="Inter">Inter (Default)</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="Lato">Lato</option>
+                            </optgroup>
                         </select>
                     </div>
                 </div>
@@ -433,7 +483,53 @@ import { InspectorPanel } from "../open-source-engine/src/ui/InspectorPanel";
     };
     engine.onTimeUpdate(0);
 
-    // Initialize Inspector - CORRECTED ORDER
+    // Timeline Drag Logic
+    const timelineContainer = playhead?.parentElement;
+    if (timelineContainer && playhead) {
+        let isDragging = false;
+        let wasPlaying = false;
+
+        const updateTime = (e: PointerEvent) => {
+            const rect = timelineContainer.getBoundingClientRect();
+            const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+            const pct = x / rect.width;
+            const time = pct * engine.totalDuration;
+
+            engine.seek(time);
+            // Manually update UI for responsiveness during drag
+            playhead.style.width = `${pct * 100}%`;
+            if (timeDisplay)
+                timeDisplay.innerText = `${formatTime(time)} / ${formatTime(engine.totalDuration)}`;
+        };
+
+        timelineContainer.addEventListener("pointerdown", (e) => {
+            isDragging = true;
+            wasPlaying = engine.isPlaying;
+            engine.pause();
+            timelineContainer.setPointerCapture(e.pointerId);
+            updateTime(e);
+            timelineContainer.style.cursor = "grabbing";
+        });
+
+        timelineContainer.addEventListener("pointermove", (e) => {
+            if (!isDragging) return;
+            updateTime(e);
+        });
+
+        timelineContainer.addEventListener("pointerup", (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            timelineContainer.releasePointerCapture(e.pointerId);
+            timelineContainer.style.cursor = "pointer";
+            // Only resume if it was playing, OR if user wants it to just stop at seek.
+            // Usually editors stay paused after seek. Let's keep it paused unless it was playing?
+            // Actually, standard behavior is usually "scrubbing pauses", then "resume if playing".
+            // But for simple seeking, maybe just stay paused.
+            // Let's resume if it was playing.
+            if (wasPlaying) engine.play();
+        });
+    }
+
     const inspectorContainer = document.getElementById("inspector-container");
     if (!inspectorContainer) {
         log("CRITICAL: Inspector container not found!");
@@ -441,6 +537,22 @@ import { InspectorPanel } from "../open-source-engine/src/ui/InspectorPanel";
         const inspector = new InspectorPanel(
             engine,
             inspectorContainer as HTMLElement,
+            {
+                // App Theme Integration
+                containerClass:
+                    "p-4 space-y-4 overflow-y-auto h-full scrollbar-thin",
+                headerClass:
+                    "font-bold text-gray-200 text-sm mb-4 pb-2 border-b border-app-border",
+                labelClass:
+                    "text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1 block",
+                inputClass:
+                    "w-full bg-app-bg text-gray-200 text-xs rounded-lg p-2 border border-app-border focus:border-primary outline-none transition-colors",
+                selectClass:
+                    "w-full bg-app-bg text-gray-200 text-xs rounded-lg p-2 border border-app-border focus:border-primary outline-none appearance-none",
+                checkboxClass:
+                    "w-4 h-4 rounded border-app-border bg-app-bg text-primary focus:ring-primary rounded cursor-pointer",
+                fieldWrapperClass: "mb-4",
+            },
         );
         log("Inspector initialized");
         (window as any).inspector = inspector;
@@ -457,8 +569,45 @@ import { InspectorPanel } from "../open-source-engine/src/ui/InspectorPanel";
     title.x = (1080 - 800) / 2;
     title.y = 800;
     engine.scene.add(title);
-    engine.play();
-    log("Engine started with initial object");
+    engine.render();
+    // Font Loading (Optimistic)
+    const fontSelect = document.getElementById(
+        "google-font-select",
+    ) as HTMLSelectElement;
+    if (fontSelect) {
+        fontSelect.addEventListener("change", (e) => {
+            const fontName = (e.target as HTMLSelectElement).value;
+            if (!fontName) return;
+            log(`Loading Font: ${fontName}`);
+
+            // 1. Optimistic Update
+            const selected = engine.interaction.selectedObjectId
+                ? engine.scene.get(engine.interaction.selectedObjectId)
+                : null;
+            if (selected && selected instanceof RichTextObject) {
+                selected.fontFamily = fontName;
+                (selected as any)._layout = null;
+                (window as any).inspector?.refresh();
+                engine.render();
+                log(`Optimistically set font to ${fontName}`);
+            }
+
+            // 2. Load Font
+            WebFont.load({
+                google: {
+                    families: [fontName],
+                    text: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?",
+                },
+                active: () => {
+                    log(`Font Loaded: ${fontName}`);
+                    if (selected && selected instanceof RichTextObject) {
+                        (selected as any)._layout = null;
+                        engine.render();
+                    }
+                },
+            });
+        });
+    }
 
     // Debug Toggle
     document
@@ -556,32 +705,6 @@ import { InspectorPanel } from "../open-source-engine/src/ui/InspectorPanel";
                 log(`Total Duration set to ${seconds}s`);
                 engine.onTimeUpdate?.(engine.currentTime);
             }
-        });
-    }
-
-    // Font Loading
-    const fontSelect = document.getElementById(
-        "google-font-select",
-    ) as HTMLSelectElement;
-    if (fontSelect) {
-        fontSelect.addEventListener("change", (e) => {
-            const fontName = (e.target as HTMLSelectElement).value;
-            if (!fontName) return;
-            log(`Loading Font: ${fontName}`);
-            WebFont.load({
-                google: { families: [fontName] },
-                active: () => {
-                    log(`Font Loaded: ${fontName}`);
-                    const selected = engine.interaction.selectedObjectId
-                        ? engine.scene.get(engine.interaction.selectedObjectId)
-                        : null;
-                    if (selected && selected instanceof RichTextObject) {
-                        selected.fontFamily = fontName;
-                        (selected as any)._layout = null;
-                        (window as any).inspector?.refresh();
-                    }
-                },
-            });
         });
     }
 
