@@ -1,84 +1,113 @@
 # Kinetix
 
-Kinetix is an advanced educational platform aimed at making learning engaging through interactive components and a dedicated creative studio. It leverages the power of Astro, React, and modern web technologies to deliver a seamless and performant user experience.
+Kinetix is an advanced educational platform and content creation studio aimed at making learning engaging through interactive components and a dedicated creative environment. It leverages the power of Astro, React, and modern web technologies to deliver a seamless, performant, and visually rich user experience.
 
-## 🌟 Key Features
+## 🌟 Features
 
-*   **Kinetix Studio**: A powerful in-browser content creation tool.
-    *   **Layer-based Editing**: Manage scenes with a familiar layers panel.
-    *   **Animated Components**: Drag-and-drop animated elements like Progress Bars, Typewriter Code blocks, and Counters.
-    *   **Video Export**: Export your creations as WebM or MP4 videos directly from the browser (client-side rendering).
-    *   **Real-time Preview**: Playback and scrub through your timeline.
-*   **Education Hub**: A structured learning environment with courses and lessons.
-*   **Interactive Blog**: Engaging content enhanced with custom components.
-*   **Dark Mode**: Fully supported dark/light theme toggle.
+- **🎨 Kinetix Studio**: A powerful in-browser content creation tool.
+    - **Layer-based Editing**: Manage scenes with a familiar professional workflow.
+    - **Animated Components**: Drag-and-drop elements including Progress Bars, Typewriter Code, and Counters.
+    - **Client-Side Video Export**: Export creations as WebM/MP4 directly from the browser using Remotion technology.
+    - **Real-time Preview**: Smooth playback and scrubbing capabilities.
+- **📚 Education Hub**: Structured learning environment with courses, lessons, and progress tracking.
+- **✍️ Interactive Blog**: Engaging technical content enhanced with custom interactive components.
+- **📊 Rich Visualization**: Integrated charts, diagrams (Mermaid, Markmap), and mathematical rendering (KaTeX).
+- **🌓 Dark Mode**: Fully supported dark/light theme toggle with persistent preferences.
+- **⚡ Performance**: Built on Astro for blazing fast performance and low TBT.
 
-## 🛠️ Tech Stack
-
-*   **Framework**: [Astro](https://astro.build/) (v5)
-*   **UI Library**: [React](https://react.dev/)
-*   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-*   **State Management**: [Nanostores](https://github.com/nanostores/nanostores)
-*   **Icons**: [Lucide React](https://lucide.dev/)
-*   **Diagrams**: Mermaid, Markmap
-*   **Video Export**: `html-to-image` + `downloadjs` + `canvas` recording techniques.
-
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-*   Node.js (v18 or higher)
-*   npm (v9 or higher)
+- Node.js 18+ and npm
+- Git
 
 ### Installation
 
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/kinetix.git
-    cd kinetix
-    ```
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/kinetix.git
+cd kinetix
 
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
+# Install dependencies
+npm install
 
-3.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-    Open `http://localhost:4321` in your browser.
+# Start development server
+npm run dev
+```
 
-## 🧞 Scripts
+Visit `http://localhost:4321` to see your site.
 
-| Command | Action |
-| :--- | :--- |
-| `npm run dev` | Starts local dev server at `localhost:4321` |
-| `npm run build` | Build your production site to `./dist/` |
-| `npm run preview` | Preview your build locally, before deploying |
-| `npm run astro ...` | Run CLI commands like `astro add`, `astro check` |
-
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```text
-/
-├── public/             # Static assets
+kinetix/
+├── public/                  # Static assets
 ├── src/
-│   ├── components/     # Reusable UI components
-│   │   ├── studio/     # Studio-specific components (Layers, Sidebar, etc.)
-│   │   └── ...
-│   ├── content/        # Content collections (Blog, Education)
-│   ├── layouts/        # Page layouts
-│   ├── pages/          # Astro pages (Routes)
-│   ├── styles/         # Global styles
-│   └── utils/          # Helper functions and Studio Engine logic
+│   ├── components/          # Reusable UI library
+│   │   ├── studio/          # Studio-specific components (Layers, Timeline)
+│   │   ├── charts/          # Data visualization components
+│   │   ├── animator/        # Animation logic and wrappers
+│   │   ├── scribble/        # Hand-drawn effects
+│   │   ├── vox/             # VOX-style documentary components
+│   │   └── ui/              # General UI elements
+│   ├── content/             # Content collections (Blog, Education)
+│   ├── layouts/             # Page layouts
+│   ├── pages/               # Application routes
+│   ├── styles/              # Global styles and tailwind config
+│   └── utils/               # Helper functions and engine logic
 └── package.json
+```
+
+## 🎨 Design System
+
+### Color Palette
+
+**Primary (Blue):**
+- Default: `#3B82F6`
+- Hover: `#2563EB`
+
+**Accent (Yellow):**
+- Default: `#EAB308`
+- Hover: `#CA8A04`
+
+**Surfaces:**
+- Dark: `#141414` (Background), `#1C1C1C` (Surface)
+- Light: `#FFFFFF` (Background), `#F9FAFB` (Surface)
+
+### Typography
+
+- **Headings/Body**: [Inter](https://fonts.google.com/specimen/Inter)
+- **Hand-drawn**: [Kalam](https://fonts.google.com/specimen/Kalam)
+
+## 🔧 Technology Stack
+
+- **Framework**: [Astro v5](https://astro.build/)
+- **UI Library**: [React 19](https://react.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **State Management**: [Nanostores](https://github.com/nanostores/nanostores) & [Zustand](https://github.com/pmndrs/zustand)
+- **Video Engine**: [Remotion](https://www.remotion.dev/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Diagrams**: Mermaid, Markmap
+- **Math**: KaTeX
+
+## 🌐 Deployment
+
+The site is built to be deployed as a static site or with an SSR adapter.
+
+```bash
+# Build the project
+npm run build
+
+# Preview locally
+npm run preview
 ```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our development workflow, code style, and submission process.
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is open source and available under the MIT License.

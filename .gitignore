@@ -25,3 +25,11 @@ pnpm-debug.log*
 
 # vscode setting folder
 .vscode
+
+# unneeded build output
+*.txt
+*.log
+build_final.log
+
+# Keep ads.txt
+!public/ads.txt
