@@ -39,7 +39,11 @@ import {
     ChevronLeft,
     ChevronRight,
     ChevronsLeft,
-    ChevronsRight
+    ChevronsRight,
+    ArrowUp,
+    ArrowDown,
+    AlignHorizontalSpaceAround,
+    AlignVerticalSpaceAround
 } from "lucide-react";
 
 // Object Types
@@ -80,13 +84,34 @@ export const DesktopPropertiesPanel: React.FC<DesktopPropertiesPanelProps> = ({ 
 
     // --- Render Helpers ---
 
+    // --- Alignment Helpers ---
+    const handleAlign = (type: 'horizontal' | 'vertical') => {
+        if (!object || !engine) return;
+        const canvasWidth = engine.scene.width || 1920;
+        const canvasHeight = engine.scene.height || 1080;
+
+        if (type === 'horizontal') {
+            const newX = (canvasWidth - object.width) / 2;
+            updateProperty('x', newX);
+        } else {
+            const newY = (canvasHeight - object.height) / 2;
+            updateProperty('y', newY);
+        }
+    };
+
+    const handleNudge = (axis: 'x' | 'y', delta: number) => {
+        if (!object) return;
+        const current = (object as any)[axis] || 0;
+        updateProperty(axis, current + delta);
+    };
+
     const renderTransformSection = () => {
         if (!object) return null;
         return (
             <PropertySection title="Transform" defaultOpen={true}>
                 {/* Position */}
                 <ControlRow label="Position">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2 mb-2">
                         <CompactControlRow label="X">
                             <input
                                 type="number"
@@ -103,6 +128,37 @@ export const DesktopPropertiesPanel: React.FC<DesktopPropertiesPanelProps> = ({ 
                                 className="w-full bg-transparent text-xs font-mono outline-none"
                             />
                         </CompactControlRow>
+                    </div>
+
+                    {/* Alignment & Nudge - New Feature */}
+                    <div className="flex items-center gap-2 p-1 bg-slate-50 dark:bg-app-surface/50 rounded-lg border border-slate-100 dark:border-app-border">
+                        {/* Alignment Buttons */}
+                        <div className="flex flex-col gap-1 pr-2 border-r border-slate-200 dark:border-white/10">
+                            <button
+                                onClick={() => handleAlign('horizontal')}
+                                className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500 hover:text-indigo-500 transition-colors"
+                                title="Center Horizontally"
+                            >
+                                <AlignHorizontalSpaceAround size={14} />
+                            </button>
+                            <button
+                                onClick={() => handleAlign('vertical')}
+                                className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500 hover:text-indigo-500 transition-colors"
+                                title="Center Vertically"
+                            >
+                                <AlignVerticalSpaceAround size={14} />
+                            </button>
+                        </div>
+
+                        {/* Nudge Controls (Mini D-Pad) */}
+                        <div className="flex-1 flex items-center justify-center gap-1">
+                            <button onClick={() => handleNudge('x', -1)} className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500 hover:text-indigo-500 transition-colors"><ArrowLeft size={14} /></button>
+                            <div className="flex flex-col gap-1">
+                                <button onClick={() => handleNudge('y', -1)} className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500 hover:text-indigo-500 transition-colors"><ArrowUp size={14} /></button>
+                                <button onClick={() => handleNudge('y', 1)} className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500 hover:text-indigo-500 transition-colors"><ArrowDown size={14} /></button>
+                            </div>
+                            <button onClick={() => handleNudge('x', 1)} className="p-1 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500 hover:text-indigo-500 transition-colors"><ArrowRight size={14} /></button>
+                        </div>
                     </div>
                 </ControlRow>
 
