@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Engine } from "../../../engine/Core";
 import { useObjectProperties } from "../hooks/useObjectProperties";
+import { useObjectAnimations } from "../hooks/useObjectAnimations";
 import { LayersPanel } from "./LayersPanel";
 import { CanvasSettings } from "../settings/CanvasSettings";
 import { TextSettings } from "../settings/TextSettings";
@@ -360,6 +361,16 @@ export const DesktopPropertiesPanel: React.FC<DesktopPropertiesPanelProps> = ({ 
         return null;
     };
 
+    // --- Animation Logic (Unified Hook) ---
+    const {
+        updateAnimation,
+        getAnimation,
+        availableEnterAnimations,
+        availableExitAnimations
+    } = useObjectAnimations(engine, selectedId);
+
+    const [activeAnimTab, setActiveAnimTab] = useState<'enter' | 'exit'>('enter');
+
     const renderAnimationsSection = () => {
         if (!object) {
             return (
@@ -370,26 +381,85 @@ export const DesktopPropertiesPanel: React.FC<DesktopPropertiesPanelProps> = ({ 
             )
         }
 
+        const currentList = activeAnimTab === 'enter' ? availableEnterAnimations : availableExitAnimations;
+        const currentAnim = getAnimation(activeAnimTab);
+
+        // Helper for consistent ID checking
+        const currentAnimId = currentAnim?.type || 'none';
+
         return (
             <div className="space-y-4">
-                <PropertySection title="Entrance Animation" defaultOpen={true}>
-                    <IconGrid
-                        value={(object as any).enterAnimation || "none"}
-                        onChange={(v) => updateProperty("enterAnimation", v)}
-                        cols={3}
-                        options={[
-                            { value: "none", label: "None", icon: <X size={16} /> },
-                            { value: "fade_in", label: "Fade In", icon: <Sparkles size={16} /> },
-                            { value: "scale_in", label: "Scale In", icon: <Maximize2 size={16} /> },
-                            { value: "slide_in_left", label: "Slide Left", icon: <ArrowLeft size={16} /> },
-                            { value: "slide_in_right", label: "Slide Right", icon: <ArrowRight size={16} /> },
-                            { value: "typewriter", label: "Typewriter", icon: <Keyboard size={16} /> },
-                        ]}
-                    />
+                {/* Animation Type Tabs */}
+                <div className="flex p-1 bg-slate-100 dark:bg-app-surface border border-slate-200 dark:border-app-border rounded-xl">
+                    <button
+                        onClick={() => setActiveAnimTab('enter')}
+                        className={`flex-1 py-1 px-3 text-xs font-bold rounded-lg transition-all ${activeAnimTab === 'enter'
+                            ? "bg-white dark:bg-indigo-500 text-indigo-600 dark:text-white shadow-sm"
+                            : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                            }`}
+                    >
+                        Enter
+                    </button>
+                    <button
+                        onClick={() => setActiveAnimTab('exit')}
+                        className={`flex-1 py-1 px-3 text-xs font-bold rounded-lg transition-all ${activeAnimTab === 'exit'
+                            ? "bg-white dark:bg-indigo-500 text-indigo-600 dark:text-white shadow-sm"
+                            : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                            }`}
+                    >
+                        Exit
+                    </button>
+                </div>
+
+                <PropertySection title="Animation Type" defaultOpen={true}>
+                    <div className="grid grid-cols-3 gap-2">
+                        {currentList.map((anim) => {
+                            const isActive = currentAnimId === anim.id;
+                            return (
+                                <button
+                                    key={anim.id}
+                                    onClick={() => updateAnimation(activeAnimTab, { type: anim.id })}
+                                    className={`
+                                        flex flex-col items-center justify-center gap-2 p-2 rounded-xl border transition-all aspect-square
+                                        ${isActive
+                                            ? "bg-indigo-50 dark:bg-indigo-500/20 border-indigo-500 text-indigo-600 dark:text-indigo-400"
+                                            : "bg-slate-50 dark:bg-app-surface/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-slate-500"
+                                        }
+                                    `}
+                                >
+                                    <anim.icon size={20} />
+                                    <span className="text-[10px] font-bold text-center leading-tight">{anim.label}</span>
+                                </button>
+                            )
+                        })}
+                    </div>
                 </PropertySection>
+
+                {currentAnimId !== 'none' && (
+                    <PropertySection title="Timing" defaultOpen={true}>
+                        <ControlRow label="Duration">
+                            <SliderInput
+                                value={currentAnim?.duration || 1000}
+                                min={100} max={3000} step={50}
+                                onChange={(v) => updateAnimation(activeAnimTab, { duration: v })}
+                                formatValue={(v) => `${(v / 1000).toFixed(1)}s`}
+                            />
+                        </ControlRow>
+                        {activeAnimTab === 'enter' && (
+                            <ControlRow label="Delay">
+                                <SliderInput
+                                    value={currentAnim?.delay || 0}
+                                    min={0} max={5000} step={100}
+                                    onChange={(v) => updateAnimation(activeAnimTab, { delay: v })}
+                                    formatValue={(v) => `${(v / 1000).toFixed(1)}s`}
+                                />
+                            </ControlRow>
+                        )}
+                    </PropertySection>
+                )}
             </div>
-        )
-    }
+        );
+    };
 
     // --- Main Render ---
 
