@@ -1,0 +1,59 @@
+---
+import { seoConfig, generateTitle, generateCanonicalUrl } from "@/config/seo";
+import OpenGraph from "./OpenGraph.astro";
+import TwitterCard from "./TwitterCard.astro";
+import StructuredData from "./StructuredData.astro";
+
+interface Props {
+    title?: string;
+    description?: string;
+    image?: string;
+    type?: "website" | "article";
+}
+
+const {
+    title,
+    description = seoConfig.defaultDescription,
+    image = seoConfig.defaultImage,
+    type = "website",
+} = Astro.props;
+
+// Generate full title
+const fullTitle = generateTitle(title);
+
+// Generate canonical URL from current path
+const canonicalUrl = generateCanonicalUrl(Astro.url.pathname);
+
+// Determine which image to use for Twitter (prefer twitter-specific)
+const twitterImage =
+    image === seoConfig.defaultImage ? seoConfig.twitterImage : image;
+---
+
+<!-- Primary Meta Tags -->
+<meta name="title" content={fullTitle} />
+<meta name="description" content={description} />
+<meta name="keywords" content={seoConfig.keywords.join(", ")} />
+<meta name="author" content={seoConfig.author} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Open Graph -->
+<OpenGraph
+    title={fullTitle}
+    description={description}
+    image={image}
+    type={type}
+    url={canonicalUrl}
+/>
+
+<!-- Twitter Card -->
+<TwitterCard
+    title={fullTitle}
+    description={description}
+    image={twitterImage}
+    url={canonicalUrl}
+/>
+
+<!-- Structured Data -->
+<StructuredData screenshot={image} />

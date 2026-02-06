@@ -1,0 +1,18 @@
+---
+import { seoConfig } from "@/config/seo";
+
+interface Props {
+    screenshot?: string;
+}
+
+const { screenshot = seoConfig.defaultImage } = Astro.props;
+
+// Create schema with dynamic screenshot
+const schema = {
+    ...seoConfig.schema,
+    screenshot,
+};
+---
+
+<!-- Structured Data (Schema.org) -->
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

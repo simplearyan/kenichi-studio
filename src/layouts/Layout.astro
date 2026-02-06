@@ -1,12 +1,25 @@
 ---
 interface Props {
-    title: string;
+    title?: string;
+    description?: string;
+    image?: string;
     showFooter?: boolean;
     showAds?: boolean;
     isApp?: boolean;
 }
 
-const { title, showFooter = true, showAds = true, isApp = false } = Astro.props;
+const {
+    title,
+    description,
+    image,
+    showFooter = true,
+    showAds = true,
+    isApp = false,
+} = Astro.props;
+
+import SEOHead from "@/components/seo/SEOHead.astro";
+import PWAMeta from "@/components/pwa/PWAMeta.astro";
+import ThemeScript from "@/components/pwa/ThemeScript.astro";
 import Footer from "@/layouts/components/Footer.astro";
 import VerticalAd from "@shared/ads/VerticalAd.astro";
 import "../styles/typography.css";
@@ -18,87 +31,16 @@ import "../styles/inspector.css";
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        
-        <!-- Primary Meta Tags -->
-        <meta name="title" content={title} />
-        <meta name="description" content="Free online animation studio. Turn text into flowcharts, animate keyframes, and export professional motion graphics. No design skills required." />
-        <meta name="keywords" content="animation software, diagram creator, motion graphics, flowchart maker, online animator, video export, mermaid diagrams, free animation tool" />
-        <meta name="author" content="SimpleAryan" />
         <meta name="generator" content={Astro.generator} />
-        
-        <!-- Canonical URL -->
-        <link rel="canonical" href="https://kenichistudio.github.io/" />
-        
-        <!-- Favicon -->
-        <link
-            rel="icon"
-            type="image/svg+xml"
-            href={`${import.meta.env.BASE_URL}favicon.svg`}
-        />
-        
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://kenichistudio.github.io/" />
-        <meta property="og:title" content="Kenichi Studio - Create Animated Diagrams & Motion Graphics Online" />
-        <meta property="og:description" content="Free online animation studio. Turn text into flowcharts, animate keyframes, and export professional motion graphics. No design skills required." />
-        <meta property="og:image" content="https://kenichistudio.github.io/og-image.png" />
-        <meta property="og:site_name" content="Kenichi Studio" />
-        
-        <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://kenichistudio.github.io/" />
-        <meta property="twitter:title" content="Kenichi Studio - Create Animated Diagrams & Motion Graphics" />
-        <meta property="twitter:description" content="Free online animation studio. Turn text into flowcharts, animate keyframes, and export professional motion graphics." />
-        <meta property="twitter:image" content="https://kenichistudio.github.io/twitter-image.png" />
-        
-        <title>{title}</title>
-        
-        <!-- Structured Data (Schema.org) -->
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "Kenichi Studio",
-          "applicationCategory": "DesignApplication",
-          "operatingSystem": "Web Browser",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-          },
-          "description": "Free online animation studio for creating diagrams and motion graphics",
-          "url": "https://kenichistudio.github.io/",
-          "author": {
-            "@type": "Person",
-            "name": "SimpleAryan"
-          },
-          "screenshot": "https://kenichistudio.github.io/og-image.png"
-        }
-        </script>
 
-        <script is:inline>
-            // Check for saved theme or system preference
-            const theme = (() => {
-                if (
-                    typeof localStorage !== "undefined" &&
-                    localStorage.getItem("theme")
-                ) {
-                    return localStorage.getItem("theme");
-                }
-                if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-                    return "dark";
-                }
-                return "light";
-            })();
+        <!-- SEO Meta Tags -->
+        <SEOHead title={title} description={description} image={image} />
 
-            if (theme === "light") {
-                document.documentElement.classList.remove("dark");
-            } else {
-                document.documentElement.classList.add("dark");
-            }
+        <!-- PWA Meta Tags -->
+        <PWAMeta />
 
-            window.localStorage.setItem("theme", theme);
-        </script>
+        <!-- Theme Initialization -->
+        <ThemeScript />
 
         <!-- Google AdSense -->
         <script
@@ -112,17 +54,6 @@ import "../styles/inspector.css";
         <link
             href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
             rel="stylesheet"
-        />
-
-        <!-- PWA Meta -->
-        <link
-            rel="manifest"
-            href={`${import.meta.env.BASE_URL}manifest.json`}
-        />
-        <meta name="theme-color" content="#3b82f6" />
-        <link
-            rel="apple-touch-icon"
-            href={`${import.meta.env.BASE_URL}pwa-icon-192.png`}
         />
     </head>
     <body
@@ -142,23 +73,6 @@ import "../styles/inspector.css";
             )
         }
 
-        <script define:vars={{ base: import.meta.env.BASE_URL }}>
-            if ("serviceWorker" in navigator) {
-                window.addEventListener("load", () => {
-                    navigator.serviceWorker
-                        .register(base + "sw.js")
-                        .then((registration) => {
-                            console.log("SW Registered: ", registration);
-                        })
-                        .catch((registrationError) => {
-                            console.log(
-                                "SW Registration Failed: ",
-                                registrationError,
-                            );
-                        });
-                });
-            }
-        </script>
         <slot />
         {showFooter && <Footer />}
     </body>
