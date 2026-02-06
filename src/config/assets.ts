@@ -3,46 +3,39 @@
  * All asset paths should be referenced from this file
  */
 
-const getBasePath = () => {
-    // In Astro, import.meta.env.BASE_URL is available at build time
-    // For this config file, we'll use a helper function in components
-    return '/';
-};
-
 export const assetPaths = {
     // Brand assets
     brand: {
-        logo: 'logo.svg',
-        logoBlackWhite: 'logo-BW.svg',
-        logoPWA: 'kenichi_brand_pwa.svg',
-        icon: 'favicon.svg',
+        logo: 'assets/images/brand/logo.svg',
+        logoMonochrome: 'assets/images/brand/logo-monochrome.svg',
+        logoPWA: 'assets/images/brand/kenichi-brand-pwa.svg',
     },
 
     // Social media images
     social: {
-        ogImage: 'og-image.svg',
-        twitterCard: 'twitter-image.svg',
+        ogImage: 'assets/images/social/og-image.svg',
+        twitterCard: 'assets/images/social/twitter-card.svg',
     },
 
     // PWA icons
-    pwa: {
-        icon192: 'pwa-icon-192.png',
-        icon512: 'pwa-icon-512.png',
-        favicon: 'favicon.svg',
+    icons: {
+        favicon: 'assets/icons/favicon.svg',
+        icon192: 'assets/icons/icon-192.png',
+        icon512: 'assets/icons/icon-512.png',
     },
 
     // Placeholders
     placeholders: {
-        blog: 'blog-placeholder.svg',
-        blue: 'placeholder-blue.svg',
-        green: 'placeholder-green.svg',
-        orange: 'placeholder-orange.svg',
-        pink: 'placeholder-pink.svg',
+        blog: 'assets/images/placeholders/blog-placeholder.svg',
+        blue: 'assets/images/placeholders/placeholder-blue.svg',
+        green: 'assets/images/placeholders/placeholder-green.svg',
+        orange: 'assets/images/placeholders/placeholder-orange.svg',
+        pink: 'assets/images/placeholders/placeholder-pink.svg',
     },
 
     // Other assets
     other: {
-        flowLogo: 'flow-logo.png',
+        flowLogo: 'assets/images/flow-logo.png',
     },
 };
 

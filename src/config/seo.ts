@@ -5,8 +5,8 @@ export const seoConfig = {
     defaultTitle: `${siteConfig.name} - ${siteConfig.tagline}`,
     defaultDescription: siteConfig.description,
     baseUrl: siteConfig.url,
-    defaultImage: `${siteConfig.url}/og-image.png`,
-    twitterImage: `${siteConfig.url}/twitter-image.png`,
+    defaultImage: `${siteConfig.url}/assets/images/social/og-image.png`,
+    twitterImage: `${siteConfig.url}/assets/images/social/twitter-card.png`,
     author: 'SimpleAryan',
 
     keywords: siteConfig.keywords,

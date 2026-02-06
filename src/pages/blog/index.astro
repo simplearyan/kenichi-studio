@@ -17,22 +17,22 @@ const styles = [
     {
         bg: "bg-white border-pink-100 hover:border-pink-200",
         tag: "bg-pink-50 text-pink-600",
-        placeholder: "placeholder-pink.svg",
+        placeholder: "assets/images/placeholders/placeholder-pink.svg",
     }, // Pink
     {
         bg: "bg-white border-orange-100 hover:border-orange-200",
         tag: "bg-orange-50 text-orange-600",
-        placeholder: "placeholder-orange.svg",
+        placeholder: "assets/images/placeholders/placeholder-orange.svg",
     }, // Peach
     {
         bg: "bg-white border-emerald-100 hover:border-emerald-200",
         tag: "bg-emerald-50 text-emerald-600",
-        placeholder: "placeholder-green.svg",
+        placeholder: "assets/images/placeholders/placeholder-green.svg",
     }, // Green
     {
         bg: "bg-white border-blue-100 hover:border-blue-200",
         tag: "bg-blue-50 text-blue-600",
-        placeholder: "placeholder-blue.svg",
+        placeholder: "assets/images/placeholders/placeholder-blue.svg",
     }, // Blue
 ];
 ---
@@ -67,11 +67,11 @@ const styles = [
                                 <img
                                     src={
                                         featuredPost.data.image ||
-                                        `${import.meta.env.BASE_URL}placeholder-blue.svg`
+                                        `${import.meta.env.BASE_URL}assets/images/placeholders/placeholder-blue.svg`
                                     }
                                     alt={featuredPost.data.title}
                                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                    onerror={`this.onerror=null; this.src='${import.meta.env.BASE_URL}placeholder-blue.svg';`}
+                                    onerror={`this.onerror=null; this.src='${import.meta.env.BASE_URL}assets/images/placeholders/placeholder-blue.svg';`}
                                 />
                             </div>
                             <div class="flex flex-col justify-center py-4 md:px-8">

@@ -5,20 +5,20 @@ export const pwaConfig = {
     themeColor: '#3b82f6',
     backgroundColor: '#111827',
 
-    // Icon paths
+    // Icon paths (relative paths, BASE_URL will be prepended in components)
     icons: {
-        favicon: '/favicon.svg',
-        appleTouchIcon: '/pwa-icon-192.png',
-        icon192: '/pwa-icon-192.png',
-        icon512: '/pwa-icon-512.png',
+        favicon: 'assets/icons/favicon.svg',
+        appleTouchIcon: 'assets/icons/icon-192.png',
+        icon192: 'assets/icons/icon-192.png',
+        icon512: 'assets/icons/icon-512.png',
     },
 
     // Manifest path
-    manifestPath: '/manifest.json',
+    manifestPath: 'manifest.json',
 
     // Service worker
     serviceWorker: {
-        path: '/sw.js',
+        path: 'sw.js',
         scope: '/',
     },
 };
